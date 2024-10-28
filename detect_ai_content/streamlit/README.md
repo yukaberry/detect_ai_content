@@ -19,7 +19,7 @@ make install_on_dev
 
 
 ### Next steps
-[ ] Remove local model and get it from a remote source
-[ ] Remove local prediction, get the result from an API
-[ ] Improve the Text Predictor Tool Layout
-[ ] Develop the Image Predictor Tool Layout
+- [ ] Remove local model and get it from a remote source
+- [ ] Remove local prediction, get the result from an API
+- [ ] Improve the Text Predictor Tool Layout
+- [ ] Develop the Image Predictor Tool Layout
