@@ -15,3 +15,6 @@ run_preprocess:
 
 run_local_fast_api:
 	fastapi dev detect_ai_content/api/fast.py
+
+run_tests:
+	python3 -m unittest discover -s tests
