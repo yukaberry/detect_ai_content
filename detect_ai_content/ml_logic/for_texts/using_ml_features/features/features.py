@@ -71,7 +71,7 @@ def compute_repetitions_in_text(text):
 # https://github.com/diffitask/spell-checkers-comparison
 
 def _number_of_corrections_using_Spacy(text):
-    print(f'_number_of_corrections_using_Spacy: {text}')
+    # print(f'_number_of_corrections_using_Spacy: {text}')
     doc = nlp(f"{text}.")
     return len(doc._.suggestions_spellCheck)
 
