@@ -21,21 +21,6 @@ def evaluate_model(model, X_test_processed, y_test):
         "recall_score" : recall_score(y_true=y_test, y_pred=y_pred)
     }
 
-def load_model():
-
-    latest_model = None
-
-    module_path = os.path.abspath(detect_ai_content)
-    dir_path = os.path.dirname(os.path.realpath(module_path))
-    local_one_model_path = os.path.join(dir_path, "models/leverdewagon/finalized_genai_text_detection_model.pickle")
-
-    latest_model = pickle.load(open(local_one_model_path, 'rb'))
-
-    print("✅ Model loaded from local disk")
-
-    return latest_model
-
-
 def _chunkstring(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
@@ -75,7 +60,7 @@ def enrich(data, ):
     sentences_df['punctuations'] = sentences_df['text'].apply(compute_punctuation_in_text)
     sentences_df['neg_sentiment_polarity'] = sentences_df['text'].apply(compute_neg_sentiment_polarity_in_text)
     sentences_df['pos_sentiment_polarity'] = sentences_df['text'].apply(compute_pos_sentiment_polarity_in_text)
-    sentences_df['corrections'] = sentences_df['text'].apply(compute_number_of_corrections_in_sentence)
+    sentences_df['corrections'] = sentences_df['text'].apply(compute_number_of_text_corrections_using_pyspellchecker)
     sentences_df['text_lenght'] = sentences_df['text'].apply(text_lenght)
     return sentences_df
 

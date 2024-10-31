@@ -69,6 +69,38 @@ def compute_repetitions_in_text(text):
     return repetions
 
 # https://github.com/diffitask/spell-checkers-comparison
+# 710   ⭐️  https://github.com/barrust/pyspellchecker
+# 68    ⭐️  https://github.com/hellohaptik/spello
+# 9000  ⭐️  https://github.com/sloria/TextBlob
+# 500   ⭐️  https://github.com/filyp/autocorrect
+# 612       Jamspell
+
+from spellchecker import SpellChecker
+spell = SpellChecker()
+
+def compute_number_of_text_corrections_using_pyspellchecker(text):
+    text_blob = TextBlob(text)
+    corrections = 0
+    for sentence in text_blob.sentences:
+        for word in sentence.words:
+            correction = spell.correction(word)
+            if correction != word:
+                # print(f'{word} -> {correction}')
+                corrections += 1
+
+    return corrections
+
+def compute_number_of_text_corrections_using_TextBlob(text):
+    text_blob = TextBlob(text)
+    corrections = 0
+    for sentence in text_blob.sentences:
+        for word in sentence.words:
+            correction = word.spellcheck()[0][0]
+            if correction != word:
+                # print(f'{word} -> {correction}')
+                corrections += 1
+
+    return corrections
 
 def _number_of_corrections_using_Spacy(text):
     # print(f'_number_of_corrections_using_Spacy: {text}')
@@ -80,7 +112,11 @@ def compute_number_of_text_corrections(text):
     corrections = 0
     for sentence in text_blob.sentences:
         if len(sentence) < 500:
-            corrections += _number_of_corrections_using_Spacy(sentence)
+            corr = _number_of_corrections_using_Spacy(sentence)
+            # print(f'{corr} in {sentence}')
+            corrections += corr
+        else:
+            print("skip number_of_corrections_using_Spacy ")
 
     return corrections
 
