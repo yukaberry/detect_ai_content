@@ -79,7 +79,8 @@ def compute_number_of_text_corrections(text):
     text_blob = TextBlob(text)
     corrections = 0
     for sentence in text_blob.sentences:
-        corrections += _number_of_corrections_using_Spacy(sentence)
+        if len(sentence) < 500:
+            corrections += _number_of_corrections_using_Spacy(sentence)
 
     return corrections
 
