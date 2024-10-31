@@ -7,6 +7,7 @@ import nltk
 nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('words')
+from nltk import tokenize
 
 import spacy
 import contextualSpellCheck
@@ -16,6 +17,13 @@ contextualSpellCheck.add_to_pipe(nlp)
 english_stopwords = stopwords.words('english')
 
 import string
+import re
+
+def extract_sentences(text):
+    return tokenize.sent_tokenize(text)
+
+def spacy_sentences(text):
+    return nlp(text).sents
 
 def compute_punctuation_in_text(text):
     number_of_ponctuations = 0
@@ -63,6 +71,7 @@ def compute_repetitions_in_text(text):
 # https://github.com/diffitask/spell-checkers-comparison
 
 def _number_of_corrections_using_Spacy(text):
+    print(f'_number_of_corrections_using_Spacy: {text}')
     doc = nlp(f"{text}.")
     return len(doc._.suggestions_spellCheck)
 
@@ -73,6 +82,9 @@ def compute_number_of_text_corrections(text):
         corrections += _number_of_corrections_using_Spacy(sentence)
 
     return corrections
+
+def compute_number_of_corrections_in_sentence(text):
+    return _number_of_corrections_using_Spacy(text)
 
 def number_of_sentences(text):
     text_blob = TextBlob(text)

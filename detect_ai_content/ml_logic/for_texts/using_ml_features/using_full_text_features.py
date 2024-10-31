@@ -31,6 +31,7 @@ def enrich(data):
     data_enriched['pos_sentiment_polarity'] = data_enriched['text'].apply(compute_pos_sentiment_polarity_in_text)
 
     print('enrich text_corrections')
+    # Temp deactivated because it's very long to compute .... but very interesting to keep
     data_enriched['text_corrections_nb'] = data_enriched['text'].apply(compute_number_of_text_corrections)
 
     print('enrich compute_repetitions_in_text')
