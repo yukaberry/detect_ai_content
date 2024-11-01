@@ -115,17 +115,26 @@ for w in list(wordnet_words):
 
 from nltk.stem import *
 stemmer = PorterStemmer()
+from textblob import Word
 
 def compute_number_of_text_corrections_using_nltk_words(text):
     text_blob = TextBlob(text)
     corrections = 0
+    ignore_words = [
+        'n\'t'
+    ]
     for sentence in text_blob.sentences:
         for word in sentence.words:
-            word_lower = str.lower(word)
-            if word_lower not in words_dict:
+            if len(word) > 2 and word not in ignore_words:
+                word_lower = str.lower(word)
                 if stemmer.stem(word_lower) not in words_dict:
-                    # print(f'❌ {word}')
-                    corrections+= 1
+                    singular_form = Word(word_lower).singularize()
+                    if singular_form not in words_dict:
+                        # print(f'❌ {word_lower} - sing({singular_form})')
+                        corrections+= 1
+#         else:
+#            print(f'✅ {word_lower}')
+
     return corrections
 
 def _number_of_corrections_using_Spacy(text):
