@@ -7,6 +7,7 @@ import nltk
 nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('words')
+nltk.download('wordnet')
 from nltk import tokenize
 
 import spacy
@@ -100,6 +101,31 @@ def compute_number_of_text_corrections_using_TextBlob(text):
                 # print(f'{word} -> {correction}')
                 corrections += 1
 
+    return corrections
+
+from nltk.corpus import wordnet
+from nltk.corpus import words
+wordnet_words = list(wordnet.words())
+words_dict = {}
+for w in words.words():
+    words_dict[w]=w
+
+for w in list(wordnet_words):
+    words_dict[w]=w
+
+from nltk.stem import *
+stemmer = PorterStemmer()
+
+def compute_number_of_text_corrections_using_nltk_words(text):
+    text_blob = TextBlob(text)
+    corrections = 0
+    for sentence in text_blob.sentences:
+        for word in sentence.words:
+            word_lower = str.lower(word)
+            if word_lower not in words_dict:
+                if stemmer.stem(word_lower) not in words_dict:
+                    # print(f'❌ {word}')
+                    corrections+= 1
     return corrections
 
 def _number_of_corrections_using_Spacy(text):

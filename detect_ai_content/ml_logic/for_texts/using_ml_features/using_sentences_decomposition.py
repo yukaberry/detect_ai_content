@@ -60,7 +60,7 @@ def enrich(data, ):
     sentences_df['punctuations'] = sentences_df['text'].apply(compute_punctuation_in_text)
     sentences_df['neg_sentiment_polarity'] = sentences_df['text'].apply(compute_neg_sentiment_polarity_in_text)
     sentences_df['pos_sentiment_polarity'] = sentences_df['text'].apply(compute_pos_sentiment_polarity_in_text)
-    sentences_df['corrections'] = sentences_df['text'].apply(compute_number_of_text_corrections_using_pyspellchecker)
+    sentences_df['corrections'] = sentences_df['text'].apply(compute_number_of_text_corrections_using_nltk_words)
     sentences_df['text_lenght'] = sentences_df['text'].apply(text_lenght)
     return sentences_df
 

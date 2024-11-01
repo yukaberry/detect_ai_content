@@ -31,7 +31,7 @@ def enrich(data):
     data_enriched['pos_sentiment_polarity'] = data_enriched['text'].apply(compute_pos_sentiment_polarity_in_text)
 
     print('enrich text_corrections')
-    data_enriched['text_corrections_nb'] = data_enriched['text'].apply(compute_number_of_text_corrections_using_pyspellchecker)
+    data_enriched['text_corrections_nb'] = data_enriched['text'].apply(compute_number_of_text_corrections_using_nltk_words)
 
     print('enrich compute_repetitions_in_text')
     data_enriched['text_repetitions_nb'] = data_enriched['text'].apply(compute_repetitions_in_text)
