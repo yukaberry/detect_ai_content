@@ -1,2 +1,10 @@
-streamlit==1.22.0 #Temp hack to sync the compatibility for detect_ai_content
-detect_ai_content
+# streamlit==1.22.0 #Temp hack to sync the compatibility for detect_ai_content
+# detect_ai_content
+streamlit==1.39.0
+base64
+PIL
+numpy
+os
+pathlib
+io
+requests

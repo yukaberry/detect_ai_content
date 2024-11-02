@@ -1,15 +1,10 @@
 import streamlit as st
-import sklearn
 
 '''
 # Detect AI Content front
 '''
 
-import datetime
 import streamlit as st
-import pickle
-
-from detect_ai_content.ml_logic.preprocess import preprocess_text
 
 
 txt = st.text_area(
