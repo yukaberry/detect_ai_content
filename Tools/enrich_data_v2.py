@@ -9,9 +9,9 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features im
 print(sys.argv)
 
 from_filepath = sys.argv[1]
-to_enrich_filepath = from_filepath.replace('.csv', '_enriched.csv')
+to_enrich_filepath = from_filepath.replace('.csv', '_enriched_v2.csv')
 
-chunksize = 1000
+chunksize = 10
 
 def save(df, path):
     if os.path.isfile(path) == False:

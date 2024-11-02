@@ -11,7 +11,7 @@ print(sys.argv)
 from_filepath = sys.argv[1]
 to_enrich_filepath = from_filepath.replace('.csv', '_enriched.csv')
 
-chunksize = 10
+chunksize = 1000
 
 def save(df, path):
     if os.path.isfile(path) == False:
