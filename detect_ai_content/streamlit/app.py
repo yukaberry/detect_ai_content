@@ -16,7 +16,7 @@ st.subheader("🔑 Key concepts")
 st.write(f"Explain the basis of the projet ")
 
 st.subheader("📚 Datasets")
-st.write(f"Link the datasets")
+st.write(f"present our datasets & Link the datasets")
 
 st.subheader("🧠 Preprocess")
 st.write(f"Explain the processes ")

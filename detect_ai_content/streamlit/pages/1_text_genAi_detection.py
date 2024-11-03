@@ -1,11 +1,5 @@
 import streamlit as st
-
-'''
-# Detect AI Content front
-'''
-
-import streamlit as st
-
+import requests
 
 txt = st.text_area(
     "Text to analyze",
@@ -16,15 +10,17 @@ txt = st.text_area(
     "despair, (...)",
 )
 
-# st.write(f"You wrote {len(txt)} characters.")
+st.write(f"You wrote {len(txt)} characters.")
 
-# st.subheader("Prediction - get text")
+st.subheader("Prediction - get text")
 st.write(f"{txt}")
 
-st.subheader("Prediction - preprocess")
-# X_processed = preprocess_text(txt)
-# st.dataframe(X_processed)
-
 st.subheader("Prediction - predict")
-# y_pred = model.predict(X_processed)
-# st.write(f"{y_pred}")
+headers = {
+    'accept': 'application/json',
+}
+params = {
+    "text":txt
+}
+response = requests.get('https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/predict', headers=headers, params=params)
+st.write(f"{response.json()}")
