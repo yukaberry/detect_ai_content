@@ -3,4 +3,10 @@ scikit-learn == 1.5.2
 tensorflow == 2.18.0
 keras == 3.6.0
 matplotlib == 3.9.2
-seaborn == 0.13.2
+seaborn
+google-cloud-bigquery
+google-cloud-storage==2.14.0
+google-api-core==2.8.2
+googleapis-common-protos==1.56.4
+pandas == 2.2.3
+h5py==3.12.1
