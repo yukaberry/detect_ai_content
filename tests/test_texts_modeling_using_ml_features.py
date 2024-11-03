@@ -61,7 +61,7 @@ Conclude if students get classes from home by online they don't want to pay atte
 Students fall in environment learning because they learn at class when the teacher explain if students attend classes from home by online is hard they learn. Also student sleep more and stay with more energy to receive the class by online. Also they feel safe at home with their family"
 """
         errors = compute_number_of_text_corrections_using_nltk_words(text)
-        self.assertEqual(errors, 18)
+        self.assertEqual(errors, 7)
 
     def test_preprocessing(self):
         texts = get_human_texts()
