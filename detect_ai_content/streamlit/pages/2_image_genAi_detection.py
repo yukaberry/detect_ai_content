@@ -1,11 +1,11 @@
 import streamlit as st
-import base64
 from PIL import Image
 import numpy as np
 import os
 import pathlib
 import io
 import requests
+import time
 
 # https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader
 uploaded_file = st.file_uploader("Upload an image", type=["png"], accept_multiple_files=False)
@@ -39,16 +39,20 @@ if path_in is not None:
     st.subheader("Image saved at ")
     st.write(f"{complete_name}")
 
-    import requests
-    headers = {
-        'accept': 'application/json',
-        # requests won't add a boundary if this header is set when you pass files=
-        # 'Content-Type': 'multipart/form-data',
-    }
+    if st.button('Evaluate this image'):
+        st.subheader("Prediction - predict")
+        with st.spinner('Wait for it...'):
+            time.sleep(2)
 
-    files = {
-        'img': ('image.png', open(complete_name, 'rb'), 'image/png'),
-    }
+            headers = {
+                'accept': 'application/json',
+                # requests won't add a boundary if this header is set when you pass files=
+                # 'Content-Type': 'multipart/form-data',
+            }
 
-    response = requests.post('http://127.0.0.1:8000/predict', headers=headers, files=files)
-    print(response)
+            files = {
+                'img': ('image.png', open(complete_name, 'rb'), 'image/png'),
+            }
+
+            response = requests.post('http://127.0.0.1:8000/predict', headers=headers, files=files)
+            st.success(f"{response.json()}")
