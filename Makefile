@@ -15,3 +15,16 @@ run_preprocess:
 
 run_local_fast_api:
 	fastapi dev detect_ai_content/api/fast.py
+
+## TESTS
+
+run_tests:
+	python3 -m unittest discover -s tests
+
+## RE TRAIN MODELS
+
+run_retrain_text_model:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import retrain_full_model; retrain_full_model()'
+
+run_retrain_text_2nd_model:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_vectorizer_and_NaiveBayes.using_vectorizer_and_NaiveBayes import retrain_full_model; retrain_full_model()'
