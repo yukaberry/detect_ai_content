@@ -174,10 +174,13 @@ def retrain_full_model():
                         accuracy_score= results['accuracy_score'])
 
     # mlflow_save_model
+    example_df = big_df.sample(3)
+
     mlflow_save_model(
         model=model,
         is_tensorflow=False,
-        model_name=MLFLOW_FE_MODEL_NAME
+        model_name=MLFLOW_FE_MODEL_NAME,
+        input_example=example_df
     )
 
     mlflow.end_run()

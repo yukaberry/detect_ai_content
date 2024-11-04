@@ -81,7 +81,7 @@ def retrain_full_model():
         daigt_v2_df
         ])
 
-    # big_df = big_df.sample(1000)
+    # big_df = big_df.sample(100_000)
 
     pipeline_naive_bayes = make_pipeline(
         TfidfVectorizer(),
@@ -118,11 +118,15 @@ def retrain_full_model():
                         precision_score= results['precision_score'],
                         accuracy_score= results['accuracy_score'])
 
+
     # mlflow_save_model
+    input_example_df = big_df.sample(3)
+
     mlflow_save_model(
         model=model,
         is_tensorflow=False,
-        model_name=MLFLOW_VECTORIZER_MODEL_NAME
+        model_name=MLFLOW_VECTORIZER_MODEL_NAME,
+        input_example=input_example_df
     )
 
     mlflow.end_run()

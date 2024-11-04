@@ -51,16 +51,19 @@ def mlflow_save_metrics(
 def mlflow_save_model(
                         model,
                         model_name: str,
-                        is_tensorflow: bool) -> None:
+                        is_tensorflow: bool,
+                        input_example) -> None:
 
     # Save model
     if is_tensorflow:
         mlflow.tensorflow.log_model(model=model,
                                     artifact_path="model",
-                                    registered_model_name=model_name)
+                                    registered_model_name=model_name,
+                                    input_example=input_example)
         print("✅ tensorflow Model saved to mlflow")
     else:
         mlflow.sklearn.log_model(sk_model=model,
                                  artifact_path="model",
-                                 registered_model_name=model_name)
+                                 registered_model_name=model_name,
+                                 input_example=input_example)
         print("✅ sklearn Model saved to mlflow")
