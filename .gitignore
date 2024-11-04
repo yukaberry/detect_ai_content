@@ -210,6 +210,7 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,macos
+
 .DS_Store
 detect_ai_content/ml_logic/for_texts/.DS_Store
 detect_ai_content/ml_logic/for_texts/.DS_Store
@@ -218,3 +219,10 @@ notebooks/.DS_Store
 notebooks/.DS_Store
 detect_ai_content/.DS_Store
 .DS_Store
+
+# recommended for MLFlow
+.idea
+mlruns
+.DS_Store
+.cache
+*__pycache__*

@@ -28,3 +28,10 @@ run_retrain_text_model:
 
 run_retrain_text_2nd_model:
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_vectorizer_and_NaiveBayes.using_vectorizer_and_NaiveBayes import retrain_full_model; retrain_full_model()'
+
+## TOOLS
+
+run_generate_text_sample_datasets:
+	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(1000)'
+	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(10000)'
+	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(50000)'
