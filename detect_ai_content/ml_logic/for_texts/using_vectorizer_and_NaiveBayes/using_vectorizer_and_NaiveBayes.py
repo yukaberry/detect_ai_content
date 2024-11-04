@@ -81,10 +81,10 @@ def retrain_full_model():
         daigt_v2_df
         ])
 
-    # big_df = big_df.sample(100_000)
+    # big_df = big_df.sample(500_000)
 
     pipeline_naive_bayes = make_pipeline(
-        TfidfVectorizer(),
+        TfidfVectorizer(min_df=0.1),
         MultinomialNB()
     )
 
