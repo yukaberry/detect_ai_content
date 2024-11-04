@@ -8,7 +8,9 @@ import requests
 import time
 
 # https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader
-uploaded_file = st.file_uploader("Upload an image", type=["png"], accept_multiple_files=False)
+# SUPPORT PNG in the futur
+# Complex to support the 4th layer on the Api & model
+uploaded_file = st.file_uploader("Upload an image", type=["jpg"], accept_multiple_files=False)
 
 if uploaded_file is not None:
     path_in = uploaded_file.name
@@ -51,8 +53,8 @@ if path_in is not None:
             }
 
             files = {
-                'img': ('image.png', open(complete_name, 'rb'), 'image/png'),
+                'img': ('image.jpg', open(complete_name, 'rb'), 'image/jpg'),
             }
 
-            response = requests.post('http://127.0.0.1:8000/predict', headers=headers, files=files)
+            response = requests.post('https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
             st.success(f"{response.json()}")
