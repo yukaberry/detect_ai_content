@@ -140,5 +140,5 @@ async def predict(img: UploadFile = File(...)):
 @app.get("/")
 def root():
     return {
-        'greeting': 'Hello Detect AI Content !! '
+        'greeting': 'Hello Detect AI Content !! hello '
     }
