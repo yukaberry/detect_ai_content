@@ -28,5 +28,5 @@ class TrueNetImageUsinCustomCNN:
         to_predict_img_array = TrueNetImageUsinCustomCNN.pre_process(image_path)
         prediction = self.model.predict(to_predict_img_array)
         if prediction[0][0] < 0.5:
-            return " This is Fake :( "
-        return " Real it is :D "
+            return 0
+        return 1
