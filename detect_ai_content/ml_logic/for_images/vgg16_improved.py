@@ -39,7 +39,7 @@ def clean_img_vgg16(user_input):
     return arr
 
 
-def load_model():
+def load_model_vgg16():
     """
     - Return a keras VGG16 model (Baseline model, to re-train the model with bigger datasets)
     - Return None (but do not Raise) if no model is found
