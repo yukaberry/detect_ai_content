@@ -2,7 +2,7 @@
 # detect_ai_content
 streamlit==1.39.0
 base64
-PIL
+pillow==10.4.0
 numpy
 os
 pathlib

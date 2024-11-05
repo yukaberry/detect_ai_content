@@ -20,9 +20,6 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params
 from detect_ai_content.params import *
 
-def test():
-    print("test")
-
 def train_LogisticRegression_model(X_train_processed, y_train):
     model = LogisticRegression(max_iter=1000)
     model.fit(X_train_processed, y_train)
@@ -64,6 +61,12 @@ def enrich(data):
     return data_enriched
 
 def load_model():
+    """
+        Model sumary :
+            Trained in 2,532,099 texts (using 3 datasets combined)
+            Algo : TfidfVectorizer() + MultinomialNB
+            Cross Validate average result (0.2 test) : 0.83
+    """
     import detect_ai_content
     module_dir_path = os.path.dirname(detect_ai_content.__file__)
     model_path = f = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/genai_text_detection_using_ml_features.pickle'

@@ -226,3 +226,6 @@ mlruns
 .DS_Store
 .cache
 *__pycache__*
+
+# GCGLOUD
+gcloud_upload
