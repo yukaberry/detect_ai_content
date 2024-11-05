@@ -24,5 +24,5 @@ if st.button('Evaluate this text'):
         params = {
             "text":txt
         }
-        response = requests.get('https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/predict', headers=headers, params=params)
+        response = requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/predict', headers=headers, params=params)
         st.success(f"{response.json()}")
