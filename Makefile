@@ -21,6 +21,9 @@ run_local_fast_api:
 run_tests:
 	python3 -m unittest discover -s tests
 
+run_cnn_tests:
+	python tests/test_image_modeling_TrueNetImageUsinCustomCNN.py
+
 ## RE TRAIN MODELS
 
 run_retrain_text_model:
