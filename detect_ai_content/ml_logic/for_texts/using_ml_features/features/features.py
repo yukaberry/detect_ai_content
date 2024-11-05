@@ -10,11 +10,6 @@ nltk.download('words')
 nltk.download('wordnet')
 from nltk import tokenize
 
-import spacy
-import contextualSpellCheck
-nlp = spacy.load('en_core_web_sm')
-contextualSpellCheck.add_to_pipe(nlp)
-
 english_stopwords = stopwords.words('english')
 
 import string
@@ -75,33 +70,6 @@ def compute_repetitions_in_text(text):
 # 9000  ⭐️  https://github.com/sloria/TextBlob
 # 500   ⭐️  https://github.com/filyp/autocorrect
 # 612       Jamspell
-
-from spellchecker import SpellChecker
-spell = SpellChecker()
-
-def compute_number_of_text_corrections_using_pyspellchecker(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        for word in sentence.words:
-            correction = spell.correction(word)
-            if correction != word:
-                # print(f'{word} -> {correction}')
-                corrections += 1
-
-    return corrections
-
-def compute_number_of_text_corrections_using_TextBlob(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        for word in sentence.words:
-            correction = word.spellcheck()[0][0]
-            if correction != word:
-                # print(f'{word} -> {correction}')
-                corrections += 1
-
-    return corrections
 
 from nltk.corpus import wordnet
 from nltk.corpus import words

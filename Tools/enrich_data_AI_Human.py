@@ -4,7 +4,7 @@ import os
 
 import pandas as pd
 
-from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import enrich
+from detect_ai_content.ml_logic.data import enrich_text
 
 print(sys.argv)
 
@@ -23,7 +23,7 @@ actual_dataset_size = 0
 
 for chunk in pd.read_csv(from_filepath, chunksize=chunksize):
     df = chunk[["text", "generated"]]
-    df = enrich(df)
+    df = enrich_text(df)
 
     save(df, to_enrich_filepath)
     actual_dataset_size += chunksize

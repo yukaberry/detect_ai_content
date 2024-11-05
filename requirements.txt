@@ -10,3 +10,5 @@ colorama
 mlflow
 tensorflow
 python-multipart
+textblob
+nltk

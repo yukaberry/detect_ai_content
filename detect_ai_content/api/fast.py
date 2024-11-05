@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
+import mlflow
 
 from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from detect_ai_content.ml_logic.preprocess import preprocess_text
+from detect_ai_content.ml_logic.preprocess import preprocess
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import *
+
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img, load_model
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
@@ -32,9 +35,10 @@ def predict(
     """
 
     if app.state.model is None:
-        app.state.model = load_model()
+        app.state.model = TrueNetTextLogisticRegression().model
 
-    X_processed = preprocess_text(text)
+    df = pd.DataFrame(data=[text], columns=["text"])
+    X_processed = preprocess(df)
     y_pred = app.state.model.predict(X_processed)
     print(f"one pred: {y_pred[0]}")
     return {

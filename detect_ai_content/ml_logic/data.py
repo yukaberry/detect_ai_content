@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import numpy as np
 
+from detect_ai_content.ml_logic.for_texts.using_ml_features.features.features import *
+
 def get_enriched_df(size = None):
     import detect_ai_content
     module_dir_path = os.path.dirname(detect_ai_content.__file__)
@@ -42,3 +44,29 @@ def get_enriched_df(size = None):
         return big_df.sample(size)
 
     return big_df
+
+
+def enrich_text(data):
+    data_enriched = data.copy()
+    # print('enrich compute_punctuation_in_text')
+    data_enriched['punctuations_nb'] = data_enriched['text'].apply(compute_punctuation_in_text)
+
+    # print('enrich compute_neg_sentiment_polarity_in_text')
+    data_enriched['neg_sentiment_polarity'] = data_enriched['text'].apply(compute_neg_sentiment_polarity_in_text)
+
+    # print('enrich compute_pos_sentiment_polarity_in_text')
+    data_enriched['pos_sentiment_polarity'] = data_enriched['text'].apply(compute_pos_sentiment_polarity_in_text)
+
+    # print('enrich text_corrections')
+    data_enriched['text_corrections_nb'] = data_enriched['text'].apply(compute_number_of_text_corrections_using_nltk_words)
+
+    # print('enrich compute_repetitions_in_text')
+    data_enriched['text_repetitions_nb'] = data_enriched['text'].apply(compute_repetitions_in_text)
+
+    # print('enrich number_of_sentences')
+    data_enriched['number_of_sentences'] = data_enriched['text'].apply(number_of_sentences)
+
+    # print('enrich text_lenght')
+    data_enriched['text_lenght'] = data_enriched['text'].apply(text_lenght)
+
+    return data_enriched

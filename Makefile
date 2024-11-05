@@ -29,11 +29,21 @@ run_one_test:
 
 ## RE TRAIN MODELS
 
-run_retrain_text_model:
-	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import retrain_full_model; retrain_full_model()'
+run_retrain_TrueNetTextLogisticRegression:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import *; TrueNetTextLogisticRegression.retrain_full_model()'
 
-run_retrain_text_2nd_model:
-	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_vectorizer_and_NaiveBayes.using_vectorizer_and_NaiveBayes import retrain_full_model; retrain_full_model()'
+run_retrain_TrueNetTextTfidfNaiveBayesClassifier:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import *; TrueNetTextTfidfNaiveBayesClassifier.retrain_full_model()'
+
+run_retrain_TrueNetTextDecisionTreeClassifier:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextDecisionTreeClassifier import *; TrueNetTextDecisionTreeClassifier.retrain_full_model()'
+
+run_retrain_TrueNetTextKNeighborsClassifier:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import *; TrueNetTextKNeighborsClassifier.retrain_full_model()'
+
+run_retrain_TrueNetTextSVC:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import *; TrueNetTextSVC.retrain_full_model()'
+
 
 ## TOOLS
 
