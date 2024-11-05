@@ -11,3 +11,5 @@ mlflow
 tensorflow
 python-multipart
 TextBlob
+spacy
+contextualSpellCheck
