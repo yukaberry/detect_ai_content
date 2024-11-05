@@ -7,5 +7,6 @@ scipy
 uvicorn
 fastapi
 colorama
+mlflow
 tensorflow
 python-multipart
