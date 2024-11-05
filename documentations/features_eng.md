@@ -91,13 +91,53 @@ stopwords_count = sum([1 for word in word_tokenize(text) if word.lower() in stop
  ## Part Of Speech (POS) 
  - make a dict of the number od nouns, verbs, adj...
  **Example**
-   - “The quick brown fox jumps over the lazy dog,” 
-   - pos_NOUN is the count of nouns (e.g., “fox”, “dog”) --> 2
-   - pos_VERB is the count of verbs (e.g., “jumps”)--> 1
-   - pos_ADJ is the count of adjectives (e.g., “quick”, “lazy”)--> 2
-   - pos_DET is the count of determiners (e.g., “the”) --> 1
-   - pos_ADV is the count of adverbs (if any were present)--> 1....
+ - “The quick brown fox jumps over the lazy dog,” 
+ - pos_NOUN is the count of nouns (e.g., “fox”, “dog”) --> 2
+ - pos_VERB is the count of verbs (e.g., “jumps”)--> 1
+ - pos_ADJ is the count of adjectives (e.g., “quick”, “lazy”)--> 2
+ - pos_DET is the count of determiners (e.g., “the”) --> 1
+ - pos_ADV is the count of adverbs (if any were present)--> 1....
   
-## Sentiment and Emotion Analysis ##
+## Sentiment and Emotion Analysis ( Transformers pipeline func part of the Hugging Face Transformers library, TextBlob)
 
+- function uses sentiment and emotion analysis tools to extract information about the tone and emotional content of text data
+- Sentiment: Predicted as POSITIVE, NEGATIVE, or NEUTRAL by the Transformers pipeline.
+- Polarity: Calculated by TextBlob; closer to 1 means positive sentiment, closer to -1 means negative. Ex Love 1, Terrible -1
+- Subjectivity: Indicates personal opinion (closer to 1) versus objective information (closer to 0): classification model that detects opinionated language, "i think"...
+- Polarity is calculated by breaking the text into words and using a sentiment lexicon, where words are rated on a polarity scale.
+- The polarity score of the entire text is a weighted average of the words’ polarity values.
 
+## N-grams and Keyword Features : CountVectorizer from Scikit-Learn
+- count occurrences of bigrams (two-word combinations) and trigrams (three-word combinations).
+
+## Linguistic Complexity Features** SpaCy: NLP library
+
+This function analyzes the complexity of sentences within the text. Specifically, it counts dependencies as a proxy for syntactic complexity, helping to capture the depth of sentence structures. A higher dependency count can indicate more complex syntactic structures.
+
+- Entity Types in NER Models: Standard NER models usually recognize entities such as PERSON, ORGANIZATION, LOCATION, DATE, TIME, GPE (Geopolitical Entities like cities or countries), and PRODUCT.
+
+## semantic_similarity_features : SentenceTransformers: To load a pre-trained model (all-MiniLM-L6-v2),torch/ transformers utility for cosine similarity between embeddings.
+
+- calculates the **cosine similarity** between a text column and a given reference text.
+- Measures how close the meaning of each text entry is to the reference text. Sentence-BERT (SBERT) embeddings are used to represent the sentences as vectors, and cosine similarity is used to quantify the similarity.
+
+## topic_modeling_features 
+
+- The topic_modeling_features function aims to identify latent themes in the text by using topic modeling. This method provides insights into the primary subjects discussed in the text and assigns each text sample a probability distribution across a set number of topics.
+- Ex : n_topics  = 3
+  
+1. "The economy is growing with new industries."
+2. "Advances in AI are reshaping technology."
+3. "Healthcare and AI work together to improve patient care."
+
+   LDA Model:find 3 topics based on these documents
+	•	Topic 0: Economy-related terms.
+	•	Topic 1: AI-related terms.
+	•	Topic 2: Healthcare-related terms.
+- Probability distribution across these 3 topics.
+
+| topic_0 | topic_1 | topic_2 |
+|---------|---------|---------|
+| 0.8     | 0.1     | 0.1     |  # Doc 1 is mostly about economy
+| 0.1     | 0.9     | 0.0     |  # Doc 2 is mostly about AI
+| 0.2     | 0.3     | 0.5     |  # Doc 3 is mixed but leans towards healthcare
