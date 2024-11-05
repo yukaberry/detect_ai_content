@@ -1,10 +1,7 @@
 # streamlit==1.22.0 #Temp hack to sync the compatibility for detect_ai_content
 # detect_ai_content
-streamlit
-base64
-PIL
+streamlit==1.39.0
+pillow==10.4.0
 numpy
-os
 pathlib
-io
 requests
