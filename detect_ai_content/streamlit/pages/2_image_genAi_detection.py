@@ -55,6 +55,6 @@ if path_in is not None:
             files = {
                 'img': ('image.jpg', open(complete_name, 'rb'), 'image/jpg'),
             }
-
-            response = requests.post('https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
+            #http://0.0.0.0:8000
+            response = requests.post("http://0.0.0.0:8000/image_predict",headers=headers, files=files) #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
             st.success(f"{response.json()}")

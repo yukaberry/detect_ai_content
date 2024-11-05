@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from detect_ai_content.ml_logic.preprocess import preprocess_text
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img, load_model
+from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
 app = FastAPI()
 app.state.model = None
@@ -87,11 +88,56 @@ async def predict(img: UploadFile = File(...)):
 
     #{"prediction": int(predicted_probabilities)}
     #{"prediction": int(prediction)}
+
+
+    # if predicted_probabilities == 1:
+    #     prediction_message = "Predicted as AI"
+    # elif predicted_probabilities == 0:
+    #     prediction_message = "Predicted as Human"
+
     return {"prediction": int(predicted_probabilities)}
+    # return {"prediction": int(predicted_probabilities),
+    #          "message": prediction_message}
+
+
+@app.post("/image_predict_cnn")
+async def predict(img: UploadFile = File(...)):
+
+    """
+    - return a single prediction.
+    - 'img'(RGB) is provided
+    - 0 likely representing 'FAKE' and 1 representing 'REAL'.
+    """
+
+    if app.state.model is None:
+        app.state.model = load_cnn_model()
+
+    # Load image  # Read image data asynchronously
+    img_data = await img.read()
+
+    # Clean/reshape user-input image
+    img = clean_img_cnn(img_data)
+
+    # Predict
+    predicted_class = app.state.model.predict(img)
+
+    # Get predicted indices
+    predicted_probabilities = np.argmax(predicted_class, axis=1)
+
+    # prediction message
+    # 0 likely representing 'FAKE' and 1 representing 'REAL'
+    if predicted_probabilities == 0:
+        prediction_message = "Predicted as AI"
+    elif predicted_probabilities == 1:
+        prediction_message = "Predicted as Human"
+
+
+    return {"prediction": int(predicted_probabilities),
+             "message": prediction_message}
 
 
 @app.get("/")
 def root():
     return {
-        'greeting': 'Hello Detect AI Content '
+        'greeting': 'Hello Detect AI Content !! '
     }
