@@ -23,7 +23,7 @@ def train_model(X, y):
         MultinomialNB()
     )
 
-    model = pipeline_naive_bayes.fit(X=X['text'].values, y=y.values)
+    model = pipeline_naive_bayes.fit(X=X, y=y.values)
     return model
 
 def evaluate_model(model, X_test, y_test):
