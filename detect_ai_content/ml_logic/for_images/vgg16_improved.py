@@ -9,7 +9,7 @@ from PIL import Image
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.applications.vgg16 import preprocess_input
 
-def clean_img(user_input):
+def clean_img_vgg16(user_input):
 
     """
     - cleaning (reshaping) image size that a user inputs for vgg16.

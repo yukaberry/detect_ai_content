@@ -64,7 +64,7 @@ def load_model():
     """
         Model sumary :
             Trained in 2,532,099 texts (using 3 datasets combined)
-            Algo : TfidfVectorizer() + MultinomialNB
+            Algo : LogisticRegression
             Cross Validate average result (0.2 test) : 0.83
     """
     import detect_ai_content
