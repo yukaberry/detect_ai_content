@@ -21,6 +21,9 @@ run_local_fast_api:
 run_tests:
 	python3 -m unittest discover -s tests
 
+run_cnn_tests:
+	python tests/test_image_modeling_TrueNetImageUsinCustomCNN.py
+
 run_one_test:
 	python tests/test_texts_modeling_using_ml_features.py TestTextModeling.test_preprocessing
 
