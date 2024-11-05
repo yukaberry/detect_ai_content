@@ -35,7 +35,7 @@ if path_in is not None:
     save_path = os.path.join(parent_path, "data")
 
     # Create the directory if it doesn't exist
-    os.makedirs(save_path, exist_ok=True)
+    #os.makedirs(save_path, exist_ok=True)
     #
 
     complete_name = os.path.join(save_path, uploaded_file.name)
@@ -63,4 +63,5 @@ if path_in is not None:
             # local http://0.0.0.0:8000/image_predict
             #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
             response = requests.post("https://detect-ai-content-667980218208.europe-west1.run.app/image_predict",headers=headers, files=files)
-            st.success(f"{response.json()}")
+            # st.success(f"{response.json()}")
+            st.success(response.text)
