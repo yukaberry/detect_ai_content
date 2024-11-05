@@ -21,6 +21,12 @@ run_local_fast_api:
 run_tests:
 	python3 -m unittest discover -s tests
 
+run_cnn_tests:
+	python tests/test_image_modeling_TrueNetImageUsinCustomCNN.py
+
+run_one_test:
+	python tests/test_texts_modeling_using_ml_features.py TestTextModeling.test_preprocessing
+
 ## RE TRAIN MODELS
 
 run_retrain_text_model:
@@ -28,6 +34,13 @@ run_retrain_text_model:
 
 run_retrain_text_2nd_model:
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_vectorizer_and_NaiveBayes.using_vectorizer_and_NaiveBayes import retrain_full_model; retrain_full_model()'
+
+## TOOLS
+
+run_generate_text_sample_datasets:
+	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(1000)'
+	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(10000)'
+	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(50000)'
 
 ## DOCKER
 

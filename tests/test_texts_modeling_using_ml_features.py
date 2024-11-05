@@ -93,26 +93,5 @@ Students fall in environment learning because they learn at class when the teach
         results = evaluate_model(model=model, X_test_processed=X_test_preprocessed, y_test=y_test)
         print(results)
 
-    def test_training_using_rich_texts(self):
-        path = "./raw_data/huggingface.co_human_ai_generated_text/model_training_dataset_enriched_7Mo.csv"
-        df = pd.read_csv(path)
-        print(df.shape)
-
-        X = df
-        y = df['generated']
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-        print(X_train.shape)
-        X_train_preprocessed = preprocess(X_train, auto_enrich=False)
-
-        print(X_train_preprocessed.shape)
-        model = train_LogisticRegression_model(X_train_preprocessed, y_train)
-
-        X_test_preprocessed = preprocess(X_test, auto_enrich=False)
-        print(X_test_preprocessed.shape)
-
-        results = evaluate_model(model=model, X_test_processed=X_test_preprocessed, y_test=y_test)
-        print(results)
-
 if __name__ == '__main__':
     unittest.main()
