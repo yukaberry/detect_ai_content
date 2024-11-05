@@ -32,7 +32,17 @@ run_retrain_text_2nd_model:
 ## DOCKER
 
 run_docker_build:
-  docker build --tag=detect_ai_content:dev . -f Dockerfile
+	docker build --tag=${IMAGE}:dev . -f Dockerfile
 
 run_docker_run:
-  docker run -it -e PORT=8000 -p 8000:8000 detect_ai_content:dev
+	docker run -it -e PORT=8000 -p 8000:8000 ${IMAGE}:dev
+
+run_docker_build_production:
+	docker build --platform linux/amd64 -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${ARTIFACTSREPO}/${IMAGE}:prod .
+
+run_docker_deploy_production:
+	docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${ARTIFACTSREPO}/${IMAGE}:prod
+	gcloud run deploy \
+  --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${ARTIFACTSREPO}/${IMAGE}:prod \
+  --memory ${MEMORY} \
+  --region ${GCP_REGION}
