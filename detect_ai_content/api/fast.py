@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from detect_ai_content.ml_logic.preprocess import preprocess_text
-from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
+from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16, load_model_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import load_model
 
@@ -49,7 +49,7 @@ async def predict(img: UploadFile = File(...)):
     Assumes `img` is provided
     """
     if app.state.model is None:
-        app.state.model = load_model()
+        app.state.model = load_model_vgg16()
 
     # Load image  # Read image data asynchronously
     img_data = await img.read()
