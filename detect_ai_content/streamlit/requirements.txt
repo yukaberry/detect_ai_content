@@ -2,11 +2,11 @@
 # detect_ai_content
 streamlit
 #base64
-#PIL
+PIL
 pillow
 numpy
-#os
+os
 pathlib
-#io
+io
 requests
 streamlit-nightly
