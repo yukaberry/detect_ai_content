@@ -28,3 +28,11 @@ run_retrain_text_model:
 
 run_retrain_text_2nd_model:
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_vectorizer_and_NaiveBayes.using_vectorizer_and_NaiveBayes import retrain_full_model; retrain_full_model()'
+
+## DOCKER
+
+run_docker_build:
+  docker build --tag=detect_ai_content:dev . -f Dockerfile
+
+run_docker_run:
+  docker run -it -e PORT=8000 -p 8000:8000 detect_ai_content:dev
