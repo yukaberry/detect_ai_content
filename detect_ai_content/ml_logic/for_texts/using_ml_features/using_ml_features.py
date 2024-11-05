@@ -69,9 +69,9 @@ def load_model():
 
 def preprocess(data, auto_enrich=True):
     if auto_enrich:
-        data_processed = enrich(data=data)
+        data_processed = enrich(data=data.copy())
     else:
-        data_processed = data
+        data_processed = data.copy()
 
     data_processed['repetitions_ratio'] = data_processed['text_repetitions_nb']/data_processed['text_lenght']
     data_processed['punctuations_ratio'] = data_processed['punctuations_nb']/data_processed['text_lenght']
