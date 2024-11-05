@@ -10,3 +10,4 @@ colorama
 mlflow
 tensorflow
 python-multipart
+TextBlob
