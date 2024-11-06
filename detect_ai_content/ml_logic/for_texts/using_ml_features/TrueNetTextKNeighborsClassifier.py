@@ -34,7 +34,7 @@ class TrueNetTextKNeighborsClassifier:
         self.model = self._load_model()
 
     def run_grid_search():
-        df = get_enriched_df(100)
+        df = get_enriched_df(50_000)
         X = df[[
             'repetitions_ratio',
             'punctuations_ratio',
@@ -65,9 +65,11 @@ class TrueNetTextKNeighborsClassifier:
 
         big_df = get_enriched_df(10_000)
 
+        param_n_neighbors = 20 # param from run_grid_search
+
         pipeline = make_pipeline(
             RobustScaler(),
-            KNeighborsClassifier(n_neighbors=20) # param from run_grid_search
+            KNeighborsClassifier(n_neighbors=param_n_neighbors)
         )
 
         X = big_df[[
@@ -89,12 +91,16 @@ class TrueNetTextKNeighborsClassifier:
         pickle.dump(model, open(model_path, 'wb'))
 
         # mlflow_save_params
+        additional_parameters = {}
+        additional_parameters['model_param_n_neighbors'] = param_n_neighbors
+
         mlflow_save_params(
             training_set_size= X_test.shape[0],
             row_count= big_df.shape[0],
             dataset_huggingface_human_ai_generated_text=True,
             dataset_kaggle_ai_generated_vs_human_text=True,
             dataset_kaggle_daigt_v2_train_dataset=True,
+            additional_parameters=additional_parameters
         )
 
         results = evaluate_model(model, X_test, y_test)

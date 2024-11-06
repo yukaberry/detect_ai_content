@@ -38,7 +38,7 @@ class TrueNetTextSVC:
             'kernel':['linear','rbf']
         }
 
-        df = get_enriched_df(10_000)
+        df = get_enriched_df()
         X = df[[
             'repetitions_ratio',
             'punctuations_ratio',

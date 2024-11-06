@@ -13,6 +13,7 @@ import os
 import pickle
 import mlflow
 from mlflow import MlflowClient
+import numpy as np
 
 class TrueNetTextDecisionTreeClassifier:
     def _load_model(self):
@@ -33,13 +34,15 @@ class TrueNetTextDecisionTreeClassifier:
         self.model = self._load_model()
 
     def run_grid_search():
+        leaves = [1,2,4,5,10,20,30,40,80,100]
         param_grid = {
-            'C':[1,10,100,1000],
-            'gamma':[1,0.1,0.001,0.0001],
-            'kernel':['linear','rbf']
+            'criterion':['gini','entropy'],
+            'max_depth': np.arange(3, 15),
+            'min_samples_leaf': leaves
         }
 
-        df = get_enriched_df(10_000)
+        df = get_enriched_df(50_000)
+
         X = df[[
             'repetitions_ratio',
             'punctuations_ratio',
@@ -59,11 +62,13 @@ class TrueNetTextDecisionTreeClassifier:
         experiment_id = client.get_experiment_by_name(futur_obj.mlflow_experiment).experiment_id
         mlflow.start_run(experiment_id=experiment_id)
 
-        big_df = get_enriched_df(10_000)
+        big_df = get_enriched_df()
 
+        param_criterion = 'entropy' # givn by Grid Searching
+        param_max_depth = np.int64(14) # givn by Grid Searching
         pipeline = make_pipeline(
             RobustScaler(),
-            DecisionTreeClassifier()
+            DecisionTreeClassifier(criterion=param_criterion, max_depth=param_max_depth) # givn by Grid Searching
         )
 
         X = big_df[[
@@ -87,12 +92,17 @@ class TrueNetTextDecisionTreeClassifier:
         results = evaluate_model(model=model, X_test_processed=X_test, y_test=y_test)
 
         # mlflow_save_params
+        additional_parameters = {}
+        additional_parameters['model_param_criterion'] = param_criterion
+        additional_parameters['model_param_max_depth'] = param_max_depth
+
         mlflow_save_params(
             training_set_size= X_test.shape[0],
             row_count= big_df.shape[0],
             dataset_huggingface_human_ai_generated_text=True,
             dataset_kaggle_ai_generated_vs_human_text=True,
             dataset_kaggle_daigt_v2_train_dataset=True,
+            additional_parameters=additional_parameters
         )
 
         results = evaluate_model(model, X_test, y_test)

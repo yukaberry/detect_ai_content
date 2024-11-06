@@ -13,14 +13,15 @@ from detect_ai_content.ml_logic.preprocess import preprocess
 
 class TestMLFlowTextPrediction(unittest.TestCase):
     def test_mlflow_predictions(self):
+        path = "../detect_ai_content/raw_data/samples/sample_dataset_50000.csv"
+        df = pd.read_csv(path)
+
         TrueNetTextLogisticRegression_model = TrueNetTextLogisticRegression().model
         TrueNetTextTfidfNaiveBayesClassifier_model = TrueNetTextTfidfNaiveBayesClassifier().model
         TrueNetTextDecisionTreeClassifier_model = TrueNetTextDecisionTreeClassifier().model
         TrueNetTextSVC_model = TrueNetTextSVC().model
         TrueNetTextKNeighborsClassifier_model = TrueNetTextKNeighborsClassifier().model
 
-        path = "./tests/data/sample_dataset_1000.csv"
-        df = pd.read_csv(path)
         X = df[['text']]
         y = df['generated']
 
