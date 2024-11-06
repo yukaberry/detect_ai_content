@@ -10,21 +10,7 @@
 - [source](https://www.kaggle.com/datasets/thedrcat/daigt-v2-train-dataset), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-daigt-v2-train-dataset/train_v2_drcat_02.csv.zip)
 
 
-## Baseline - Ben "MVP" for short App Architecture
-- [x] : Train a Baseline model
-- [x] : Loading a trained model (locally saved 😜)
-- [x] : Expose some shortcuts using Makefile
-- [?] : API not needed ... the model is store on the project
-- [ ] : Expose minimalist interface (Streamlit)
+## Documentations
 
-### Run API
-
-```
-make run_local_fast_api
-```
-
-### Run API
-
-```
-make run_local_fast_api
-```
+- [How this repo is organized?](./documentations/git_repo_structure.md)
+- [Git branch Management](./documentations/git_branches.md)
