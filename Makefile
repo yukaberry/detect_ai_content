@@ -16,6 +16,11 @@ run_preprocess:
 run_local_fast_api:
 	fastapi dev detect_ai_content/api/fast.py
 
+## run api locally
+run_local_uvicorn:
+	python -m spacy download en_core_web_sm
+	uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
+
 ## TESTS
 
 run_tests:

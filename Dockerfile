@@ -6,7 +6,8 @@ WORKDIR /production
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-
+RUN python -m spacy download en_core_web_sm
+# test comment
 # copy folders
 COPY detect_ai_content detect_ai_content
 

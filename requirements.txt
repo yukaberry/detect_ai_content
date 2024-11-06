@@ -13,3 +13,4 @@ python-multipart
 TextBlob
 spacy
 contextualSpellCheck
+pyspellchecker
