@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from detect_ai_content.ml_logic.preprocess import preprocess
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import *
-
-from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img, load_model
+from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model
+from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
 app = FastAPI()
@@ -58,7 +58,7 @@ async def predict(img: UploadFile = File(...)):
     img_data = await img.read()
 
     # Clean/reshape user-input image
-    img = clean_img(img_data)
+    img = clean_img_vgg16(img_data)
 
     # Predict
     predicted_class = app.state.model.predict(img)
