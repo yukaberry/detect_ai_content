@@ -13,7 +13,7 @@ from detect_ai_content.ml_logic.preprocess import preprocess
 
 class TestMLFlowTextPrediction(unittest.TestCase):
     def test_mlflow_predictions(self):
-        path = "../detect_ai_content/raw_data/samples/sample_dataset_50000.csv"
+        path = "../detect_ai_content/raw_data/samples/sample_dataset_1000.csv"
         df = pd.read_csv(path)
 
         TrueNetTextLogisticRegression_model = TrueNetTextLogisticRegression().model
