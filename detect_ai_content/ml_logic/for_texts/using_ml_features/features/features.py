@@ -18,9 +18,6 @@ import re
 def extract_sentences(text):
     return tokenize.sent_tokenize(text)
 
-def spacy_sentences(text):
-    return nlp(text).sents
-
 def compute_punctuation_in_text(text):
     number_of_ponctuations = 0
 
@@ -104,27 +101,6 @@ def compute_number_of_text_corrections_using_nltk_words(text):
 #            print(f'✅ {word_lower}')
 
     return corrections
-
-def _number_of_corrections_using_Spacy(text):
-    # print(f'_number_of_corrections_using_Spacy: {text}')
-    doc = nlp(f"{text}.")
-    return len(doc._.suggestions_spellCheck)
-
-def compute_number_of_text_corrections(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        if len(sentence) < 500:
-            corr = _number_of_corrections_using_Spacy(sentence)
-            # print(f'{corr} in {sentence}')
-            corrections += corr
-        else:
-            print("skip number_of_corrections_using_Spacy ")
-
-    return corrections
-
-def compute_number_of_corrections_in_sentence(text):
-    return _number_of_corrections_using_Spacy(text)
 
 def number_of_sentences(text):
     text_blob = TextBlob(text)

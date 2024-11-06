@@ -12,7 +12,7 @@ tensorflow
 python-multipart
 textblob
 nltk
-TextBlob
-spacy
-contextualSpellCheck
-pyspellchecker
+# TextBlob
+# spacy
+# contextualSpellCheck
+# pyspellchecker
