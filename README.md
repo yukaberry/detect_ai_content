@@ -14,4 +14,4 @@
 
 - [How this repo is organized?](./documentations/git_repo_structure.md)
 - [Git branch Management](./documentations/git_branches.md)
-- [MLFlow](./documentations/mlfow.md)
+- [MLFlow](./documentations/mlflow.md)
