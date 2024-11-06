@@ -3,16 +3,22 @@ import pandas as pd
 import numpy as np
 import pickle
 import os
+import mlflow
+from mlflow import MlflowClient
 
 from detect_ai_content.ml_logic.for_texts.using_ml_features.features.features import *
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import RobustScaler
+from sklearn.model_selection import train_test_split
 
 from sklearn.pipeline import make_pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params
+from detect_ai_content.params import *
 
 def train_LogisticRegression_model(X_train_processed, y_train):
     model = LogisticRegression(max_iter=1000)
@@ -58,7 +64,7 @@ def load_model():
     """
         Model sumary :
             Trained in 2,532,099 texts (using 3 datasets combined)
-            Algo : TfidfVectorizer() + MultinomialNB
+            Algo : LogisticRegression
             Cross Validate average result (0.2 test) : 0.83
     """
     import detect_ai_content
@@ -93,6 +99,12 @@ def preprocess(data, auto_enrich=True):
 def retrain_full_model():
     import detect_ai_content
     module_dir_path = os.path.dirname(detect_ai_content.__file__)
+
+    # init
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    client = MlflowClient()
+    experiment_id = client.get_experiment_by_name(MLFLOW_FE_EXPERIMENT).experiment_id
+    mlflow.start_run(experiment_id=experiment_id)
 
     df = pd.read_csv(f'{module_dir_path}/../raw_data/huggingface.co_human_ai_generated_text/model_training_dataset_enriched.csv')
 
@@ -140,7 +152,38 @@ def retrain_full_model():
     ]]
     y = big_df['generated']
 
-    model = pipeline_linear_regression.fit(X=X, y=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    model_path = f = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/genai_text_detection_using_ml_features.pickle'
+    model = pipeline_linear_regression.fit(X=X_train, y=y_train)
+
+    model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/genai_text_detection_using_ml_features.pickle'
     pickle.dump(model, open(model_path, 'wb'))
+
+    # mlflow_save_params
+    mlflow_save_params(
+        training_set_size= X_test.shape[0],
+        row_count= big_df.shape[0],
+        dataset_huggingface_human_ai_generated_text=True,
+        dataset_kaggle_ai_generated_vs_human_text=True,
+        dataset_kaggle_daigt_v2_train_dataset=True,
+    )
+
+    results = evaluate_model(model, X_test, y_test)
+
+    # mlflow_save_metrics
+    mlflow_save_metrics(f1_score= results['f1_score'],
+                        recall_score= results['recall_score'],
+                        precision_score= results['precision_score'],
+                        accuracy_score= results['accuracy_score'])
+
+    # mlflow_save_model
+    example_df = big_df.sample(3)
+
+    mlflow_save_model(
+        model=model,
+        is_tensorflow=False,
+        model_name=MLFLOW_FE_MODEL_NAME,
+        input_example=example_df
+    )
+
+    mlflow.end_run()

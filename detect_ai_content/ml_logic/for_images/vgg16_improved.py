@@ -9,7 +9,7 @@ from PIL import Image
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.applications.vgg16 import preprocess_input
 
-def clean_img(user_input):
+def clean_img_vgg16(user_input):
 
     """
     - cleaning (reshaping) image size that a user inputs for vgg16.
@@ -39,7 +39,7 @@ def clean_img(user_input):
     return arr
 
 
-def load_model():
+def load_model_vgg16():
     """
     - Return a keras VGG16 model (Baseline model, to re-train the model with bigger datasets)
     - Return None (but do not Raise) if no model is found

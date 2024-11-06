@@ -5,26 +5,13 @@
 - **public url**: is a public url i created (using GCP) to simplify our tests on Google Colab for example
 
 ### Texts
-- [source](https://huggingface.co/datasets/dmitva/human_ai_generated_text), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/hugging_face_human_ai_generated_text/model_training_dataset.csv.zip)
-- [source](https://www.kaggle.com/code/syedali110/ai-generated-vs-human-text-95-accuracy/notebook), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-ai-generated-vs-human-text/AI_Human.csv.zip)
-- [source](https://www.kaggle.com/datasets/thedrcat/daigt-v2-train-dataset), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-daigt-v2-train-dataset/train_v2_drcat_02.csv.zip)
+- [HuggingFace - human_ai_generated_text](https://huggingface.co/datasets/dmitva/human_ai_generated_text), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/hugging_face_human_ai_generated_text/model_training_dataset.csv.zip)
+- [Kaggle - ai-generated-vs-human-text-95-accuracy](https://www.kaggle.com/code/syedali110/ai-generated-vs-human-text-95-accuracy/notebook), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-ai-generated-vs-human-text/AI_Human.csv.zip)
+- [Kaggle - daigt-v2-train-dataset](https://www.kaggle.com/datasets/thedrcat/daigt-v2-train-dataset), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-daigt-v2-train-dataset/train_v2_drcat_02.csv.zip)
 
 
-## Baseline - Ben "MVP" for short App Architecture
-- [x] : Train a Baseline model
-- [x] : Loading a trained model (locally saved 😜)
-- [x] : Expose some shortcuts using Makefile
-- [?] : API not needed ... the model is store on the project
-- [ ] : Expose minimalist interface (Streamlit)
+## Documentations
 
-### Run API
-
-```
-make run_local_fast_api
-```
-
-### Run API
-
-```
-make run_local_fast_api
-```
+- [How this repo is organized?](./documentations/git_repo_structure.md)
+- [Git branch Management](./documentations/git_branches.md)
+- [MLFlow & models](./documentations/mlflow.md)
