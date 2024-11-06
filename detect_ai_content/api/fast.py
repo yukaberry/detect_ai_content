@@ -5,13 +5,14 @@ from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from detect_ai_content.ml_logic.preprocess import preprocess_text
-from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
+from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16, load_model_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
-from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import load_model
+from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import load_model, preprocess
 
 app = FastAPI()
-app.state.model = None
+app.state.model_text = None
+app.state.model_image = None
+app.state.model_image_cnn = None
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
@@ -32,11 +33,12 @@ def predict(
     Assumes `text` is provided as a string
     """
 
-    if app.state.model is None:
-        app.state.model = load_model()
+    if app.state.model_text is None:
+        app.state.model_text = load_model()
 
-    X_processed = preprocess_text(text)
-    y_pred = app.state.model.predict(X_processed)
+    text_df = pd.DataFrame(data=[text],columns=['text'])
+    X_processed = preprocess(text_df)
+    y_pred = app.state.model_text.predict(X_processed)
     print(f"one pred: {y_pred[0]}")
     return {
         'prediction': int(y_pred[0])
@@ -48,8 +50,8 @@ async def predict(img: UploadFile = File(...)):
     Make a single prediction prediction.
     Assumes `img` is provided
     """
-    if app.state.model is None:
-        app.state.model = load_model()
+    if app.state.model_image is None:
+        app.state.model_image = load_model_vgg16()
 
     # Load image  # Read image data asynchronously
     img_data = await img.read()
@@ -58,7 +60,7 @@ async def predict(img: UploadFile = File(...)):
     img = clean_img_vgg16(img_data)
 
     # Predict
-    predicted_class = app.state.model.predict(img)
+    predicted_class = app.state.model_image.predict(img)
 
     # Get predicted indices
     predicted_probabilities = np.argmax(predicted_class, axis=1)
@@ -110,8 +112,8 @@ async def predict(img: UploadFile = File(...)):
     - 0 likely representing 'FAKE' and 1 representing 'REAL'.
     """
 
-    if app.state.model is None:
-        app.state.model = load_cnn_model()
+    if app.state.model_image_cnn is None:
+        app.state.model_image_cnn = load_cnn_model()
 
     # Load image  # Read image data asynchronously
     img_data = await img.read()
@@ -120,7 +122,7 @@ async def predict(img: UploadFile = File(...)):
     img = clean_img_cnn(img_data)
 
     # Predict
-    predicted_class = app.state.model.predict(img)
+    predicted_class = app.state.model_image_cnn.predict(img)
 
     # Get predicted indices
     predicted_probabilities = np.argmax(predicted_class, axis=1)
@@ -140,5 +142,5 @@ async def predict(img: UploadFile = File(...)):
 @app.get("/")
 def root():
     return {
-        'greeting': 'Hello Detect AI Content !! '
+        'greeting': 'Hello Detect AI Content !! hello '
     }

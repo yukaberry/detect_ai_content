@@ -10,3 +10,7 @@ colorama
 mlflow
 tensorflow
 python-multipart
+TextBlob
+spacy
+contextualSpellCheck
+pyspellchecker
