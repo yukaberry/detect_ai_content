@@ -108,3 +108,59 @@ def number_of_sentences(text):
 
 def text_lenght(text):
     return len(text)
+
+
+import torch
+from transformers import BertTokenizer, BertForMaskedLM
+bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+bert_model = BertForMaskedLM.from_pretrained('bert-base-uncased').eval()
+
+def compute_masked_words_BERT_prediction(text):
+    text_blob = TextBlob(text)
+    number_of_test = 0
+    number_of_correct_prediction = 0
+
+    for sentence in text_blob.sentences:
+        if len(sentence) > 500:
+            # print('ignore the sentence')
+            continue
+
+        for word in sentence.words:
+            if len(word) > 5:
+                masked_sentence = sentence.replace(word, "<mask>")
+                # print(f'START_{masked_sentence}_END')
+                top_k = 10
+                top_clean = 5
+                input_ids, mask_idx = BERT_encode(bert_tokenizer, f'{masked_sentence}')
+                with torch.no_grad():
+                    predict = bert_model(input_ids)[0]
+                predict_words = BERT_decode(bert_tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_clean)
+                # print(predict_words)
+
+                number_of_test += 1
+                if word in predict_words:
+                    number_of_correct_prediction +=1
+
+    # print(f"number_of_test: {number_of_test}")
+    # print(f"number_of_correct_prediction: {number_of_correct_prediction}")
+    # print(f"prediction : {round(100 * number_of_correct_prediction/number_of_test)}%")
+    return (number_of_test, number_of_correct_prediction)
+
+def BERT_decode(tokenizer, pred_idx, top_clean):
+    ignore_tokens = string.punctuation + '[PAD]'
+    tokens = []
+    for w in pred_idx:
+        token = ''.join(tokenizer.decode(w).split())
+        if token not in ignore_tokens:
+            tokens.append(token.replace('##', ''))
+    return '\n'.join(tokens[:top_clean])
+
+
+def BERT_encode(tokenizer, text_sentence, add_special_tokens=True):
+    text_sentence = text_sentence.replace('<mask>', tokenizer.mask_token)
+    # if <mask> is the last token, append a "." so that models dont predict punctuation.
+    if tokenizer.mask_token == text_sentence.split()[-1]:
+        text_sentence += ' .'
+    input_ids = torch.tensor([tokenizer.encode(text_sentence, add_special_tokens=add_special_tokens)])
+    mask_idx = torch.where(input_ids == tokenizer.mask_token_id)[1].tolist()[0]
+    return input_ids, mask_idx
