@@ -10,11 +10,6 @@ nltk.download('words')
 nltk.download('wordnet')
 from nltk import tokenize
 
-import spacy
-import contextualSpellCheck
-nlp = spacy.load('en_core_web_sm')
-contextualSpellCheck.add_to_pipe(nlp)
-
 english_stopwords = stopwords.words('english')
 
 import string
@@ -22,9 +17,6 @@ import re
 
 def extract_sentences(text):
     return tokenize.sent_tokenize(text)
-
-def spacy_sentences(text):
-    return nlp(text).sents
 
 def compute_punctuation_in_text(text):
     number_of_ponctuations = 0
@@ -76,33 +68,6 @@ def compute_repetitions_in_text(text):
 # 500   ⭐️  https://github.com/filyp/autocorrect
 # 612       Jamspell
 
-from spellchecker import SpellChecker
-spell = SpellChecker()
-
-def compute_number_of_text_corrections_using_pyspellchecker(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        for word in sentence.words:
-            correction = spell.correction(word)
-            if correction != word:
-                # print(f'{word} -> {correction}')
-                corrections += 1
-
-    return corrections
-
-def compute_number_of_text_corrections_using_TextBlob(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        for word in sentence.words:
-            correction = word.spellcheck()[0][0]
-            if correction != word:
-                # print(f'{word} -> {correction}')
-                corrections += 1
-
-    return corrections
-
 from nltk.corpus import wordnet
 from nltk.corpus import words
 wordnet_words = list(wordnet.words())
@@ -136,27 +101,6 @@ def compute_number_of_text_corrections_using_nltk_words(text):
 #            print(f'✅ {word_lower}')
 
     return corrections
-
-def _number_of_corrections_using_Spacy(text):
-    # print(f'_number_of_corrections_using_Spacy: {text}')
-    doc = nlp(f"{text}.")
-    return len(doc._.suggestions_spellCheck)
-
-def compute_number_of_text_corrections(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        if len(sentence) < 500:
-            corr = _number_of_corrections_using_Spacy(sentence)
-            # print(f'{corr} in {sentence}')
-            corrections += corr
-        else:
-            print("skip number_of_corrections_using_Spacy ")
-
-    return corrections
-
-def compute_number_of_corrections_in_sentence(text):
-    return _number_of_corrections_using_Spacy(text)
 
 def number_of_sentences(text):
     text_blob = TextBlob(text)
