@@ -39,10 +39,15 @@ def predict(
     text_df = pd.DataFrame(data=[text],columns=['text'])
     X_processed = preprocess(text_df)
     y_pred = app.state.model_text.predict(X_processed)
-    print(f"one pred: {y_pred[0]}")
-    return {
-        'prediction': int(y_pred[0])
-    }
+
+    if y_pred[0] == 1:
+        prediction_message = "Predicted as AI"
+    elif y_pred[0] == 0:
+        prediction_message = "Predicted as Human"
+
+    return {"prediction": int(y_pred[0]),
+             "message": prediction_message}
+
 
 @app.post("/image_predict")
 async def predict(img: UploadFile = File(...)):
@@ -65,42 +70,14 @@ async def predict(img: UploadFile = File(...)):
     # Get predicted indices
     predicted_probabilities = np.argmax(predicted_class, axis=1)
 
-    # TODO
-    # errors below but prediction and return predicted value worked!
+    if predicted_probabilities == 1:
+        prediction_message = "Predicted as AI"
+    elif predicted_probabilities == 0:
+        prediction_message = "Predicted as Human"
 
-    # # Get class labels
-    # train_images = retrain_images()
-    # labels = getattr(train_images, 'class_indices', None)
-    # # Debug output to check labels content
-    # print(Fore.BLUE + f"\nLabels loaded!" + Style.RESET_ALL)
-
-    # if labels:
-    #     labels = {v: k for k, v in labels.items()}
-    #     print(Fore.BLUE + f"{labels}" + Style.RESET_ALL)
-    # else:
-    #     print(Fore.RED + "\nError: No class labels found in train_images.class_indices" + Style.RESET_ALL)
-    #     return {"error": "No class labels found in the model. Check dataset and retrain_images function."}
-    # # Convert indices back to class names
-    # try:
-    #     prediction = [labels.get(int(k), "Unknown") for k in predicted_probabilities]
-    # except KeyError as e:
-    #     print(Fore.RED + f"\nKeyError: {e} - predicted_probabilities contains unknown label indices." + Style.RESET_ALL)
-    #     return {"error": "Prediction contains unknown label indices. Check class indices and labels dictionary."}
-    # print(Fore.BLUE + f"\nPrediction complete!" + Style.RESET_ALL)
-    # print(Fore.BLUE + f"{prediction}" + Style.RESET_ALL)
-
-    #{"prediction": int(predicted_probabilities)}
-    #{"prediction": int(prediction)}
-
-
-    # if predicted_probabilities == 1:
-    #     prediction_message = "Predicted as AI"
-    # elif predicted_probabilities == 0:
-    #     prediction_message = "Predicted as Human"
-
-    return {"prediction": int(predicted_probabilities)}
-    # return {"prediction": int(predicted_probabilities),
-    #          "message": prediction_message}
+    # return {"prediction": int(predicted_probabilities)}
+    return {"prediction": int(predicted_probabilities),
+             "message": prediction_message}
 
 
 @app.post("/image_predict_cnn")
@@ -129,6 +106,7 @@ async def predict(img: UploadFile = File(...)):
 
     # prediction message
     # 0 likely representing 'FAKE' and 1 representing 'REAL'
+    # TODO label change to avoid confusion
     if predicted_probabilities == 0:
         prediction_message = "Predicted as AI"
     elif predicted_probabilities == 1:

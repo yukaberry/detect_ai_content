@@ -14,3 +14,4 @@ TextBlob
 spacy
 contextualSpellCheck
 pyspellchecker
+prefect

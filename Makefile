@@ -18,6 +18,11 @@ run_local_fast_api:
 
 ## run api locally
 run_local_uvicorn:
+	uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
+
+# TODO to decide if we use spacy or not
+## run api locally with spacy
+run_local_uvicorn_spacy:
 	python -m spacy download en_core_web_sm
 	uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
 
