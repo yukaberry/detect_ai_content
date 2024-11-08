@@ -49,8 +49,8 @@ run_retrain_TrueNetTextKNeighborsClassifier:
 run_retrain_TrueNetTextSVC:
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import *; TrueNetTextSVC.retrain_full_model()'
 
-run_one_test:
-	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingMasksAndBert import TrueNetTextUsingMasksAndBert; TrueNetTextUsingMasksAndBert.run_one_test()'
+run_retrain_TrueNetTextUsingBERTMaskedPredictions:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions; TrueNetTextUsingBERTMaskedPredictions.retrain_full_model()'
 
 
 ## TOOLS

@@ -10,13 +10,19 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC impor
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import *
 
 from detect_ai_content.ml_logic.preprocess import preprocess
+from detect_ai_content.ml_logic.data import get_enriched_df
 
 class TestMLFlowTextPrediction(unittest.TestCase):
     def test_mlflow_predictions(self):
-        path = "../detect_ai_content/raw_data/samples/sample_dataset_1000.csv"
-        df = pd.read_csv(path)
+        df = get_enriched_df(purpose="test")
+        y_test = df['generated']
+        X_test_processed = preprocess(data=df, auto_enrich=False)
 
-        TrueNetTextLogisticRegression_model = TrueNetTextLogisticRegression().model
+        TrueNetTextLogisticRegression_model = TrueNetTextLogisticRegression()._load_model(stage="staging")
+        TrueNetTextLogisticRegression_results = evaluate_model(model=TrueNetTextLogisticRegression_model, X_test_processed=X_test_processed, y_test=y_test)
+        print(TrueNetTextLogisticRegression_results)
+        return
+
         TrueNetTextTfidfNaiveBayesClassifier_model = TrueNetTextTfidfNaiveBayesClassifier().model
         TrueNetTextDecisionTreeClassifier_model = TrueNetTextDecisionTreeClassifier().model
         TrueNetTextSVC_model = TrueNetTextSVC().model

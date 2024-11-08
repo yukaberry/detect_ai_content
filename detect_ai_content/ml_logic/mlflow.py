@@ -20,7 +20,8 @@ def load_model(model_name: str, is_tensorflow: bool, stage:str):
     return model
 
 def mlflow_save_params(
-        training_set_size: int,
+        training_test_size: int,
+        training_fit_size: int,
         row_count: int,
         dataset_huggingface_human_ai_generated_text: bool,
         dataset_kaggle_ai_generated_vs_human_text: bool,
@@ -29,8 +30,9 @@ def mlflow_save_params(
     ) -> None:
 
     params = {
-        "training_set_size": training_set_size,
-        "row_count": row_count,
+        "training_test_size": training_test_size,
+        "training_fit_size": training_fit_size,
+        "training_row_count": row_count,
         "dataset_huggingface_human_ai_generated_text": dataset_huggingface_human_ai_generated_text,
         "dataset_kaggle_ai_generated_vs_human_text": dataset_kaggle_ai_generated_vs_human_text,
         "dataset_kaggle_daigt_v2_train_dataset": dataset_kaggle_daigt_v2_train_dataset,
