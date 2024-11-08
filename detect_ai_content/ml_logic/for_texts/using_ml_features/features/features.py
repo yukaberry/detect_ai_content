@@ -111,9 +111,22 @@ def text_lenght(text):
 
 
 import torch
+print(f'torch.cuda.is_available:{torch.cuda.is_available()}')
+
 from transformers import BertTokenizer, BertForMaskedLM
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert_model = BertForMaskedLM.from_pretrained('bert-base-uncased').eval()
+
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps")
+
+print(f'device:{device}')
+bert_model.to(device)
+
+import tensorflow as tf
+tf.config.experimental.list_physical_devices('GPU')
+list_physical_devices = tf.config.experimental.list_physical_devices('GPU')
+print(f'tf.config.experimental.list_physical_devices(GPU):{list_physical_devices}')
 
 def compute_masked_words_BERT_prediction(text):
     text_blob = TextBlob(text)
@@ -161,6 +174,6 @@ def BERT_encode(tokenizer, text_sentence, add_special_tokens=True):
     # if <mask> is the last token, append a "." so that models dont predict punctuation.
     if tokenizer.mask_token == text_sentence.split()[-1]:
         text_sentence += ' .'
-    input_ids = torch.tensor([tokenizer.encode(text_sentence, add_special_tokens=add_special_tokens)])
+    input_ids = torch.tensor([tokenizer.encode(text_sentence, add_special_tokens=add_special_tokens)]).to(device)
     mask_idx = torch.where(input_ids == tokenizer.mask_token_id)[1].tolist()[0]
     return input_ids, mask_idx
