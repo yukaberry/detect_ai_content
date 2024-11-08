@@ -16,7 +16,7 @@ def preprocess(data, auto_enrich=True):
         'text_corrections_ratio',
         'average_sentence_lenght',
         'average_neg_sentiment_polarity',
-       # 'average_pos_sentiment_polarity'
+        'pourcentage_of_correct_prediction'
     ]]
 
     scaler = RobustScaler()
