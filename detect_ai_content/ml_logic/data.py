@@ -88,6 +88,6 @@ def enrich_text_BERT_predictions(data):
         print(index_sum)
 
     data_enriched['number_of_tests'] = number_of_tests
-    data_enriched['number_of_correct_prediction'] = number_of_tests
+    data_enriched['number_of_correct_prediction'] = number_of_correct_predictions
     data_enriched['pourcentage_of_correct_prediction'] = pourcentage_of_correct_predictions
     return data_enriched
