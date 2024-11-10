@@ -58,6 +58,9 @@ run_retrain_TrueNetImageCNN_JM:
 run_retrain_TrueNetImageCNN_vgg16_JM:
 	python3 -c 'from detect_ai_content.ml_logic.for_images.TrueNetImageCNN_JM import TrueNetImageCNN_vgg16_JM; TrueNetImageCNN_vgg16_JM.retrain_full_model()'
 
+run_retrain_TrueNetTextRNN:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import TrueNetTextRNN; TrueNetTextRNN.retrain_full_model()'
+
 
 ## TOOLS
 
