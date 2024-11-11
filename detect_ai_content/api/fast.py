@@ -1,13 +1,17 @@
 import pandas as pd
 import numpy as np
 
+from PIL import Image
+from io import BytesIO
+
 from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16, load_model_vgg16
-from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import load_model, preprocess
+
+from detect_ai_content.ml_logic.for_images.vgg16 import Vgg16
+from detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN import TrueNetImageUsinCustomCNN
 
 app = FastAPI()
 app.state.model_text = None
@@ -25,12 +29,12 @@ app.add_middleware(
 
 # http://127.0.0.1:8000/predict?text=lsjisefohlksdjf
 @app.get("/predict")
-def predict(
-        text: str
-    ):
+def predict(text: str):
+
     """
-    Make a single prediction prediction.
-    Assumes `text` is provided as a string
+    - make a single prediction prediction using user provided 'text'
+    - text : text type only  # TO BE IMPROVED for csv data type etc ...
+
     """
 
     if app.state.model_text is None:
@@ -49,76 +53,90 @@ def predict(
              "message": prediction_message}
 
 
-@app.post("/image_predict")
-async def predict(img: UploadFile = File(...)):
+@app.get("/predict_")
+def predict(text: str):
+
     """
-    Make a single prediction prediction.
-    Assumes `img` is provided
+    - make a single prediction prediction using user provided 'text'
+    - text : text type only  # TO BE IMPROVED for csv data type etc ...
+
     """
-    if app.state.model_image is None:
-        app.state.model_image = load_model_vgg16()
 
-    # Load image  # Read image data asynchronously
-    img_data = await img.read()
+    if app.state.model_text is None:
+        app.state.model_text = load_model()
 
-    # Clean/reshape user-input image
-    img = clean_img_vgg16(img_data)
+    text_df = pd.DataFrame(data=[text],columns=['text'])
+    X_processed = preprocess(text_df)
+    y_pred = app.state.model_text.predict(X_processed)
 
-    # Predict
-    predicted_class = app.state.model_image.predict(img)
-
-    # Get predicted indices
-    predicted_probabilities = np.argmax(predicted_class, axis=1)
-
-    if predicted_probabilities == 1:
+    if y_pred[0] == 1:
         prediction_message = "Predicted as AI"
-    elif predicted_probabilities == 0:
+    elif y_pred[0] == 0:
         prediction_message = "Predicted as Human"
 
-    # return {"prediction": int(predicted_probabilities)}
-    return {"prediction": int(predicted_probabilities),
+    return {"prediction": int(y_pred[0]),
              "message": prediction_message}
+
+
+@app.post("/image_predict_vgg16")
+async def predict(user_input: UploadFile = File(...)):
+
+    """
+    - make a single prediction prediction using user provided 'img'
+    - img : jpg data type only  # TO BE IMPROVED
+
+    """
+
+
+    # read user input image
+    user_input = await user_input.read()
+    img = Image.open(BytesIO(user_input))
+
+    # initialise class
+    vgg16 = Vgg16()
+
+    # preprocess user input image
+    # load model
+    # predict
+    # return message
+    prediction, message = vgg16.predict(img)
+
+
+    return {"prediction": prediction,
+            "message": message}
 
 
 @app.post("/image_predict_cnn")
-async def predict(img: UploadFile = File(...)):
+async def predict(user_input: UploadFile = File(...)):
 
     """
-    - return a single prediction.
-    - 'img'(RGB) is provided
+    - make a single prediction prediction using user provided 'img'
+    - img (RGB) : jpg data type only  # TO BE IMPROVED
+
     - 0 likely representing 'FAKE' and 1 representing 'REAL'.
     """
 
-    if app.state.model_image_cnn is None:
-        app.state.model_image_cnn = load_cnn_model()
+    # read user input image
+    user_input = await user_input.read()
+    img = Image.open(BytesIO(user_input))
 
-    # Load image  # Read image data asynchronously
-    img_data = await img.read()
+    # initialise class
+    cnn = TrueNetImageUsinCustomCNN()
 
-    # Clean/reshape user-input image
-    img = clean_img_cnn(img_data)
+    # preprocess user input image
+    # load model
+    # predict
+    # return message
+    prediction, message = cnn.predict(img)
 
-    # Predict
-    predicted_class = app.state.model_image_cnn.predict(img)
+    # # 0 likely representing 'FAKE' and 1 representing 'REAL'
+    # # TODO label change to avoid confusion
 
-    # Get predicted indices
-    predicted_probabilities = np.argmax(predicted_class, axis=1)
+    return {"prediction": prediction,
+            "message": message}
 
-    # prediction message
-    # 0 likely representing 'FAKE' and 1 representing 'REAL'
-    # TODO label change to avoid confusion
-    if predicted_probabilities == 0:
-        prediction_message = "Predicted as AI"
-    elif predicted_probabilities == 1:
-        prediction_message = "Predicted as Human"
-
-
-    return {"prediction": int(predicted_probabilities),
-             "message": prediction_message}
 
 
 @app.get("/")
 def root():
-    return {
-        'greeting': 'Hello Detect AI Content !! hello '
-    }
+    return {'greeting': 'Hello Detect AI Content. imporved : class used'}
