@@ -5,15 +5,12 @@ We tried to implement a [gitflow principle](https://www.atlassian.com/git/tutori
 
 ## master
 - The root branch of the project.
+- It's the code on Production (FastApi + Streamlit)
+
+## development 
 - If you want to create a feature, you have to create a branch starting by this one.
-- If you want to share your code with other, you have to open a [Pull Request on github](https://github.com/yukaberry/detect_ai_content/compare) and to target this one. (base:master, compare:your_branch)
-
-
-## production (not yet use)
-- The code on production.
-- If we want to fix the production, we can fix on that branch.
-- If we want to share that fix to master, we have to create a Pull Request to master
-
+- If you want to share your code with other, you have to open a [Pull Request on github](https://github.com/yukaberry/detect_ai_content/compare) and to target this one. (base:development, compare:your_branch)
 
 ## feature/{name}_{your_feature}
 - We do development on one specific branch
+- Your brnanch should start from **development** branch
