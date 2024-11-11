@@ -69,3 +69,9 @@ run_docker_deploy_production:
   --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${ARTIFACTSREPO}/${IMAGE}:prod \
   --memory ${MEMORY} \
   --region ${GCP_REGION}
+
+
+# prefect flow
+
+run_prefect_workflow:
+	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN
