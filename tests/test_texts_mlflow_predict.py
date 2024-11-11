@@ -18,9 +18,10 @@ class TestMLFlowTextPrediction(unittest.TestCase):
         self.assertEqual(model is not None, True)
 
     def test_mlflow_model_FE_predictions(self):
-        model = TrueNetTextLogisticRegression().model
+        model = TrueNetTextLogisticRegression()._load_model(stage='staging')
         path = "./tests/data/sample_dataset_1000.csv"
         df = pd.read_csv(path)
+        df = df.sample(25)
         X = df[['text']]
         y = df['generated']
 

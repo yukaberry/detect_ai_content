@@ -8,6 +8,7 @@ from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_m
 from detect_ai_content.params import *
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
+from detect_ai_content.ml_logic.preprocess import preprocess
 
 import os
 import pickle
@@ -15,14 +16,14 @@ import mlflow
 from mlflow import MlflowClient
 
 class TrueNetTextSVC:
-    def _load_model(self):
+    def _load_model(self, stage="Production"):
         """
         Model sumary :
             Trained TBD
             Algo : TBD
             Cross Validate average result (0.2 test) : TBD
         """
-        return load_model(self.mlflow_model_name, is_tensorflow=False, stage="Production")
+        return load_model(self.mlflow_model_name, is_tensorflow=False, stage=stage)
 
     def __init__(self):
         self.name = "TrueNetTextSVC"
@@ -32,21 +33,16 @@ class TrueNetTextSVC:
         self.model = self._load_model()
 
     def run_grid_search():
+        df = get_enriched_df()
+        X = preprocess(data=df, auto_enrich=False)
+        y = df['generated']
+
         param_grid = {
             'C':[1,10,100,1000],
             'gamma':[1,0.1,0.001,0.0001],
             'kernel':['linear','rbf']
         }
 
-        df = get_enriched_df()
-        X = df[[
-            'repetitions_ratio',
-            'punctuations_ratio',
-            'text_corrections_ratio',
-            'average_sentence_lenght',
-            'average_neg_sentiment_polarity',
-        ]]
-        y = df['generated']
         grid = GridSearchCV(SVC(),param_grid,refit = True, verbose=2)
         grid.fit(X,y)
         print(grid.best_estimator_)
@@ -59,36 +55,28 @@ class TrueNetTextSVC:
         experiment_id = client.get_experiment_by_name(futur_obj.mlflow_experiment).experiment_id
         mlflow.start_run(experiment_id=experiment_id)
 
+        df = get_enriched_df()
+        X = preprocess(data=df, auto_enrich=False)
+        y = df['generated']
 
-        big_df = get_enriched_df(10_000)
-
-        pipeline = make_pipeline(
-            RobustScaler(),
-            SVC(C=10, gamma=0.1) # param from run_grid_search
-        )
-
-        X = big_df[[
-            'repetitions_ratio',
-            'punctuations_ratio',
-            'text_corrections_ratio',
-            'average_sentence_lenght',
-            'average_neg_sentiment_polarity',
-        ]]
-        y = big_df['generated']
+        model_param_C = 10 # param from run_grid_search
+        model_param_gamma = 0.1 # param from run_grid_search
+        model = SVC(C=model_param_C, gamma=model_param_gamma)
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-        model = pipeline.fit(X_train, y_train)
+        model = model.fit(X_train, y_train)
 
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = f = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{futur_obj.mlflow_model_name}.pickle'
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{futur_obj.mlflow_model_name}.pickle'
         pickle.dump(model, open(model_path, 'wb'))
 
         # mlflow_save_params
         mlflow_save_params(
-            training_set_size= X_test.shape[0],
-            row_count= big_df.shape[0],
+            training_fit_size= X_train.shape[0],
+            training_test_size= X_test.shape[0],
+            row_count= df.shape[0],
             dataset_huggingface_human_ai_generated_text=True,
             dataset_kaggle_ai_generated_vs_human_text=True,
             dataset_kaggle_daigt_v2_train_dataset=True,
@@ -103,7 +91,7 @@ class TrueNetTextSVC:
                             accuracy_score= results['accuracy_score'])
 
         # mlflow_save_model
-        example_df = big_df.sample(3)
+        example_df = df.sample(3)
 
         mlflow_save_model(
             model=model,

@@ -14,20 +14,19 @@ import mlflow
 from mlflow import MlflowClient
 
 from detect_ai_content.params import *
-from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 
 class TrueNetTextTfidfNaiveBayesClassifier:
-    def _load_model(self):
+    def _load_model(self, stage="Production"):
         """
         Model sumary :
             Trained in 2,532,099 texts (using 3 datasets combined)
             Algo : TfidfVectorizer() + MultinomialNB
             Cross Validate average result (0.2 test) : 0.95
         """
-        return load_model(self.mlflow_model_name, is_tensorflow=False, stage="Production")
+        return load_model(self.mlflow_model_name, is_tensorflow=False, stage=stage)
 
     def __init__(self):
         self.description = ""
@@ -47,7 +46,7 @@ class TrueNetTextTfidfNaiveBayesClassifier:
         experiment_id = client.get_experiment_by_name(futur_obj.mlflow_experiment).experiment_id
         mlflow.start_run(experiment_id=experiment_id)
 
-        big_df = get_enriched_df()
+        big_df = get_enriched_df(purpose="train")
 
         pipeline_naive_bayes = make_pipeline(
             TfidfVectorizer(min_df=0.1),
@@ -66,7 +65,8 @@ class TrueNetTextTfidfNaiveBayesClassifier:
 
         # mlflow_save_params
         mlflow_save_params(
-            training_set_size= X_test.shape[0],
+            training_fit_size = X_train.shape[0],
+            training_test_size = X_test.shape[0],
             row_count= big_df.shape[0],
             dataset_huggingface_human_ai_generated_text=True,
             dataset_kaggle_ai_generated_vs_human_text=True,

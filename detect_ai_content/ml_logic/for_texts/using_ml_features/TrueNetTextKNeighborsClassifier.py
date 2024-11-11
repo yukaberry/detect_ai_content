@@ -7,6 +7,7 @@ from sklearn.pipeline import make_pipeline
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
+from detect_ai_content.ml_logic.preprocess import preprocess
 
 import os
 import pandas as pd
@@ -16,14 +17,14 @@ import mlflow
 from mlflow import MlflowClient
 
 class TrueNetTextKNeighborsClassifier:
-    def _load_model(self):
+    def _load_model(self, stage="Production"):
         """
         Model sumary :
             Trained TBD
             Algo : TBD
             Cross Validate average result (0.2 test) : TBD
         """
-        return load_model(self.mlflow_model_name, is_tensorflow=False, stage="Production")
+        return load_model(self.mlflow_model_name, is_tensorflow=False, stage=stage)
 
     def __init__(self):
         self.description = ""
@@ -34,25 +35,15 @@ class TrueNetTextKNeighborsClassifier:
         self.model = self._load_model()
 
     def run_grid_search():
-        df = get_enriched_df(50_000)
-        X = df[[
-            'repetitions_ratio',
-            'punctuations_ratio',
-            'text_corrections_ratio',
-            'average_sentence_lenght',
-            'average_neg_sentiment_polarity',
-        ]]
+        df = get_enriched_df()
+        X = preprocess(data=df, auto_enrich=False)
         y = df['generated']
 
-        pipeline = make_pipeline(
-            RobustScaler(),
-            KNeighborsClassifier()
-        )
-
+        model = KNeighborsClassifier()
         k_range = list(range(1, 31))
-        param_grid = dict(kneighborsclassifier__n_neighbors=k_range)
+        param_grid = dict(n_neighbors=k_range)
 
-        grid = GridSearchCV(pipeline ,param_grid,refit = True, verbose=2)
+        grid = GridSearchCV(model ,param_grid,refit = True, verbose=2)
         grid.fit(X,y)
         print(grid.best_estimator_)
 
@@ -63,31 +54,21 @@ class TrueNetTextKNeighborsClassifier:
         experiment_id = client.get_experiment_by_name(futur_obj.mlflow_experiment).experiment_id
         mlflow.start_run(experiment_id=experiment_id)
 
-        big_df = get_enriched_df(10_000)
+        big_df = get_enriched_df()
+        y = big_df['generated']
+        X = preprocess(data=big_df, auto_enrich=False)
 
         param_n_neighbors = 20 # param from run_grid_search
 
-        pipeline = make_pipeline(
-            RobustScaler(),
-            KNeighborsClassifier(n_neighbors=param_n_neighbors)
-        )
-
-        X = big_df[[
-            'repetitions_ratio',
-            'punctuations_ratio',
-            'text_corrections_ratio',
-            'average_sentence_lenght',
-            'average_neg_sentiment_polarity',
-        ]]
-        y = big_df['generated']
+        model = KNeighborsClassifier(n_neighbors=param_n_neighbors)
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-        model = pipeline.fit(X_train, y_train)
+        model = model.fit(X_train, y_train)
 
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = f = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{futur_obj.mlflow_model_name}.pickle'
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{futur_obj.mlflow_model_name}.pickle'
         pickle.dump(model, open(model_path, 'wb'))
 
         # mlflow_save_params
@@ -95,7 +76,8 @@ class TrueNetTextKNeighborsClassifier:
         additional_parameters['model_param_n_neighbors'] = param_n_neighbors
 
         mlflow_save_params(
-            training_set_size= X_test.shape[0],
+            training_fit_size=X_train.shape[0],
+            training_test_size=X_test.shape[0],
             row_count= big_df.shape[0],
             dataset_huggingface_human_ai_generated_text=True,
             dataset_kaggle_ai_generated_vs_human_text=True,
