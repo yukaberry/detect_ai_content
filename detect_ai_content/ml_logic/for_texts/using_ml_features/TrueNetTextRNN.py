@@ -27,14 +27,13 @@ from keras.layers import Dense, SimpleRNN, Flatten, Input
 from keras.callbacks import EarlyStopping
 
 class TrueNetTextRNN:
-    def _local_model(self):
+    def local_trained_pipeline(self):
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        local_path = f'{module_dir_path}/models/leverdewagon/{self.mlflow_model_name}.pickle'
-        latest_model = pickle.load(open(local_path, 'rb'))
-        return latest_model
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
+        return pickle.load(open(model_path, 'rb'))
 
-    def _load_model(self, stage="Production"):
+    def get_mlflow_model(self, stage="Production"):
         """
         Model sumary :
             Trained
@@ -45,7 +44,7 @@ class TrueNetTextRNN:
 
     def get_architecture_model():
         model = Sequential()
-        model.add(Normalization(input_shape = (6, )))
+        model.add(Normalization(input_shape = (10, )))
         model.add(Dense(units=12, activation="relu"))
         model.add(Dense(units=24, activation="relu"))
         model.add(Dense(units=12, activation="relu"))
@@ -64,7 +63,7 @@ class TrueNetTextRNN:
         self.description = ""
         self.mlflow_model_name = "TrueNetTextRNN"
         self.mlflow_experiment = "TrueNetTextRNN_experiment_leverdewagon"
-        self.model = self._load_model()
+        self.model = self.local_trained_pipeline()
 
     def preprocess(data):
         scaler = RobustScaler()
@@ -118,7 +117,11 @@ class TrueNetTextRNN:
             'text_corrections_ratio',
             'average_sentence_lenght',
             'average_neg_sentiment_polarity',
-            'pourcentage_of_correct_prediction'
+            'pourcentage_of_correct_prediction',
+            'lexical_diversity',
+            'smog_index',
+            'flesch_reading_ease',
+            'avg_word_length'
         ]
 
         model = TrueNetTextRNN.get_architecture_model()

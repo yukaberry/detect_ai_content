@@ -1,6 +1,6 @@
 import pandas as pd
 
-from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions
+from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions, enrich_lexical_diversity_readability
 from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import FunctionTransformer
 
@@ -30,8 +30,12 @@ def smartEnrichFunction(data):
     data_processed = data.copy()
     if 'repetitions_ratio' not in data_processed:
         data_processed = enrich_text(data_processed)
+
     if 'pourcentage_of_correct_prediction' not in data_processed:
         data_processed = enrich_text_BERT_predictions(data_processed)
+
+    if 'lexical_diversity' not in data_processed:
+        data_processed = enrich_lexical_diversity_readability(data_processed)
 
     return data_processed
 
@@ -60,3 +64,10 @@ def smartSelectionFunction(data, columns):
 
 def smartSelectionTransformer(columns: None):
     return FunctionTransformer(smartSelectionFunction, kw_args={'columns':columns})
+
+def dataframeToSerie(data):
+    first_column = data.columns[0]
+    return pd.Series(data=data[first_column])
+
+def dataframeToSerieTransformer():
+    return FunctionTransformer(dataframeToSerie)

@@ -20,14 +20,13 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import RobustScaler
 
 class TrueNetTextUsingBERTMaskedPredictions:
-    def _local_model(self):
+    def local_trained_pipeline(self):
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        local_path = f'{module_dir_path}/models/leverdewagon/{self.mlflow_model_name}.pickle'
-        latest_model = pickle.load(open(local_path, 'rb'))
-        return latest_model
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
+        return pickle.load(open(model_path, 'rb'))
 
-    def _load_model(self, stage="Production"):
+    def get_mlflow_model(self, stage="Production"):
         """
         Model sumary :
             Trained 5720 rows
@@ -42,7 +41,7 @@ class TrueNetTextUsingBERTMaskedPredictions:
         self.description = ""
         self.mlflow_model_name = "TrueNetTextUsingBERTMaskedPredictions"
         self.mlflow_experiment = "TrueNetTextUsingBERTMaskedPredictions_experiment_leverdewagon"
-        self.model = self._load_model()
+        self.model = self.local_trained_pipeline()
 
     # inspiration : https://github.com/renatoviolin/next_word_prediction/blob/master/main.py
     # ../../raw_data/samples/sample_dataset_10000_enriched.csv
@@ -131,11 +130,10 @@ class TrueNetTextUsingBERTMaskedPredictions:
         df = get_enriched_df()
         y = df['generated']
 
-
         X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2, )
-        model = pipeline.fit(X=X_train, y=y_train)
+        pipeline.fit(X=X_train, y=y_train)
 
-        results = evaluate_model(model, X_test, y_test)
+        results = evaluate_model(pipeline, X_test, y_test)
         print(results)
 
         import detect_ai_content

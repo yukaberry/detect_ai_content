@@ -3,6 +3,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 import pandas as pd
 
 def evaluate_model(model, X_test_processed, y_test):
+    print(f'evaluate_model:{model}')
     y_pred = model.predict(X_test_processed)
     df = pd.DataFrame(data=y_pred)
     # print(df)

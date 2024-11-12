@@ -17,7 +17,13 @@ import mlflow
 from mlflow import MlflowClient
 
 class TrueNetTextSVC:
-    def _load_model(self, stage="Production"):
+    def local_trained_pipeline(self):
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
+        return pickle.load(open(model_path, 'rb'))
+
+    def get_mlflow_model(self, stage="Production"):
         """
         Model sumary :
             Trained TBD
@@ -31,7 +37,7 @@ class TrueNetTextSVC:
         self.description = ""
         self.mlflow_model_name = "TrueNetTextSVC"
         self.mlflow_experiment = "TrueNetTextSVC_experiment_leverdewagon"
-        self.model = self._load_model()
+        self.model = self.local_trained_pipeline()
 
     def run_grid_search():
         df = get_enriched_df()
@@ -111,7 +117,11 @@ class TrueNetTextSVC:
             'text_corrections_ratio',
             'average_sentence_lenght',
             'average_neg_sentiment_polarity',
-            'pourcentage_of_correct_prediction'
+            'pourcentage_of_correct_prediction',
+            'lexical_diversity',
+            'smog_index',
+            'flesch_reading_ease',
+            'avg_word_length'
         ]
 
         model_param_C = 10 # param from run_grid_search
@@ -133,7 +143,7 @@ class TrueNetTextSVC:
 
         X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2)
 
-        pipeline = pipeline.fit(X=X_train, y=y_train,)
+        pipeline.fit(X=X_train, y=y_train,)
         results = evaluate_model(pipeline, X_test, y_test)
         print(results)
 

@@ -16,7 +16,13 @@ from detect_ai_content.ml_logic.evaluation import evaluate_model
 from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
 
 class TrueNetTextLogisticRegression:
-    def _load_model(self, stage="Production"):
+    def local_trained_pipeline(self):
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
+        return pickle.load(open(model_path, 'rb'))
+
+    def get_mlflow_model(self, stage="Production"):
         """
         Model sumary :
             Trained in 2,532,099 texts (using 3 datasets combined)
@@ -30,7 +36,7 @@ class TrueNetTextLogisticRegression:
         self.description = ""
         self.mlflow_model_name = "TrueNetTextLogisticRegression"
         self.mlflow_experiment = "TrueNetTextLogisticRegression_experiment_leverdewagon"
-        self.model = self._load_model()
+        self.model = self.local_trained_pipeline()
 
     def retrain_full_model():
         print("retrain_full_model START")
@@ -95,7 +101,11 @@ class TrueNetTextLogisticRegression:
             'text_corrections_ratio',
             'average_sentence_lenght',
             'average_neg_sentiment_polarity',
-            'pourcentage_of_correct_prediction'
+            'pourcentage_of_correct_prediction',
+            'lexical_diversity',
+            'smog_index',
+            'flesch_reading_ease',
+            'avg_word_length'
         ]
 
         features_selection_transformer = smartSelectionTransformer(columns=columns)
@@ -111,9 +121,9 @@ class TrueNetTextLogisticRegression:
         y = df['generated']
 
         X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2, )
-        model = pipeline.fit(X=X_train, y=y_train)
+        pipeline.fit(X=X_train, y=y_train)
 
-        results = evaluate_model(model, X_test, y_test)
+        results = evaluate_model(pipeline, X_test, y_test)
         print(results)
 
         import detect_ai_content
