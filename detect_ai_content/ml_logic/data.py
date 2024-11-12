@@ -67,6 +67,7 @@ def enrich_text(data):
     return data_enriched
 
 def enrich_text_BERT_predictions(data):
+    print('enrich_text_BERT_predictions')
     data_enriched = data.copy()
 
     pourcentage_of_correct_predictions = []

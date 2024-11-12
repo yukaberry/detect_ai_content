@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import RobustScaler
 
 import pandas as pd
 import numpy as np
@@ -17,6 +18,8 @@ from detect_ai_content.params import *
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
 from detect_ai_content.ml_logic.evaluation import evaluate_model
+from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
+from sklearn.pipeline import make_pipeline, Pipeline
 
 class TrueNetTextTfidfNaiveBayesClassifier:
     def _load_model(self, stage="Production"):
@@ -96,3 +99,27 @@ class TrueNetTextTfidfNaiveBayesClassifier:
         )
 
         mlflow.end_run()
+
+
+    def retrain_production_pipeline():
+
+        pipeline = Pipeline([
+            ('TfidfVectorizer', TfidfVectorizer(min_df=0.1)),
+            ('MultinomialNB', MultinomialNB())
+        ])
+
+        df = get_enriched_df(purpose="train")
+        y = df['generated']
+        X = df['text']
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        pipeline = pipeline.fit(X=X_train, y=y_train)
+
+        results = evaluate_model(pipeline, X_test, y_test)
+        print(results)
+
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+        mlflow_model_name = TrueNetTextTfidfNaiveBayesClassifier().mlflow_model_name
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{mlflow_model_name}_pipeline.pickle'
+        pickle.dump(pipeline, open(model_path, 'wb'))

@@ -2,12 +2,13 @@
 from sklearn.preprocessing import RobustScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import make_pipeline, Pipeline
 
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
 from detect_ai_content.ml_logic.preprocess import preprocess
+from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
 
 import os
 import pandas as pd
@@ -104,3 +105,41 @@ class TrueNetTextKNeighborsClassifier:
         )
 
         mlflow.end_run()
+
+
+    def retrain_production_pipeline():
+        columns = [
+            'repetitions_ratio',
+            'punctuations_ratio',
+            'text_corrections_ratio',
+            'average_sentence_lenght',
+            'average_neg_sentiment_polarity',
+            'pourcentage_of_correct_prediction'
+        ]
+
+        param_n_neighbors = 20 # param from run_grid_search
+        model = KNeighborsClassifier(n_neighbors=param_n_neighbors)
+
+        features_selection_transformer = smartSelectionTransformer(columns=columns)
+        pipeline = Pipeline([
+            ('row_cleaner', smartCleanerTransformer()),
+            ('enricher', smartEnrichTransformer()),
+            ('features_selection', features_selection_transformer),
+            ('scaler', RobustScaler()),
+            ('estimator', model),
+             ])
+
+        df = get_enriched_df()
+        y = df['generated']
+
+        X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2, )
+        model = pipeline.fit(X=X_train, y=y_train)
+
+        results = evaluate_model(model, X_test, y_test)
+        print(results)
+
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+        mlflow_model_name = TrueNetTextKNeighborsClassifier().mlflow_model_name
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{mlflow_model_name}_pipeline.pickle'
+        pickle.dump(pipeline, open(model_path, 'wb'))

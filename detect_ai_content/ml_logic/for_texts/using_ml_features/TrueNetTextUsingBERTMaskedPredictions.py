@@ -6,6 +6,8 @@ from detect_ai_content.ml_logic.evaluation import evaluate_model
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
 from detect_ai_content.ml_logic.preprocess import preprocess
 from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions
+from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
+from sklearn.pipeline import make_pipeline, Pipeline
 
 import pandas as pd
 import os
@@ -110,3 +112,34 @@ class TrueNetTextUsingBERTMaskedPredictions:
         )
 
         mlflow.end_run()
+
+
+    def retrain_production_pipeline():
+        columns = [
+            'pourcentage_of_correct_prediction'
+        ]
+
+        features_selection_transformer = smartSelectionTransformer(columns=columns)
+        pipeline = Pipeline([
+            ('row_cleaner', smartCleanerTransformer()),
+            ('enricher', smartEnrichTransformer()),
+            ('features_selection', features_selection_transformer),
+            ('scaler', RobustScaler()),
+            ('estimator', LogisticRegression()),
+             ])
+
+        df = get_enriched_df()
+        y = df['generated']
+
+
+        X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2, )
+        model = pipeline.fit(X=X_train, y=y_train)
+
+        results = evaluate_model(model, X_test, y_test)
+        print(results)
+
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+        mlflow_model_name = TrueNetTextUsingBERTMaskedPredictions().mlflow_model_name
+        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{mlflow_model_name}_pipeline.pickle'
+        pickle.dump(pipeline, open(model_path, 'wb'))
