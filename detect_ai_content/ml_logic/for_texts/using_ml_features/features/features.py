@@ -117,8 +117,11 @@ from transformers import BertTokenizer, BertForMaskedLM
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert_model = BertForMaskedLM.from_pretrained('bert-base-uncased').eval()
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device = torch.device("mps")
+import platform
+if platform.system() == 'Darwin':
+    device = torch.device("mps")
+else:
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print(f'device:{device}')
 bert_model.to(device)
