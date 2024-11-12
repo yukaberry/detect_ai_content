@@ -5,6 +5,9 @@ import numpy as np
 
 from detect_ai_content.ml_logic.for_texts.using_ml_features.features.features import *
 
+from nltk.tokenize import word_tokenize, sent_tokenize
+import textstat
+
 
 def get_enriched_df(purpose="train", size = None):
     import detect_ai_content
@@ -92,3 +95,19 @@ def enrich_text_BERT_predictions(data):
     data_enriched['number_of_correct_prediction'] = number_of_correct_predictions
     data_enriched['pourcentage_of_correct_prediction'] = pourcentage_of_correct_predictions
     return data_enriched
+
+def enrich_lexical_diversity_readability(data):
+    enriched_data = data.copy()
+
+    # Lexical diversity (Unique words / Total words)
+    enriched_data['lexical_diversity'] = data['text'].apply(lambda x: len(set(word_tokenize(x))) / len(word_tokenize(x)) if len(word_tokenize(x)) > 0 else 0)
+
+    # Readability Scores
+    enriched_data['flesch_reading_ease'] = data['text'].apply(textstat.flesch_reading_ease)
+    enriched_data['smog_index'] = data['text'].apply(textstat.smog_index)
+    enriched_data['flesch_kincaid_grade'] = data['text'].apply(textstat.flesch_kincaid_grade)
+
+    # Some metrics
+    enriched_data['avg_word_length'] = data['text'].apply(lambda x: np.mean([len(word) for word in word_tokenize(x)]))
+
+    return enriched_data

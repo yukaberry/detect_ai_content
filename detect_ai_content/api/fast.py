@@ -15,8 +15,7 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiv
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
 
 
-from detect_ai_content.ml_logic.preprocess import preprocess
-from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions
+from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions, enrich_lexical_diversity_readability
 
 from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model_vgg16
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
@@ -52,8 +51,7 @@ def predict(
         app.state.model = TrueNetTextLogisticRegression().model
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
-    X_processed = preprocess(text_df)
-    y_pred = app.state.model_text.predict(X_processed)
+    y_pred = app.state.model_text.predict(text_df)
 
     print(f"one pred: {y_pred[0]}")
     return {
@@ -73,6 +71,8 @@ def predict(
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
     text_enriched_df = enrich_text(text_df)
+    text_enriched_df = enrich_text_BERT_predictions(text_enriched_df)
+    text_enriched_df = enrich_lexical_diversity_readability(text_enriched_df)
 
     if "TrueNetTextLogisticRegression" not in app.state.models:
         app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
@@ -98,7 +98,7 @@ def predict(
         y_pred = model.predict(text_enriched_df)
         predictions["TrueNetTextRNN"] = int(y_pred[0])
 
-    # Using only "BERT" preprocess
+    # Using only "BERT"
 
     if "TrueNetTextUsingBERTMaskedPredictions" not in app.state.models:
         app.state.models["TrueNetTextUsingBERTMaskedPredictions"] = TrueNetTextUsingBERTMaskedPredictions().local_trained_pipeline()
