@@ -6,8 +6,17 @@ from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import *
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import TrueNetTextLogisticRegression
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextDecisionTreeClassifier import TrueNetTextDecisionTreeClassifier
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import TrueNetTextKNeighborsClassifier
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import TrueNetTextRNN
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import TrueNetTextSVC
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import TrueNetTextTfidfNaiveBayesClassifier
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
+
+
 from detect_ai_content.ml_logic.preprocess import preprocess
+from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions
 
 from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model_vgg16
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
@@ -17,6 +26,8 @@ app = FastAPI()
 app.state.model_text = None
 app.state.model_image = None
 app.state.model_image_cnn = None
+
+app.state.models = {}
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
@@ -47,6 +58,69 @@ def predict(
     print(f"one pred: {y_pred[0]}")
     return {
         'prediction': int(y_pred[0])
+    }
+
+@app.get("/text_multi_predict")
+def predict(
+        text: str
+    ):
+    """
+    Make a single prediction prediction.
+    Assumes `text` is provided as a string
+    """
+
+    predictions = {}
+
+    text_df = pd.DataFrame(data=[text],columns=['text'])
+    text_enriched_df = enrich_text(text_df)
+    text_enriched_df = enrich_text_BERT_predictions(text_enriched_df)
+
+    # Using "classic" preprocessed data
+    X_processed = preprocess(text_enriched_df, auto_enrich=False)
+
+    if "TrueNetTextLogisticRegression" not in app.state.models:
+        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression()._load_model(stage="staging")
+    model = app.state.models["TrueNetTextLogisticRegression"]
+    y_pred = model.predict(X_processed)
+    predictions["TrueNetTextLogisticRegression"] = int(y_pred[0])
+
+    if "TrueNetTextDecisionTreeClassifier" not in app.state.models:
+        app.state.models["TrueNetTextDecisionTreeClassifier"] = TrueNetTextDecisionTreeClassifier()._load_model(stage="staging")
+    model = app.state.models["TrueNetTextDecisionTreeClassifier"]
+    y_pred = model.predict(X_processed)
+    predictions["TrueNetTextDecisionTreeClassifier"] = int(y_pred[0])
+
+    if "TrueNetTextKNeighborsClassifier" not in app.state.models:
+        app.state.models["TrueNetTextKNeighborsClassifier"] = TrueNetTextKNeighborsClassifier()._load_model(stage="staging")
+    model = app.state.models["TrueNetTextKNeighborsClassifier"]
+    y_pred = model.predict(X_processed)
+    predictions["TrueNetTextKNeighborsClassifier"] = int(y_pred[0])
+
+    # if "TrueNetTextRNN" not in app.state.models:
+    #    app.state.models["TrueNetTextRNN"] = TrueNetTextRNN()._load_model(stage="staging")
+    # model = app.state.models["TrueNetTextRNN"]
+    # y_pred = model.predict(X_processed)
+    # predictions["TrueNetTextRNN"] = y_pred
+
+    # Using only "BERT" preprocess
+
+    if "TrueNetTextUsingBERTMaskedPredictions" not in app.state.models:
+        app.state.models["TrueNetTextUsingBERTMaskedPredictions"] = TrueNetTextUsingBERTMaskedPredictions()._load_model(stage="staging")
+    model = app.state.models["TrueNetTextUsingBERTMaskedPredictions"]
+    y_pred = model.predict(TrueNetTextUsingBERTMaskedPredictions.preprocess(data=text_enriched_df))
+    predictions["TrueNetTextUsingBERTMaskedPredictions"] = int(y_pred[0])
+
+    # Using raw data
+
+    if "TrueNetTextTfidfNaiveBayesClassifier" not in app.state.models:
+        app.state.models["TrueNetTextTfidfNaiveBayesClassifier"] = TrueNetTextTfidfNaiveBayesClassifier()._load_model(stage="staging")
+    model = app.state.models["TrueNetTextTfidfNaiveBayesClassifier"]
+    y_pred = model.predict(text_df)
+    predictions["TrueNetTextTfidfNaiveBayesClassifier"] = int(y_pred[0])
+
+    print(f"preds: {predictions}")
+    return {
+        'predictions': predictions
     }
 
 @app.post("/image_predict")
