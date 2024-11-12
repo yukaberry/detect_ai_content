@@ -73,54 +73,77 @@ def predict(
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
     text_enriched_df = enrich_text(text_df)
-    text_enriched_df = enrich_text_BERT_predictions(text_enriched_df)
-
-    # Using "classic" preprocessed data
-    X_processed = preprocess(text_enriched_df, auto_enrich=False)
 
     if "TrueNetTextLogisticRegression" not in app.state.models:
-        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression()._load_model(stage="staging")
+        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
     model = app.state.models["TrueNetTextLogisticRegression"]
-    y_pred = model.predict(X_processed)
+    y_pred = model.predict(text_enriched_df)
     predictions["TrueNetTextLogisticRegression"] = int(y_pred[0])
 
     if "TrueNetTextDecisionTreeClassifier" not in app.state.models:
-        app.state.models["TrueNetTextDecisionTreeClassifier"] = TrueNetTextDecisionTreeClassifier()._load_model(stage="staging")
+        app.state.models["TrueNetTextDecisionTreeClassifier"] = TrueNetTextDecisionTreeClassifier().local_trained_pipeline()
     model = app.state.models["TrueNetTextDecisionTreeClassifier"]
-    y_pred = model.predict(X_processed)
+    y_pred = model.predict(text_enriched_df)
     predictions["TrueNetTextDecisionTreeClassifier"] = int(y_pred[0])
 
     if "TrueNetTextKNeighborsClassifier" not in app.state.models:
-        app.state.models["TrueNetTextKNeighborsClassifier"] = TrueNetTextKNeighborsClassifier()._load_model(stage="staging")
+        app.state.models["TrueNetTextKNeighborsClassifier"] = TrueNetTextKNeighborsClassifier().local_trained_pipeline()
     model = app.state.models["TrueNetTextKNeighborsClassifier"]
-    y_pred = model.predict(X_processed)
+    y_pred = model.predict(text_enriched_df)
     predictions["TrueNetTextKNeighborsClassifier"] = int(y_pred[0])
 
-    # if "TrueNetTextRNN" not in app.state.models:
-    #    app.state.models["TrueNetTextRNN"] = TrueNetTextRNN()._load_model(stage="staging")
-    # model = app.state.models["TrueNetTextRNN"]
-    # y_pred = model.predict(X_processed)
-    # predictions["TrueNetTextRNN"] = y_pred
+    if "TrueNetTextRNN" not in app.state.models:
+        app.state.models["TrueNetTextRNN"] = TrueNetTextRNN().local_trained_pipeline()
+        model = app.state.models["TrueNetTextRNN"]
+        y_pred = model.predict(text_enriched_df)
+        predictions["TrueNetTextRNN"] = int(y_pred[0])
 
     # Using only "BERT" preprocess
 
     if "TrueNetTextUsingBERTMaskedPredictions" not in app.state.models:
-        app.state.models["TrueNetTextUsingBERTMaskedPredictions"] = TrueNetTextUsingBERTMaskedPredictions()._load_model(stage="staging")
+        app.state.models["TrueNetTextUsingBERTMaskedPredictions"] = TrueNetTextUsingBERTMaskedPredictions().local_trained_pipeline()
     model = app.state.models["TrueNetTextUsingBERTMaskedPredictions"]
-    y_pred = model.predict(TrueNetTextUsingBERTMaskedPredictions.preprocess(data=text_enriched_df))
+    y_pred = model.predict(text_enriched_df)
     predictions["TrueNetTextUsingBERTMaskedPredictions"] = int(y_pred[0])
 
     # Using raw data
 
     if "TrueNetTextTfidfNaiveBayesClassifier" not in app.state.models:
-        app.state.models["TrueNetTextTfidfNaiveBayesClassifier"] = TrueNetTextTfidfNaiveBayesClassifier()._load_model(stage="staging")
+        app.state.models["TrueNetTextTfidfNaiveBayesClassifier"] = TrueNetTextTfidfNaiveBayesClassifier().local_trained_pipeline()
     model = app.state.models["TrueNetTextTfidfNaiveBayesClassifier"]
-    y_pred = model.predict(text_df)
+    y_pred = model.predict(text_enriched_df)
     predictions["TrueNetTextTfidfNaiveBayesClassifier"] = int(y_pred[0])
+
+    y_preds = []
+    number_of_zeros = float(0)
+    number_of_ones = float(0)
+
+    for estimator in predictions:
+        v = predictions[estimator]
+        y_preds.append(v)
+        if v == 0:
+            number_of_zeros += 1
+        else:
+            number_of_ones += 1
+
+    prediction = -1
+    prediction_confidence = 0
+
+    if np.mean(y_preds) < 0.5:
+        prediction = 0
+        prediction_confidence = round(100 * (number_of_zeros/len(predictions)))
+
+    else:
+        prediction = 1
+        prediction_confidence = round(100 * (number_of_ones/len(predictions)))
 
     print(f"preds: {predictions}")
     return {
-        'predictions': predictions
+        'predictions_details': predictions,
+        'prediction': {
+            'final_prediction':prediction,
+            'final_prediction_confidence':f'{prediction_confidence}%',
+        }
     }
 
 @app.post("/image_predict")
