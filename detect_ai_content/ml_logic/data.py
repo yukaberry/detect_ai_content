@@ -1,48 +1,84 @@
+
 import os
 import pandas as pd
+import numpy as np
 
-def generate_dataset_sample(sample_size: int):
+from detect_ai_content.ml_logic.for_texts.using_ml_features.features.features import *
+
+from nltk.tokenize import word_tokenize, sent_tokenize
+import textstat
+
+def get_enriched_df(purpose="train", size = None):
     import detect_ai_content
     module_dir_path = os.path.dirname(detect_ai_content.__file__)
+    df = pd.read_csv(f'{module_dir_path}/../raw_data/texts_merged_dataset_enriched/texts_merged_dataset_enriched_{purpose}.csv')
+    big_df = df
+    big_df = big_df[np.isinf(big_df['average_sentence_lenght']) == False]
+    big_df = big_df[np.isinf(big_df['repetitions_ratio']) == False]
+    big_df = big_df[np.isinf(big_df['punctuations_ratio']) == False]
+    big_df = big_df[np.isinf(big_df['text_corrections_ratio']) == False]
+    big_df = big_df[np.isinf(big_df['average_neg_sentiment_polarity']) == False]
+    big_df = big_df.fillna(0)
 
-    # Load huggingface dataset
-    print("Load huggingface.co_human_ai_generated_text")
-    huggingface_df = pd.read_csv(f'{module_dir_path}/../raw_data/huggingface.co_human_ai_generated_text/model_training_dataset.csv')
-    huggingface_df['source']='huggingface.co_human_ai_generated_text'
+    if size is not None:
+        return big_df.sample(size)
 
-    huggingface_human_text_df = huggingface_df[["human_text", "source"]]
-    huggingface_human_text_df = huggingface_human_text_df.rename(columns={'human_text':'text'},)
-    huggingface_human_text_df['generated'] = 0
+    return big_df
 
-    huggingface_ai_text_df = huggingface_df[["ai_text", "source"]]
-    huggingface_ai_text_df = huggingface_ai_text_df.rename(columns={'ai_text':'text'},)
-    huggingface_ai_text_df['generated'] = 1
+def enrich_text(data):
+    data_enriched = data.copy()
+    # print('enrich compute_punctuation_in_text')
+    data_enriched['punctuations_nb'] = data_enriched['text'].apply(compute_punctuation_in_text)
 
-    # Load kaggle dataset
-    print("Load kaggle-ai-generated-vs-human-text")
-    AI_Human_enriched_df = pd.read_csv(f'{module_dir_path}/../raw_data/kaggle-ai-generated-vs-human-text/AI_Human.csv')
-    AI_Human_enriched_df['source']='kaggle-ai-generated-vs-human-text'
-    AI_Human_enriched_df = AI_Human_enriched_df[["text", "generated"]]
+    # print('enrich compute_neg_sentiment_polarity_in_text')
+    data_enriched['neg_sentiment_polarity'] = data_enriched['text'].apply(compute_neg_sentiment_polarity_in_text)
 
-    # Load kaggle dataset
-    print("daigt-v2-train-dataset")
-    daigt_v2_enriched_df = pd.read_csv(f'{module_dir_path}/../raw_data/daigt-v2-train-dataset/train_v2_drcat_02.csv')
-    daigt_v2_enriched_df['source']='daigt-v2-train-dataset'
-    daigt_v2_enriched_df = daigt_v2_enriched_df[["text"]]
-    daigt_v2_enriched_df['generated'] = 1
+    # print('enrich compute_pos_sentiment_polarity_in_text')
+    data_enriched['pos_sentiment_polarity'] = data_enriched['text'].apply(compute_pos_sentiment_polarity_in_text)
 
-    merged_df = pd.concat(objs=[
-        huggingface_human_text_df,
-        huggingface_ai_text_df,
-        AI_Human_enriched_df,
-        daigt_v2_enriched_df
-        ])
+    # print('enrich text_corrections')
+    data_enriched['text_corrections_nb'] = data_enriched['text'].apply(compute_number_of_text_corrections_using_nltk_words)
 
-    print(merged_df.shape)
+    # print('enrich compute_repetitions_in_text')
+    data_enriched['text_repetitions_nb'] = data_enriched['text'].apply(compute_repetitions_in_text)
 
-    # Save it
-    sample_df = merged_df.sample(sample_size)
-    print(sample_df.shape)
+    # print('enrich number_of_sentences')
+    data_enriched['number_of_sentences'] = data_enriched['text'].apply(number_of_sentences)
 
-    sample_path = f'{module_dir_path}/../raw_data/sample_dataset_{sample_size}.csv'
-    sample_df.to_csv(sample_path, mode='w', index=True, header=True)
+    # print('enrich text_lenght')
+    data_enriched['text_lenght'] = data_enriched['text'].apply(text_lenght)
+
+    data_enriched['repetitions_ratio'] = data_enriched['text_repetitions_nb']/data_enriched['text_lenght']
+    data_enriched['punctuations_ratio'] = data_enriched['punctuations_nb']/data_enriched['text_lenght']
+    data_enriched['text_corrections_ratio'] = data_enriched['text_corrections_nb']/data_enriched['text_lenght']
+    data_enriched['text_corrections_set_ratio'] = data_enriched['text_corrections_nb']/data_enriched['number_of_sentences']
+    data_enriched['average_neg_sentiment_polarity'] = data_enriched['neg_sentiment_polarity']/data_enriched['text_lenght']
+    data_enriched['average_pos_sentiment_polarity'] = data_enriched['pos_sentiment_polarity']/data_enriched['text_lenght']
+    data_enriched['average_sentence_lenght'] = data_enriched['text_lenght']/data_enriched['number_of_sentences']
+
+    data_enriched = data_enriched[np.isinf(data_enriched['average_sentence_lenght']) == False]
+    data_enriched = data_enriched[np.isinf(data_enriched['repetitions_ratio']) == False]
+    data_enriched = data_enriched[np.isinf(data_enriched['punctuations_ratio']) == False]
+    data_enriched = data_enriched[np.isinf(data_enriched['text_corrections_ratio']) == False]
+    data_enriched = data_enriched[np.isinf(data_enriched['average_neg_sentiment_polarity']) == False]
+    data_enriched = data_enriched[np.isinf(data_enriched['average_pos_sentiment_polarity']) == False]
+
+    data_enriched = data_enriched.dropna()
+
+    return data_enriched
+
+def enrich_lexical_diversity_readability(data):
+    enriched_data = data.copy()
+
+    # Lexical diversity (Unique words / Total words)
+    enriched_data['lexical_diversity'] = data['text'].apply(lambda x: len(set(word_tokenize(x))) / len(word_tokenize(x)) if len(word_tokenize(x)) > 0 else 0)
+
+    # Readability Scores
+    enriched_data['flesch_reading_ease'] = data['text'].apply(textstat.flesch_reading_ease)
+    enriched_data['smog_index'] = data['text'].apply(textstat.smog_index)
+    enriched_data['flesch_kincaid_grade'] = data['text'].apply(textstat.flesch_kincaid_grade)
+
+    # Some metrics
+    enriched_data['avg_word_length'] = data['text'].apply(lambda x: np.mean([len(word) for word in word_tokenize(x)]))
+
+    return enriched_data

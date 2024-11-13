@@ -65,3 +65,7 @@ if path_in is not None:
             response = requests.post("https://detect-ai-content2-667980218208.europe-west1.run.app/image_predict",headers=headers, files=files)
             # st.success(f"{response.json()}")
             st.success(response.text)
+
+# Ping server to preload things if needed
+import requests
+requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')

@@ -4,11 +4,11 @@ import os
 
 import pandas as pd
 
-from detect_ai_content.ml_logic.data import enrich_text
+from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions
 
 print(sys.argv)
 
-from_filepath = sys.argv[1]
+from_filepath = './raw_data/texts_merged_dataset.csv'
 to_enrich_filepath = from_filepath.replace('.csv', '_enriched.csv')
 
 chunksize = 10
@@ -22,10 +22,10 @@ def save(df, path):
 actual_dataset_size = 0
 
 for chunk in pd.read_csv(from_filepath, chunksize=chunksize):
-    df = chunk[["text"]]
-    df['generated'] = 1
-    df = enrich_text(df)
+    df = chunk
+    enriched_df = enrich_text(df)
+    enriched_df = enrich_text_BERT_predictions(enriched_df)
 
-    save(df, to_enrich_filepath)
+    save(enriched_df, to_enrich_filepath)
     actual_dataset_size += chunksize
     print(f"actual_dataset_size : {actual_dataset_size}")

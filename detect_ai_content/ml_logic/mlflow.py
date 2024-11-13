@@ -1,17 +1,27 @@
 
-import mlflow
+
 from detect_ai_content.params import *
+
+import mlflow
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 def load_model(model_name: str, is_tensorflow: bool, stage:str):
     model_uri = f"models:/{model_name}/{stage}"
-    if is_tensorflow:
-        model = mlflow.tensorflow.load_model(model_uri=model_uri)
-    else:
-        model = mlflow.sklearn.load_model(model_uri=model_uri)
+
+    try:
+        if is_tensorflow:
+            model = mlflow.tensorflow.load_model(model_uri=model_uri)
+        else:
+            model = mlflow.sklearn.load_model(model_uri=model_uri)
+
+    except mlflow.exceptions.MlflowException:
+        print(f"Oops!  there is no model:{model_name} on stage:{stage}")
+        model = None
     return model
 
 def mlflow_save_params(
-        training_set_size: int,
+        training_test_size: int,
+        training_fit_size: int,
         row_count: int,
         dataset_huggingface_human_ai_generated_text: bool,
         dataset_kaggle_ai_generated_vs_human_text: bool,
@@ -20,8 +30,9 @@ def mlflow_save_params(
     ) -> None:
 
     params = {
-        "training_set_size": training_set_size,
-        "row_count": row_count,
+        "training_test_size": training_test_size,
+        "training_fit_size": training_fit_size,
+        "training_row_count": row_count,
         "dataset_huggingface_human_ai_generated_text": dataset_huggingface_human_ai_generated_text,
         "dataset_kaggle_ai_generated_vs_human_text": dataset_kaggle_ai_generated_vs_human_text,
         "dataset_kaggle_daigt_v2_train_dataset": dataset_kaggle_daigt_v2_train_dataset,

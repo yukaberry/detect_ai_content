@@ -1,23 +1,51 @@
 import pandas as pd
 
-def text_lenght(text):
-    return len(text)
+from detect_ai_content.ml_logic.data import enrich_text, enrich_lexical_diversity_readability
+from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import FunctionTransformer
 
-def average_sentences(text):
-    return len(text.split("."))
+def smartEnrichFunction(data):
+    '''
+        Create features if they don't exist
+    '''
+    data_processed = data.copy()
+    if 'repetitions_ratio' not in data_processed:
+        data_processed = enrich_text(data_processed)
 
-def preprocess_text(text):
-    X = pd.DataFrame(dict(
-        text=[text],
-    ))
+    if 'lexical_diversity' not in data_processed:
+        data_processed = enrich_lexical_diversity_readability(data_processed)
 
-    X_processed = preprocess_features(X)
-    print(X_processed)
-    return X_processed
+    return data_processed
 
-def preprocess_features(df):
-    texts_df = df.copy()
-    texts_df['text_lenght'] = texts_df['text'].apply(text_lenght)
-    texts_df['sentences_count'] = texts_df['text'].apply(average_sentences)
-    texts_df = texts_df.drop(columns=['text'])
-    return texts_df
+def smartEnrichTransformer():
+    return FunctionTransformer(smartEnrichFunction)
+
+def smartCleanerFunction(data):
+    '''
+        Create features if they don't exist
+    '''
+    text_df = data['text']
+    data_cleaned = data[text_df.duplicated() == False]
+    return data_cleaned
+
+def smartCleanerTransformer():
+    return FunctionTransformer(smartCleanerFunction)
+
+def smartSelectionFunction(data, columns):
+    '''
+        Create features if they don't exist
+    '''
+
+    cleaned_data = data.copy()
+    cleaned_data = cleaned_data[columns]
+    return cleaned_data
+
+def smartSelectionTransformer(columns: None):
+    return FunctionTransformer(smartSelectionFunction, kw_args={'columns':columns})
+
+def dataframeToSerie(data):
+    first_column = data.columns[0]
+    return pd.Series(data=data[first_column])
+
+def dataframeToSerieTransformer():
+    return FunctionTransformer(dataframeToSerie)
