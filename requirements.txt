@@ -16,6 +16,7 @@ nltk
 # spacy
 # contextualSpellCheck
 # pyspellchecker
+textstat
 
 torch
 transformers

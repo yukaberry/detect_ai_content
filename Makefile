@@ -61,6 +61,28 @@ run_retrain_TrueNetImageCNN_vgg16_JM:
 run_retrain_TrueNetTextRNN:
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import TrueNetTextRNN; TrueNetTextRNN.retrain_full_model()'
 
+run_retrain_all_text_models:
+	make run_retrain_TrueNetTextLogisticRegression
+	make run_retrain_TrueNetTextTfidfNaiveBayesClassifier
+	make run_retrain_TrueNetTextDecisionTreeClassifier
+	make run_retrain_TrueNetTextKNeighborsClassifier
+	make run_retrain_TrueNetTextSVC
+	make run_retrain_TrueNetTextUsingBERTMaskedPredictions
+	make run_retrain_TrueNetTextRNN
+
+run_train_production_pipelines:
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import *; TrueNetTextLogisticRegression.retrain_production_pipeline()'
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextDecisionTreeClassifier import *; TrueNetTextDecisionTreeClassifier.retrain_production_pipeline()'
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import *; TrueNetTextKNeighborsClassifier.retrain_production_pipeline()'
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import *; TrueNetTextRNN.retrain_production_pipeline()'
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import *; TrueNetTextSVC.retrain_production_pipeline()'
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import *; TrueNetTextTfidfNaiveBayesClassifier.retrain_production_pipeline()'
+	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import *; TrueNetTextUsingBERTMaskedPredictions.retrain_production_pipeline()'
+
+
+
+
+
 
 ## TOOLS
 

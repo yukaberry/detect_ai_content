@@ -18,33 +18,45 @@ class TestMLFlowTextPrediction(unittest.TestCase):
     def test_mlflow_predictions(self):
         df = get_enriched_df(purpose="test")
         y_test = df['generated']
-        X_test_processed = preprocess(data=df, auto_enrich=False)
 
-        TrueNetTextLogisticRegression_model = TrueNetTextLogisticRegression()._load_model(stage="staging")
-        TrueNetTextLogisticRegression_results = evaluate_model(model=TrueNetTextLogisticRegression_model, X_test_processed=X_test_processed, y_test=y_test)
+        TrueNetTextLogisticRegression_model = TrueNetTextLogisticRegression().model
+        TrueNetTextLogisticRegression_results = evaluate_model(model=TrueNetTextLogisticRegression_model, X_test_processed=df, y_test=y_test)
+        TrueNetTextLogisticRegression_results['name'] = "TrueNetTextLogisticRegression"
         print(TrueNetTextLogisticRegression_results)
 
-        TrueNetTextDecisionTreeClassifier_model = TrueNetTextDecisionTreeClassifier()._load_model(stage="staging")
-        TrueNetTextDecisionTreeClassifier_results = evaluate_model(model=TrueNetTextDecisionTreeClassifier_model, X_test_processed=X_test_processed, y_test=y_test)
+        TrueNetTextDecisionTreeClassifier_model = TrueNetTextDecisionTreeClassifier().local_trained_pipeline()
+        TrueNetTextDecisionTreeClassifier_results = evaluate_model(model=TrueNetTextDecisionTreeClassifier_model, X_test_processed=df, y_test=y_test)
+        TrueNetTextDecisionTreeClassifier_results['name'] = "TrueNetTextDecisionTreeClassifier"
         print(TrueNetTextDecisionTreeClassifier_results)
 
-        TrueNetTextKNeighborsClassifier_model = TrueNetTextKNeighborsClassifier()._load_model(stage="staging")
-        TrueNetTextKNeighborsClassifier_results = evaluate_model(model=TrueNetTextKNeighborsClassifier_model, X_test_processed=X_test_processed, y_test=y_test)
+        TrueNetTextKNeighborsClassifier_model = TrueNetTextKNeighborsClassifier().local_trained_pipeline()
+        TrueNetTextKNeighborsClassifier_results = evaluate_model(model=TrueNetTextKNeighborsClassifier_model, X_test_processed=df, y_test=y_test)
+        TrueNetTextKNeighborsClassifier_results['name'] = "TrueNetTextKNeighborsClassifier"
         print(TrueNetTextKNeighborsClassifier_results)
 
-        TrueNetTextSVC_model = TrueNetTextSVC()._load_model(stage="staging")
-        TrueNetTextSVC_results = evaluate_model(model=TrueNetTextSVC_model, X_test_processed=X_test_processed, y_test=y_test)
+        TrueNetTextSVC_model = TrueNetTextSVC().local_trained_pipeline()
+        TrueNetTextSVC_results = evaluate_model(model=TrueNetTextSVC_model, X_test_processed=df, y_test=y_test)
+        TrueNetTextSVC_results['name'] = "TrueNetTrueNetTextSVCTextKNeighborsClassifier"
         print(TrueNetTextSVC_results)
 
-        TrueNetTextUsingBERTMaskedPredictions_model = TrueNetTextUsingBERTMaskedPredictions()._load_model(stage="staging")
-        X_processed_for_BERT = TrueNetTextUsingBERTMaskedPredictions.preprocess(data=df)
-        TrueNetTextUsingBERTMaskedPredictions_results = evaluate_model(model=TrueNetTextUsingBERTMaskedPredictions_model, X_test_processed=X_processed_for_BERT, y_test=y_test)
+        TrueNetTextUsingBERTMaskedPredictions_model = TrueNetTextUsingBERTMaskedPredictions().local_trained_pipeline()
+        TrueNetTextUsingBERTMaskedPredictions_results = evaluate_model(model=TrueNetTextUsingBERTMaskedPredictions_model, X_test_processed=df, y_test=y_test)
+        TrueNetTextUsingBERTMaskedPredictions_results['name'] = "TrueNetTextUsingBERTMaskedPredictions"
         print(TrueNetTextUsingBERTMaskedPredictions_results)
 
-        TrueNetTextTfidfNaiveBayesClassifier_model = TrueNetTextTfidfNaiveBayesClassifier()._load_model(stage="Staging")
-        TrueNetTextTfidfNaiveBayesClassifier_results = evaluate_model(model=TrueNetTextTfidfNaiveBayesClassifier_model, X_test_processed=df['text'], y_test=y_test)
+        TrueNetTextTfidfNaiveBayesClassifier_model = TrueNetTextTfidfNaiveBayesClassifier().local_trained_pipeline()
+        TrueNetTextTfidfNaiveBayesClassifier_results = evaluate_model(model=TrueNetTextTfidfNaiveBayesClassifier_model,X_test_processed=df, y_test=y_test)
+        TrueNetTextTfidfNaiveBayesClassifier_results['name'] = "TrueNetTextTfidfNaiveBayesClassifier"
         print(TrueNetTextTfidfNaiveBayesClassifier_results)
 
+        print(pd.DataFrame(data=[
+            TrueNetTextLogisticRegression_results,
+            TrueNetTextDecisionTreeClassifier_results,
+            TrueNetTextKNeighborsClassifier_results,
+            TrueNetTextSVC_results,
+            TrueNetTextUsingBERTMaskedPredictions_results,
+            TrueNetTextTfidfNaiveBayesClassifier_results
+        ]))
 
 if __name__ == '__main__':
     unittest.main()

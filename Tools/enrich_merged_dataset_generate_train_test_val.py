@@ -12,6 +12,7 @@ print(sys.argv)
 
 from_filepath = './raw_data/texts_merged_dataset_enriched.csv'
 df = pd.read_csv(from_filepath)
+df = df.sample(20_000)
 
 df_train, df_test = train_test_split(df, test_size=0.2)
 
