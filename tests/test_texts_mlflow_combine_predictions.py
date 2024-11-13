@@ -10,7 +10,6 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC impor
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import TrueNetTextKNeighborsClassifier
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
 
-from detect_ai_content.ml_logic.preprocess import preprocess
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 

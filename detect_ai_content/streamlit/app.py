@@ -27,6 +27,9 @@ st.divider()
 st.subheader('Image')
 image = st.file_uploader("Upload your Image Here", type=["jpg", "jpeg", "png"])
 
+st.subheader("💯 Results & metrics")
+st.write(f"What are our results ?")
+
 # API URL will need to be replaced by the service URL that Yuka will generate after deploying to Cloud Run
 if st.button("Hit me!") and image is not None:
     api_url = "https://detect-ai-content-image-api-334152645738.europe-west1.run.app/predict"
@@ -37,3 +40,7 @@ if st.button("Hit me!") and image is not None:
         st.success("Prediction: " + response.json().get("prediction", "No prediction found"))
     else:
         st.error("Error: " + response.text)
+
+# Ping server to preload things if needed
+import requests
+requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')

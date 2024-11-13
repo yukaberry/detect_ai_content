@@ -8,7 +8,6 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.features.features im
 from nltk.tokenize import word_tokenize, sent_tokenize
 import textstat
 
-
 def get_enriched_df(purpose="train", size = None):
     import detect_ai_content
     module_dir_path = os.path.dirname(detect_ai_content.__file__)
@@ -25,7 +24,6 @@ def get_enriched_df(purpose="train", size = None):
         return big_df.sample(size)
 
     return big_df
-
 
 def enrich_text(data):
     data_enriched = data.copy()
@@ -67,33 +65,6 @@ def enrich_text(data):
 
     data_enriched = data_enriched.dropna()
 
-    return data_enriched
-
-def enrich_text_BERT_predictions(data):
-    print('enrich_text_BERT_predictions')
-    data_enriched = data.copy()
-
-    pourcentage_of_correct_predictions = []
-    number_of_tests = []
-    number_of_correct_predictions = []
-
-    index_sum = 0
-    for (index, row) in data_enriched.iterrows():
-        text = row['text']
-        index_sum += 1
-        (number_of_test, number_of_correct_prediction) = compute_masked_words_BERT_prediction(text)
-        pourcentage = -1
-        if number_of_test > 0:
-            pourcentage = round(100 * number_of_correct_prediction/number_of_test)
-
-        pourcentage_of_correct_predictions.append(pourcentage)
-        number_of_tests.append(number_of_test)
-        number_of_correct_predictions.append(number_of_correct_prediction)
-        print(index_sum)
-
-    data_enriched['number_of_tests'] = number_of_tests
-    data_enriched['number_of_correct_prediction'] = number_of_correct_predictions
-    data_enriched['pourcentage_of_correct_prediction'] = pourcentage_of_correct_predictions
     return data_enriched
 
 def enrich_lexical_diversity_readability(data):
