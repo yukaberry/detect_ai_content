@@ -38,6 +38,10 @@ app.add_middleware(
 
 @app.get("/ping")
 def ping():
+    """
+    Preload - models
+    """
+
     # pre-load the light models (not BERT) into memory
     if "TrueNetTextSVC" not in app.state.models:
         app.state.models["TrueNetTextSVC"] = TrueNetTextSVC().local_trained_pipeline()
@@ -57,6 +61,7 @@ def ping():
     if "TrueNetTextTfidfNaiveBayesClassifier" not in app.state.models:
         app.state.models["TrueNetTextTfidfNaiveBayesClassifier"] = TrueNetTextTfidfNaiveBayesClassifier().local_trained_pipeline()
 
+    return {}
 
 # http://127.0.0.1:8000/predict?text=lsjisefohlksdjf
 @app.get("/text_single_predict")
