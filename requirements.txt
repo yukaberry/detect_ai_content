@@ -20,3 +20,9 @@ textstat
 
 torch
 transformers
+TextBlob
+spacy
+contextualSpellCheck
+pyspellchecker
+textstat
+tf-keras
