@@ -17,3 +17,7 @@ st.write(f"Explain the processes ")
 
 st.subheader("💯 Results & metrics")
 st.write(f"What are our results ?")
+
+# Ping server to preload things if needed
+import requests
+requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')
