@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
@@ -276,4 +277,17 @@ async def predict(img: UploadFile = File(...)):
 def root():
     return {
         'greeting': 'Hello Detect AI Content !! hello '
+    }
+
+
+@app.get("/random_text")
+def get_random_text(source: str):
+    import detect_ai_content
+    module_dir_path = os.path.dirname(detect_ai_content.__file__)
+    df = pd.read_csv(f'{module_dir_path}/daigt-v2-samples.csv')
+    filtered_df = df[df["source"] == source]
+    print('random_text filtered_df')
+    print(filtered_df)
+    return {
+        'text': filtered_df.iloc[0]['text']
     }
