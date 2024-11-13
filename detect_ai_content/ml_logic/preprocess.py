@@ -1,27 +1,8 @@
 import pandas as pd
 
-from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions, enrich_lexical_diversity_readability
+from detect_ai_content.ml_logic.data import enrich_text, enrich_lexical_diversity_readability
 from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import FunctionTransformer
-
-def preprocess(data, auto_enrich=True):
-    data_processed = data.copy()
-    if auto_enrich:
-        data_processed = enrich_text(data_processed)
-        data_processed = enrich_text_BERT_predictions(data_processed)
-
-    # keep only the features we want
-    data_processed = data_processed[[
-        'repetitions_ratio',
-        'punctuations_ratio',
-        'text_corrections_ratio',
-        'average_sentence_lenght',
-        'average_neg_sentiment_polarity',
-        'pourcentage_of_correct_prediction'
-    ]]
-
-    scaler = RobustScaler()
-    return scaler.fit_transform(data_processed)
 
 def smartEnrichFunction(data):
     '''
@@ -30,9 +11,6 @@ def smartEnrichFunction(data):
     data_processed = data.copy()
     if 'repetitions_ratio' not in data_processed:
         data_processed = enrich_text(data_processed)
-
-    if 'pourcentage_of_correct_prediction' not in data_processed:
-        data_processed = enrich_text_BERT_predictions(data_processed)
 
     if 'lexical_diversity' not in data_processed:
         data_processed = enrich_lexical_diversity_readability(data_processed)

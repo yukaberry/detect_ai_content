@@ -2,13 +2,12 @@
 from sklearn.preprocessing import RobustScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.pipeline import Pipeline
 
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
-from detect_ai_content.ml_logic.preprocess import preprocess
-from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
+from detect_ai_content.ml_logic.preprocess import smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer, smartEnrichFunction
 
 import os
 import pandas as pd
@@ -43,7 +42,7 @@ class TrueNetTextKNeighborsClassifier:
 
     def run_grid_search():
         df = get_enriched_df()
-        X = preprocess(data=df, auto_enrich=False)
+        X = smartEnrichFunction(data=df, auto_enrich=False)
         y = df['generated']
 
         model = KNeighborsClassifier()
@@ -63,7 +62,7 @@ class TrueNetTextKNeighborsClassifier:
 
         big_df = get_enriched_df()
         y = big_df['generated']
-        X = preprocess(data=big_df, auto_enrich=False)
+        X = smartEnrichFunction(data=big_df)
 
         param_n_neighbors = 20 # param from run_grid_search
 
@@ -120,7 +119,6 @@ class TrueNetTextKNeighborsClassifier:
             'text_corrections_ratio',
             'average_sentence_lenght',
             'average_neg_sentiment_polarity',
-            'pourcentage_of_correct_prediction',
             'lexical_diversity',
             'smog_index',
             'flesch_reading_ease',

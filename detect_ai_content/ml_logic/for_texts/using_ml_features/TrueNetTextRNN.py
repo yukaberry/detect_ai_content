@@ -1,13 +1,10 @@
 
 
-from detect_ai_content.ml_logic.for_texts.using_ml_features.features.features import compute_masked_words_BERT_prediction
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
-from detect_ai_content.ml_logic.preprocess import preprocess
-from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions
-from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
-from sklearn.pipeline import make_pipeline, Pipeline
+from detect_ai_content.ml_logic.preprocess import smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
+from sklearn.pipeline import Pipeline
 
 import pandas as pd
 import os
@@ -17,7 +14,6 @@ import pickle
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler
-from sklearn.preprocessing import FunctionTransformer
 
 import tensorflow as tf
 import tensorflow.keras as keras
@@ -44,7 +40,7 @@ class TrueNetTextRNN:
 
     def get_architecture_model():
         model = Sequential()
-        model.add(Normalization(input_shape = (10, )))
+        model.add(Normalization(input_shape = (9, )))
         model.add(Dense(units=12, activation="relu"))
         model.add(Dense(units=24, activation="relu"))
         model.add(Dense(units=12, activation="relu"))
@@ -117,7 +113,6 @@ class TrueNetTextRNN:
             'text_corrections_ratio',
             'average_sentence_lenght',
             'average_neg_sentiment_polarity',
-            'pourcentage_of_correct_prediction',
             'lexical_diversity',
             'smog_index',
             'flesch_reading_ease',
