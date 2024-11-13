@@ -1,22 +1,45 @@
 import streamlit as st
+import requests
 
-'''
-# Detect AI Content front
-'''
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #000000 ;
+        color: #FFFFFF
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-import streamlit as st
+st.title("Detect AI Content")
+st.divider()
 
-st.subheader("🔑 Key concepts")
-st.write(f"Explain the basis of the projet ")
+# Text section
+st.subheader('Text')
+st.file_uploader("Upload Text Data Here")
+st.button("Let's Predict!")
 
-st.subheader("📚 Datasets")
-st.write(f"present our datasets & Link the datasets")
+st.divider()
 
-st.subheader("🧠 Preprocess")
-st.write(f"Explain the processes ")
+# Image section
+st.subheader('Image')
+image = st.file_uploader("Upload your Image Here", type=["jpg", "jpeg", "png"])
 
 st.subheader("💯 Results & metrics")
 st.write(f"What are our results ?")
+
+# API URL will need to be replaced by the service URL that Yuka will generate after deploying to Cloud Run
+if st.button("Hit me!") and image is not None:
+    api_url = "https://detect-ai-content-image-api-334152645738.europe-west1.run.app/predict"
+    files = {"file": image.getvalue()}
+    response = requests.post(api_url, files=files)
+
+    if response.status_code == 200:
+        st.success("Prediction: " + response.json().get("prediction", "No prediction found"))
+    else:
+        st.error("Error: " + response.text)
 
 # Ping server to preload things if needed
 import requests
