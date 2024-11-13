@@ -75,3 +75,6 @@ run_docker_deploy_production:
 
 run_prefect_workflow:
 	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN
+
+run_prefect_workflow:
+	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.interface.ml_flow_images
