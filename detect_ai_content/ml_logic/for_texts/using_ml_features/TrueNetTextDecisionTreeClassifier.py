@@ -26,7 +26,6 @@ class TrueNetTextDecisionTreeClassifier:
         return load_model(self.mlflow_model_name, is_tensorflow=False, stage=stage)
 
     def __init__(self):
-        self.description = ""
         self.name = "TrueNetTextDecisionTreeClassifier"
         self.description = ""
         self.mlflow_model_name = "TrueNetTextDecisionTreeClassifier"
