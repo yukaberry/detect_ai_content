@@ -129,20 +129,27 @@ def example_buttons():
     selected_example = None
 
     # Create all buttons and check their states
-    if cols[0].button("ChatGPT", key="example1", type="secondary"):
-        selected_example = "example_chatgpt_text"
+    if cols[0].button("Llama2", key="example1", type="secondary"):
+        response = requests.get('http://0.0.0.0:8000/random_text?source=llama2_chat')
+        print(response.json())
+        selected_example = response.json()['text']
 
     if cols[1].button("Claude", key="example2", type="secondary"):
-        selected_example = "example_claude_text"
+        response = requests.get('http://0.0.0.0:8000/random_text?source=darragh_claude_v6')
+        print(response.json())
+        selected_example = response.json()['text']
 
-    if cols[2].button("Human", key="example3", type="secondary"):
-        selected_example = "example_human_text"
+    if cols[2].button("ChatGPT", key="example3", type="secondary"):
+        response = requests.get('http://0.0.0.0:8000/random_text?source=chat_gpt_moth')
+        print(response.json())
+        selected_example = response.json()['text']
 
-    if cols[3].button("AI + Human", key="example4", type="secondary"):
-        selected_example = "example_hybrid_text"
+    if cols[3].button("Human", key="example4", type="secondary"):
+        response = requests.get('http://0.0.0.0:8000/random_text?source=persuade_corpus')
+        print(response.json())
+        selected_example = response.json()['text']
 
     return selected_example
-
 
 
 def text_input_section():
@@ -164,7 +171,7 @@ def analyze_text(text: str) -> dict:
     params = {
         "text":text
     }
-    response = requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/predict', headers=headers, params=params)
+    response = requests.get('http://0.0.0.0:8000/text_single_predict', headers=headers, params=params)
     st.success(response.text)
     return response.json()
 
@@ -233,3 +240,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+import requests
+requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')

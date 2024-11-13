@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import mlflow
 
 from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
@@ -12,20 +11,18 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighbor
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import TrueNetTextRNN
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import TrueNetTextSVC
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import TrueNetTextTfidfNaiveBayesClassifier
-from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
+# from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
 
 
-from detect_ai_content.ml_logic.data import enrich_text, enrich_text_BERT_predictions, enrich_lexical_diversity_readability
+from detect_ai_content.ml_logic.data import enrich_text, enrich_lexical_diversity_readability
 
 from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model_vgg16
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
 app = FastAPI()
-app.state.model_text = None
 app.state.model_image = None
 app.state.model_image_cnn = None
-
 app.state.models = {}
 
 # Allowing all middleware is optional, but good practice for dev purposes
@@ -37,21 +34,49 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+@app.get("/ping")
+def ping():
+    """
+    Preload - models + nltk_data
+    """
+
+    # pre-load the light models (not BERT) into memory
+    if "TrueNetTextSVC" not in app.state.models:
+        app.state.models["TrueNetTextSVC"] = TrueNetTextSVC().local_trained_pipeline()
+
+    if "TrueNetTextLogisticRegression" not in app.state.models:
+        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
+
+    if "TrueNetTextDecisionTreeClassifier" not in app.state.models:
+        app.state.models["TrueNetTextDecisionTreeClassifier"] = TrueNetTextDecisionTreeClassifier().local_trained_pipeline()
+
+    if "TrueNetTextKNeighborsClassifier" not in app.state.models:
+        app.state.models["TrueNetTextKNeighborsClassifier"] = TrueNetTextKNeighborsClassifier().local_trained_pipeline()
+
+    if "TrueNetTextRNN" not in app.state.models:
+        app.state.models["TrueNetTextRNN"] = TrueNetTextRNN().local_trained_pipeline()
+
+    if "TrueNetTextTfidfNaiveBayesClassifier" not in app.state.models:
+        app.state.models["TrueNetTextTfidfNaiveBayesClassifier"] = TrueNetTextTfidfNaiveBayesClassifier().local_trained_pipeline()
+
+    return {}
+
 # http://127.0.0.1:8000/predict?text=lsjisefohlksdjf
-@app.get("/predict")
+@app.get("/text_single_predict")
 def predict(
         text: str
     ):
     """
-    Make a single prediction prediction.
+    Make a single prediction prediction (using our best estimator)
     Assumes `text` is provided as a string
     """
 
-    if app.state.model_text is None:
-        app.state.model = TrueNetTextLogisticRegression().model
+    if "TrueNetTextLogisticRegression" not in app.state.models:
+        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
+    best_model = app.state.models["TrueNetTextLogisticRegression"]
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
-    y_pred = app.state.model_text.predict(text_df)
+    y_pred = best_model.predict(text_df)
 
     print(f"one pred: {y_pred[0]}")
     return {
@@ -71,8 +96,14 @@ def predict(
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
     text_enriched_df = enrich_text(text_df)
-    text_enriched_df = enrich_text_BERT_predictions(text_enriched_df)
+    # text_enriched_df = enrich_text_BERT_predictions(text_enriched_df)
     text_enriched_df = enrich_lexical_diversity_readability(text_enriched_df)
+
+    if "TrueNetTextSVC" not in app.state.models:
+        app.state.models["TrueNetTextSVC"] = TrueNetTextSVC().local_trained_pipeline()
+    model = app.state.models["TrueNetTextSVC"]
+    y_pred = model.predict(text_enriched_df)
+    predictions["TrueNetTextSVC"] = int(y_pred[0])
 
     if "TrueNetTextLogisticRegression" not in app.state.models:
         app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
@@ -100,11 +131,11 @@ def predict(
 
     # Using only "BERT"
 
-    if "TrueNetTextUsingBERTMaskedPredictions" not in app.state.models:
-        app.state.models["TrueNetTextUsingBERTMaskedPredictions"] = TrueNetTextUsingBERTMaskedPredictions().local_trained_pipeline()
-    model = app.state.models["TrueNetTextUsingBERTMaskedPredictions"]
-    y_pred = model.predict(text_enriched_df)
-    predictions["TrueNetTextUsingBERTMaskedPredictions"] = int(y_pred[0])
+    # if "TrueNetTextUsingBERTMaskedPredictions" not in app.state.models:
+    #     app.state.models["TrueNetTextUsingBERTMaskedPredictions"] = TrueNetTextUsingBERTMaskedPredictions().local_trained_pipeline()
+    # model = app.state.models["TrueNetTextUsingBERTMaskedPredictions"]
+    # y_pred = model.predict(text_enriched_df)
+    # predictions["TrueNetTextUsingBERTMaskedPredictions"] = int(y_pred[0])
 
     # Using raw data
 
