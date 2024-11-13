@@ -21,10 +21,8 @@ from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
 app = FastAPI()
-app.state.model_text = None
 app.state.model_image = None
 app.state.model_image_cnn = None
-
 app.state.models = {}
 
 # Allowing all middleware is optional, but good practice for dev purposes
@@ -39,7 +37,7 @@ app.add_middleware(
 @app.get("/ping")
 def ping():
     """
-    Preload - models
+    Preload - models + nltk_data
     """
 
     # pre-load the light models (not BERT) into memory
@@ -73,11 +71,12 @@ def predict(
     Assumes `text` is provided as a string
     """
 
-    if app.state.model_text is None:
-        app.state.model = TrueNetTextLogisticRegression().model
+    if "TrueNetTextLogisticRegression" not in app.state.models:
+        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
+    best_model = app.state.models["TrueNetTextLogisticRegression"]
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
-    y_pred = app.state.model_text.predict(text_df)
+    y_pred = best_model.predict(text_df)
 
     print(f"one pred: {y_pred[0]}")
     return {
