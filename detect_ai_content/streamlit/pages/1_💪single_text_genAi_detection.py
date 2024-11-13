@@ -172,17 +172,18 @@ def analyze_text(text: str) -> dict:
         "text":text
     }
     response = requests.get('http://0.0.0.0:8000/text_single_predict', headers=headers, params=params)
-    st.success(response.text)
+    st.success("Prediction done ✅")
     return response.json()
 
 def display_results(analysis: dict):
     st.markdown("### Analysis Results")
+    print(analysis)
 
     col1, col2 = st.columns(2)
     with col1:
         st.metric("Prediction", analysis["prediction"])
     with col2:
-        st.metric("Confidence", f"{analysis['confidence']:.1%}")
+        st.metric("Predict proba", analysis["predict_proba"])
 
     st.markdown("#### Detailed Metrics")
     metrics = analysis["details"]
@@ -190,7 +191,7 @@ def display_results(analysis: dict):
     for col, (metric, value) in zip(cols, metrics.items()):
         col.metric(
             metric.replace("_", " ").title(),
-            f"{value:.1%}"
+            value
         )
 
 def create_content():
@@ -224,6 +225,7 @@ def create_content():
     with col2:
         if st.button("Clear", type="secondary"):
             st.session_state.clear()
+            st.session_state.text_input = ''
             st.rerun()
 
 

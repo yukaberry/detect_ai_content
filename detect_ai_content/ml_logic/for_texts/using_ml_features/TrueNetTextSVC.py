@@ -125,7 +125,7 @@ class TrueNetTextSVC:
 
         model_param_C = 10 # param from run_grid_search
         model_param_gamma = 0.1 # param from run_grid_search
-        model = SVC(C=model_param_C, gamma=model_param_gamma)
+        model = SVC(C=model_param_C, gamma=model_param_gamma, probability=True)
 
         features_selection_transformer = smartSelectionTransformer(columns=columns)
         pipeline = Pipeline([

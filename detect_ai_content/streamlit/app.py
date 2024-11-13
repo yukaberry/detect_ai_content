@@ -13,6 +13,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.write("[![Star](https://img.shields.io/github/stars/yukaberry/detect_ai_content.svg?logo=github&style=social)](https://gitHub.com/yukaberry/detect_ai_content)")
+
 st.title("Detect AI Content")
 st.divider()
 
