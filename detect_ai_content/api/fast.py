@@ -36,6 +36,28 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+@app.get("/ping")
+def ping():
+    # pre-load the light models (not BERT) into memory
+    if "TrueNetTextSVC" not in app.state.models:
+        app.state.models["TrueNetTextSVC"] = TrueNetTextSVC().local_trained_pipeline()
+
+    if "TrueNetTextLogisticRegression" not in app.state.models:
+        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
+
+    if "TrueNetTextDecisionTreeClassifier" not in app.state.models:
+        app.state.models["TrueNetTextDecisionTreeClassifier"] = TrueNetTextDecisionTreeClassifier().local_trained_pipeline()
+
+    if "TrueNetTextKNeighborsClassifier" not in app.state.models:
+        app.state.models["TrueNetTextKNeighborsClassifier"] = TrueNetTextKNeighborsClassifier().local_trained_pipeline()
+
+    if "TrueNetTextRNN" not in app.state.models:
+        app.state.models["TrueNetTextRNN"] = TrueNetTextRNN().local_trained_pipeline()
+
+    if "TrueNetTextTfidfNaiveBayesClassifier" not in app.state.models:
+        app.state.models["TrueNetTextTfidfNaiveBayesClassifier"] = TrueNetTextTfidfNaiveBayesClassifier().local_trained_pipeline()
+
+
 # http://127.0.0.1:8000/predict?text=lsjisefohlksdjf
 @app.get("/text_single_predict")
 def predict(
