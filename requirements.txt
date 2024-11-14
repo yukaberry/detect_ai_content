@@ -26,3 +26,5 @@ contextualSpellCheck
 pyspellchecker
 textstat
 tf-keras
+xgboost
+lightgbm
