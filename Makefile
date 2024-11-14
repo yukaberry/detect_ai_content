@@ -18,6 +18,11 @@ run_local_fast_api:
 
 ## run api locally
 run_local_uvicorn:
+	uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
+
+# TODO to decide if we use spacy or not
+## run api locally with spacy
+run_local_uvicorn_spacy:
 	python -m spacy download en_core_web_sm
 	uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
 
@@ -108,3 +113,12 @@ run_docker_deploy_production:
   --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${ARTIFACTSREPO}/${IMAGE}:prod \
   --memory ${MEMORY} \
   --region ${GCP_REGION}
+
+
+# prefect flow
+
+run_prefect_workflow:
+	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN
+
+run_prefect_workflow:
+	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.interface.ml_flow_images

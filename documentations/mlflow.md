@@ -2,6 +2,7 @@
 - the params
 - the model itself
 
+
 ## Create a new model & use MLFlow ?
 
 ## TrueNetTextLogisticRegression
