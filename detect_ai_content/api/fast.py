@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 
+from PIL import Image
+from io import BytesIO
+
 from fastapi import FastAPI
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,6 +22,10 @@ from detect_ai_content.ml_logic.data import enrich_text, enrich_lexical_diversit
 from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model_vgg16
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
+
+
+from detect_ai_content.ml_logic.for_images.vgg16 import Vgg16
+from detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN import TrueNetImageUsinCustomCNN
 
 app = FastAPI()
 app.state.model_image = None
@@ -62,6 +69,7 @@ def ping():
     return {}
 
 # http://127.0.0.1:8000/predict?text=lsjisefohlksdjf
+
 @app.get("/text_single_predict")
 def predict(
         text: str
@@ -87,14 +95,17 @@ def predict(
 def predict(
         text: str
     ):
+
     """
-    Make a single prediction prediction.
-    Assumes `text` is provided as a string
+    - make a single prediction prediction using user provided 'text'
+    - text : text type only  # TO BE IMPROVED for csv data type etc ...
+
     """
 
     predictions = {}
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
+
     text_enriched_df = enrich_text(text_df)
     # text_enriched_df = enrich_text_BERT_predictions(text_enriched_df)
     text_enriched_df = enrich_lexical_diversity_readability(text_enriched_df)
@@ -177,103 +188,66 @@ def predict(
         }
     }
 
-@app.post("/image_predict")
-async def predict(img: UploadFile = File(...)):
+
+@app.post("/image_predict_vgg16")
+async def predict(user_input: UploadFile = File(...)):
+
     """
-    Make a single prediction prediction.
-    Assumes `img` is provided
+    - make a single prediction prediction using user provided 'img'
+    - img : jpg data type only  # TO BE IMPROVED
+
     """
-    if app.state.model_image is None:
-        app.state.model_image = load_model_vgg16()
-
-    # Load image  # Read image data asynchronously
-    img_data = await img.read()
-
-    # Clean/reshape user-input image
-    img = clean_img_vgg16(img_data)
-
-    # Predict
-    predicted_class = app.state.model_image.predict(img)
-
-    # Get predicted indices
-    predicted_probabilities = np.argmax(predicted_class, axis=1)
-
-    # TODO
-    # errors below but prediction and return predicted value worked!
-
-    # # Get class labels
-    # train_images = retrain_images()
-    # labels = getattr(train_images, 'class_indices', None)
-    # # Debug output to check labels content
-    # print(Fore.BLUE + f"\nLabels loaded!" + Style.RESET_ALL)
-
-    # if labels:
-    #     labels = {v: k for k, v in labels.items()}
-    #     print(Fore.BLUE + f"{labels}" + Style.RESET_ALL)
-    # else:
-    #     print(Fore.RED + "\nError: No class labels found in train_images.class_indices" + Style.RESET_ALL)
-    #     return {"error": "No class labels found in the model. Check dataset and retrain_images function."}
-    # # Convert indices back to class names
-    # try:
-    #     prediction = [labels.get(int(k), "Unknown") for k in predicted_probabilities]
-    # except KeyError as e:
-    #     print(Fore.RED + f"\nKeyError: {e} - predicted_probabilities contains unknown label indices." + Style.RESET_ALL)
-    #     return {"error": "Prediction contains unknown label indices. Check class indices and labels dictionary."}
-    # print(Fore.BLUE + f"\nPrediction complete!" + Style.RESET_ALL)
-    # print(Fore.BLUE + f"{prediction}" + Style.RESET_ALL)
-
-    #{"prediction": int(predicted_probabilities)}
-    #{"prediction": int(prediction)}
 
 
-    # if predicted_probabilities == 1:
-    #     prediction_message = "Predicted as AI"
-    # elif predicted_probabilities == 0:
-    #     prediction_message = "Predicted as Human"
+    # read user input image
+    user_input = await user_input.read()
+    img = Image.open(BytesIO(user_input))
 
-    return {"prediction": int(predicted_probabilities)}
-    # return {"prediction": int(predicted_probabilities),
-    #          "message": prediction_message}
+    # initialise class
+    vgg16 = Vgg16()
+
+    # preprocess user input image
+    # load model
+    # predict
+    # return message
+    prediction, message = vgg16.predict(img)
+
+
+    return {"prediction": prediction,
+            "message": message}
 
 
 @app.post("/image_predict_cnn")
-async def predict(img: UploadFile = File(...)):
+async def predict(user_input: UploadFile = File(...)):
 
     """
-    - return a single prediction.
-    - 'img'(RGB) is provided
+    - make a single prediction prediction using user provided 'img'
+    - img (RGB) : jpg data type only  # TO BE IMPROVED
+
     - 0 likely representing 'FAKE' and 1 representing 'REAL'.
     """
 
-    if app.state.model_image_cnn is None:
-        app.state.model_image_cnn = load_cnn_model()
+    # read user input image
+    user_input = await user_input.read()
+    img = Image.open(BytesIO(user_input))
 
-    # Load image  # Read image data asynchronously
-    img_data = await img.read()
+    # initialise class
+    cnn = TrueNetImageUsinCustomCNN()
 
-    # Clean/reshape user-input image
-    img = clean_img_cnn(img_data)
+    # preprocess user input image
+    # load model
+    # predict
+    # return message
+    prediction, message = cnn.predict(img)
 
-    # Predict
-    predicted_class = app.state.model_image_cnn.predict(img)
+    # # 0 likely representing 'FAKE' and 1 representing 'REAL'
+    # # TODO label change to avoid confusion
 
-    # Get predicted indices
-    predicted_probabilities = np.argmax(predicted_class, axis=1)
+    return {"prediction": prediction,
+            "message": message}
 
-    # prediction message
-    # 0 likely representing 'FAKE' and 1 representing 'REAL'
-    if predicted_probabilities == 0:
-        prediction_message = "Predicted as AI"
-    elif predicted_probabilities == 1:
-        prediction_message = "Predicted as Human"
-
-
-    return {"prediction": int(predicted_probabilities),
-             "message": prediction_message}
 
 
 @app.get("/")
 def root():
-    return {
-        'greeting': 'Hello Detect AI Content !! hello '
-    }
+    return {'greeting': 'Hello Detect AI Content. imporved : class used'}
