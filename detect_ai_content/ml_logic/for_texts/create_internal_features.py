@@ -14,7 +14,6 @@ from spellchecker import SpellChecker
 
 from transformers import pipeline
 
-
 # Load Spacy model for NLP
 nlp = spacy.load("en_core_web_sm")
 

@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from XgBoost import XgBoost
+from detect_ai_content.ml_logic.for_texts.XgBoost import XgBoost
 
 def get_human_texts():
     return [
