@@ -131,22 +131,22 @@ def example_buttons():
 
     # Create all buttons and check their states
     if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get('http://0.0.0.0:8000/random_text?source=llama2_chat')
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
         print(response.json())
         selected_example = response.json()['text']
 
     if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get('http://0.0.0.0:8000/random_text?source=darragh_claude_v6')
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
         print(response.json())
         selected_example = response.json()['text']
 
     if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get('http://0.0.0.0:8000/random_text?source=chat_gpt_moth')
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
         print(response.json())
         selected_example = response.json()['text']
 
     if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get('http://0.0.0.0:8000/random_text?source=persuade_corpus')
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
         print(response.json())
         selected_example = response.json()['text']
 
@@ -172,7 +172,7 @@ def analyze_text(text: str) -> dict:
     params = {
         "text":text
     }
-    response = requests.get('http://0.0.0.0:8000/text_multi_predict', headers=headers, params=params)
+    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
     st.success("Prediction done ✅")
     return response.json()
 
@@ -244,4 +244,4 @@ if __name__ == "__main__":
     main()
 
 import requests
-requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')
+requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/ping')

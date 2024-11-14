@@ -96,13 +96,26 @@ run_generate_text_sample_datasets:
 	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(10000)'
 	python3 -c 'from detect_ai_content.ml_logic.data import generate_dataset_sample; generate_dataset_sample(50000)'
 
-## DOCKER
+### DOCKER and gcloud
+### run them in order from the top then you can deploy!
 
+# build image
 run_docker_build:
 	docker build --tag=${IMAGE}:dev . -f Dockerfile
 
+# run the image
 run_docker_run:
 	docker run -it -e PORT=8000 -p 8000:8000 ${IMAGE}:dev
+
+# optional
+# run the image more flexible, loading from your .env file
+run_docker_run_env:
+	docker run -it -e PORT=8000 -p 8000:8000 --env-file .env ${IMAGE}:dev
+
+# optional
+# if you make a new repo on artifacts
+run_create_new_repo:
+	gcloud artifacts repositories create ${ARTIFACTSREPO} --repository-format=docker --location=${GCP_REGION}
 
 run_docker_build_production:
 	docker build --platform linux/amd64 -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${ARTIFACTSREPO}/${IMAGE}:prod .
@@ -115,10 +128,11 @@ run_docker_deploy_production:
   --region ${GCP_REGION}
 
 
-# prefect flow
+#### prefect flow
 
+# test for specific script, TrueNetImageUsinCustomCNN.py
 run_prefect_workflow:
 	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN
 
-run_prefect_workflow:
-	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.interface.ml_flow_images
+#run_prefect_workflow:
+#	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m detect_ai_content.interface.ml_flow_images
