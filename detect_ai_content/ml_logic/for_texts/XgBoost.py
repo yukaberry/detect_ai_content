@@ -1,86 +1,43 @@
 import pandas as pd
+import pickle
 import os
-
 from create_internal_features import InternalFeatures
 
 class XgBoost:
-
-    def local_trained_pipeline(self):
-        import detect_ai_content
-        module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
-        return pickle.load(open(model_path, 'rb'))
-
-    def load_model():
-
-        """
-        - Return a model
-        - Return None (but do not Raise) if no model is found
-        """
-
-        model= None
-
-        return model
-
     def __init__(self):
         self.description = "XgBoost model 13 nov updated"
         self.name = "XgBoost model"
-        self.model = XgBoost.load_model()
-        # TODO
-        # self.pipeline = self.local_trained_pipeline()
+        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'models', 'linchenpal', 'best_xgb_model.pkl')
+        self.model = self.load_model()
 
+    def load_model(self):
+        'Load the pre-trained XGBoost model from pickle file'
+        try:
+            with open(self.model_path, 'rb') as file:
+                return pickle.load(file)
+        except Exception as e:
+            print(f"Failed to load model. Error: {e}")
+            return None
 
-
-    def get_internal_features(self):
-
-        """
-        load df with all of features which are created in create_internal_features.py
-
-        """
-
+    def get_internal_features(self, text):
+        """Generate a DataFrame of features from the given text."""
         internal_features = InternalFeatures()
-        df = internal_features.main()
-
+        df = internal_features.main(text)
         return df
 
+    def predict(self, text):
+        """Predict and return the class ('1' for AI or '0' for Human) and the corresponding message."""
+        df = self.get_internal_features(text)
+        if self.model:
+            prediction = self.model.predict(df)[0]
+            message = "AI-generated" if prediction == 1 else "Human-generated"
+            return prediction, message
+        else:
+            return None, "Model is not loaded."
 
-    def pre_process(self):
-        pass
-
-
-    def predict(self):
-
-        """
-        Return
-        1. prediciton class '1' or '0'
-        2. prediction message 'AI' or ' Human'
-
-        """
-        # get data with freatures
-        df = XgBoost.get_internal_features()
-
-        # predict
-
-        # predict class
-        # predicted_class = int(predict_proba > 0.5)
-
-        # if predicted_class == 1:
-        #     prediction_message = "Predicted as AI"
-        # elif predicted_class == 0:
-        #     prediction_message = "Predicted as Human"
-
-        # return predicted_class, prediction_message
-        pass
-
-
-# local test
+# Example of how to use this class
 if __name__ == '__main__':
-
     xgboost = XgBoost()
-    # test input data (user input )
-    # test_data = pd.read_csv()
     test_text = 'I am from Paris but live in Munich at the moment. I dont like German food. I want to go back to Paris... '
-
-    text_df = pd.DataFrame(data=[test_text],columns=['text'])
-    prediction, message = xgboost.predict(text_df)
+    prediction, message = xgboost.predict(test_text)
     print(f"Prediction: {prediction}, Message: {message}")
