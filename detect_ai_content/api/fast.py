@@ -21,6 +21,9 @@ from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model_vgg1
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
+from detect_ai_content.ml_logic.for_texts.XGB import XGB
+
+
 app = FastAPI()
 app.state.model_text = None
 app.state.model_image = None
@@ -145,6 +148,31 @@ def predict(
             'final_prediction_confidence':f'{prediction_confidence}%',
         }
     }
+
+
+@app.get("/text_predict_xgb")
+def predict(user_input_text:str):
+
+    """
+    - return prediction and message (ai or human)
+
+    model : xgboost
+    text : strings
+
+    """
+
+    xgb = XGB()
+    # convert user input str to df
+    raw_df = pd.DataFrame(data=[user_input_text],columns=['text'])
+    df = xgb.get_internal_features(raw_df)
+
+    # predict
+    prediction, message = xgb.predict(df)
+
+    return {"prediction": prediction,
+            "message": message}
+
+
 
 @app.post("/image_predict")
 async def predict(img: UploadFile = File(...)):
