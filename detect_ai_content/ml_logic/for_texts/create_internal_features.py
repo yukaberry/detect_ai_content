@@ -27,7 +27,7 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 # Load SpaCy's English model with only NER (for named entity recognition)
 nlp = spacy.load("en_core_web_sm", disable=["tagger", "parser", "lemmatizer"])
-
+import os
 import json
 
 class InternalFeatures():
@@ -35,7 +35,10 @@ class InternalFeatures():
     def __init__(self ):
 
         # Open and load the JSON file
-        with open('detect_ai_content/ml_logic/for_texts/slang_dict.json', 'r') as file:
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+
+        with open(f'{module_dir_path}/ml_logic/for_texts/slang_dict.json', 'r') as file:
             slang_dictonary = json.load(file)
 
         self.slang_dict = slang_dictonary
@@ -261,9 +264,15 @@ class InternalFeatures():
         """
         internal_features = pd.concat(features, axis=1)
 
-        internal_df = pd.concat([raw_data[['generated', 'text']],
-                                 internal_features],
-                                axis=1)
+        # for training
+        # internal_df = pd.concat([raw_data[['generated', 'text']],
+        #                          internal_features],
+        #                         axis=1)
+
+        # for user input 'genetrated' is not nessesary
+        internal_df = pd.concat([raw_data,
+                                internal_features],
+                            axis=1)
 
         # test
         print(internal_df.shape)
@@ -273,45 +282,85 @@ class InternalFeatures():
 
     def aggregate_internal_features(self, df):
 
-        # Retain specific features directly
-        retained_features = df[['avg_word_length', 'lexical_diversity',
-                                'flesch_reading_ease','smog_index',
-                                'flesch_kincaid_grade', 'polarity',
-                                'subjectivity', 'slang_count']].copy()
+        # # Retain specific features directly
+        # retained_features = df[['avg_word_length', 'lexical_diversity',
+        #                         'flesch_reading_ease','smog_index',
+        #                         'flesch_kincaid_grade', 'polarity',
+        #                         'subjectivity', 'slang_count']].copy()
+
+        # # Useful ratios
+        # df['word_count_ratio'] = df['word_count'] / df['sentence_count']
+        # df['stopwords_ratio'] = df['stopwords_count'] / df['word_count']
+        # df['punctuation_ratio'] = df['punctuation_count'] / df['word_count']
+        # df['repetition_ratio'] = df['repetition_count'] / df['word_count']
+        # df['bigram_count_ratio'] = df['bigram_count'] / df['word_count']
+        # df['trigram_count_ratio'] = df['trigram_count'] / df['word_count']
+        # df['dependency_ratio'] = df['dependency_count'] / df['sentence_count']
+        # df['spelling_errors_ratio'] = df['spelling_errors'] / df['word_count']
+
+        # df = df[['generated',
+        #         'word_count_ratio', 'stopwords_ratio','punctuation_ratio',
+        #         'repetition_ratio', 'bigram_count_ratio', 'trigram_count_ratio',
+        #         'dependency_ratio', 'spelling_errors_ratio', 'sentiment']]
+
+        # # POS tag ratios and any directly included specific features
+        # pos_columns = [col for col in df.columns if 'pos_' in col]
+        # for pos_col in pos_columns:
+        #     df[f'{pos_col}_ratio'] = df[pos_col] / df['word_count']
+
+
+        # # Encode sentiment feature as numeric values for correlation analysis
+        # sentiment_mapping = {'NEGATIVE': -1, 'NEUTRAL': 0, 'POSITIVE': 1}
+        # retained_features['sentiment'] = df['sentiment'].map(sentiment_mapping)
+
+        # df = df[['generated',
+        #         'word_count_ratio', 'stopwords_ratio','punctuation_ratio',
+        #         'repetition_ratio', 'bigram_count_ratio', 'trigram_count_ratio',
+        #         'dependency_ratio', 'spelling_errors_ratio']]
+
+        # # Combine all features and include the 'generated' column
+        # final_internal_df = pd.concat([df, retained_features],
+        #                               axis=1)
+
+        aggregated_features = pd.DataFrame()
 
         # Useful ratios
-        df['word_count_ratio'] = df['word_count'] / df['sentence_count']
-        df['stopwords_ratio'] = df['stopwords_count'] / df['word_count']
-        df['punctuation_ratio'] = df['punctuation_count'] / df['word_count']
-        df['repetition_ratio'] = df['repetition_count'] / df['word_count']
-        df['bigram_count_ratio'] = df['bigram_count'] / df['word_count']
-        df['trigram_count_ratio'] = df['trigram_count'] / df['word_count']
-        df['dependency_ratio'] = df['dependency_count'] / df['sentence_count']
-        df['spelling_errors_ratio'] = df['spelling_errors'] / df['word_count']
-
-        df = df[['generated',
-                'word_count_ratio', 'stopwords_ratio','punctuation_ratio',
-                'repetition_ratio', 'bigram_count_ratio', 'trigram_count_ratio',
-                'dependency_ratio', 'spelling_errors_ratio', 'sentiment']]
+        aggregated_features['word_count_ratio'] = df['word_count'] / df['sentence_count']
+        aggregated_features['stopwords_ratio'] = df['stopwords_count'] / df['word_count']
+        aggregated_features['punctuation_ratio'] = df['punctuation_count'] / df['word_count']
+        aggregated_features['repetition_ratio'] = df['repetition_count'] / df['word_count']
+        aggregated_features['bigram_count_ratio'] = df['bigram_count'] / df['word_count']
+        aggregated_features['trigram_count_ratio'] = df['trigram_count'] / df['word_count']
+        aggregated_features['dependency_ratio'] = df['dependency_count'] / df['sentence_count']
+        aggregated_features['spelling_errors_ratio'] = df['spelling_errors'] / df['word_count']
 
         # POS tag ratios and any directly included specific features
         pos_columns = [col for col in df.columns if 'pos_' in col]
         for pos_col in pos_columns:
-            df[f'{pos_col}_ratio'] = df[pos_col] / df['word_count']
+            aggregated_features[f'{pos_col}_ratio'] = df[pos_col] / df['word_count']
 
+        # Retain specific features directly
+        retained_features = df[['avg_word_length', 'lexical_diversity', 'flesch_reading_ease', 'smog_index',
+                                        'flesch_kincaid_grade', 'polarity', 'subjectivity']].copy()
 
         # Encode sentiment feature as numeric values for correlation analysis
         sentiment_mapping = {'NEGATIVE': -1, 'NEUTRAL': 0, 'POSITIVE': 1}
         retained_features['sentiment'] = df['sentiment'].map(sentiment_mapping)
 
-        df = df[['generated',
-                'word_count_ratio', 'stopwords_ratio','punctuation_ratio',
-                'repetition_ratio', 'bigram_count_ratio', 'trigram_count_ratio',
-                'dependency_ratio', 'spelling_errors_ratio']]
-
+        # only for training model
         # Combine all features and include the 'generated' column
-        final_internal_df = pd.concat([df, retained_features],
-                                      axis=1)
+        # final_internal_df = pd.concat([df[['generated']], aggregated_features, retained_features], axis=1)
+
+        # for user input
+        final_internal_df = pd.concat([aggregated_features, retained_features], axis=1)
+        final_internal_df = final_internal_df[['stopwords_ratio', 'punctuation_ratio', 'repetition_ratio',
+       'dependency_ratio', 'spelling_errors_ratio', 'pos__ratio',
+       'avg_word_length', 'lexical_diversity', 'flesch_reading_ease',
+       'smog_index', 'flesch_kincaid_grade', 'sentiment']]
+
+        # TODO
+        # ask @linchenpal
+        # final_internal_df = final_internal_df.drop(columns=["word_count_ratio", "bigram_count_ratio", "polarity",  "trigram_count_ratio", "subjectivity", "pos_SPACE_ratio" ]) #"pos_SPACE_ratio"
 
         return final_internal_df
 
@@ -346,6 +395,7 @@ if __name__ == '__main__':
 
     # test data
     raw_data = pd.read_csv("detect_ai_content/ml_logic/for_texts/test_data/new_dataset.csv")
+    raw_data = raw_data.head(5)
 
     df = internal.main(raw_data)
     df.to_csv("detect_ai_content/ml_logic/for_texts/test_data/test_output_internalfeature.csv", index=False)
