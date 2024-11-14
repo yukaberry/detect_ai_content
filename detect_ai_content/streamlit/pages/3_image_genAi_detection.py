@@ -62,7 +62,7 @@ if path_in is not None:
             }
             # local http://0.0.0.0:8000/image_predict
             #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
-            response = requests.post("https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/image_predict_vgg16",headers=headers, files=files)
+            response = requests.post("https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/image_predict_cnn",headers=headers, files=files)
             # st.success(f"{response.json()}")
             st.success(response.text)
 
