@@ -76,11 +76,11 @@ class LightGbm:
 # local test
 if __name__ == '__main__':
 
-    xgboost = XgBoost()
+    lighgbm = LightGbm()
     # test input data (user input )
     # test_data = pd.read_csv()
     test_text = 'I am from Paris but live in Munich at the moment. I dont like German food. I want to go back to Paris... '
 
     text_df = pd.DataFrame(data=[test_text],columns=['text'])
-    prediction, message = xgboost.predict(text_df)
+    prediction, message = lighgbm.predict(text_df)
     print(f"Prediction: {prediction}, Message: {message}")
