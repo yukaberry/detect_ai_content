@@ -324,9 +324,9 @@ def get_random_text(source: str):
     import detect_ai_content
     module_dir_path = os.path.dirname(detect_ai_content.__file__)
     df = pd.read_csv(f'{module_dir_path}/daigt-v2-samples.csv')
-    filtered_df = df[df["source"] == source]
+    filtered_df = df[df["source"] == source] # chat_gpt_moth
     # print('random_text filtered_df')
     # print(filtered_df)
     return {
-        'text': filtered_df.iloc[0]['text']
+        'text': filtered_df.sample(1).iloc[0]['text']
     }
