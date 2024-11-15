@@ -20,7 +20,7 @@ textstat
 
 torch
 transformers
-TextBlob
+
 spacy
 contextualSpellCheck
 pyspellchecker
