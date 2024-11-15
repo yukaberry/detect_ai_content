@@ -65,7 +65,7 @@ if __name__ == '__main__':
         external_df = pd.read_csv(external_df_path)
         print(f"Loaded {len(external_df)} rows from 'external_df.csv'")
     except FileNotFoundError:
-        print("Error: 'external_df.csv' not found. Make sure to run 'create_external_features.py' first.")
+        print("Error: 'external_df.csv' not found. Run 'create_external_features.py' first!.")
         exit()
 
     # Drop 'generated' column if it exists
