@@ -1,29 +1,54 @@
 # rf_external.py
-
 import pandas as pd
 import pickle
 import os
+from create_external_features import ExternalFeatures
+from TextPreprocessor import TextPreprocessor
 
 class RandomForestExternal:
     def __init__(self):
         self.description = "Random Forest model for external features"
-        self.name = "Random Forest external model"
-        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'models', 'linchenpal', 'rf_tuned_external.pkl')
+        self.name = "RandomForest External Model"
+        # Adjust the model path based on the relative path in your project
+        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'models', 'linchenpal', 'xgboost_external.pkl')
         self.model = self.load_model()
+        self.external_features = ExternalFeatures()
+        self.text_preprocessor = TextPreprocessor()  # Initialize TextPreprocessor for cleaning text
 
     def load_model(self):
-        """Load the pre-trained Random Forest model from the pickle file."""
+        """Load the pre-trained RandomForest model from a pickle file."""
         try:
             with open(self.model_path, 'rb') as file:
                 return pickle.load(file)
-        except Exception as e:
-            print(f"Failed to load model. Error: {e}")
+        except FileNotFoundError:
+            print(f"Failed to load model. Error: Model file not found at {self.model_path}")
             return None
 
-    def predict(self, features_df):
+
+    def get_external_features(self, text):
+        """Generate a DataFrame of external features from the given text."""
+        # Create a DataFrame for the input text
+        df = pd.DataFrame({"text": [text]})
+
+        # Clean the text using TextPreprocessor
+        cleaned_df = self.text_preprocessor.apply_preprocessing(df)
+
+        # Process the cleaned DataFrame to get external features
+        df_features = self.external_features.process(cleaned_df)
+
+        return df_features
+
+
+
+    def predict(self, text):
         """Predict and return the class ('1' for AI or '0' for Human) and the corresponding message."""
+        df = self.get_external_features(text)
+
+        # Print the columns of df to debug
+        print("Columns in external_df for prediction:", df.columns.tolist())
+
         if self.model:
-            prediction = self.model.predict(features_df)[0]
+            prediction = self.model.predict(df)[0]
             message = "AI-generated" if prediction == 1 else "Human-generated"
             return prediction, message
         else:
@@ -31,15 +56,26 @@ class RandomForestExternal:
 
 # Local test
 if __name__ == '__main__':
-    # Load the external features from the CSV file
-    features_path = os.path.join(os.path.dirname(__file__), '..', 'test_data', 'test_output_externalfeatures.csv')
-    features_df = pd.read_csv(features_path)
+    # Instantiate the XGBoostExternal class
+    xgboost_external = RandomForestExternal()
 
-    # Initialize the model
-    rf_external = RandomForestExternal()
+    # Load the test data
+    try:
+        base_path = os.path.dirname(__file__)
+        external_df_path = os.path.join(base_path, "test_data", "external_df.csv")
+        external_df = pd.read_csv(external_df_path)
+        print(f"Loaded {len(external_df)} rows from 'external_df.csv'")
+    except FileNotFoundError:
+        print("Error: 'external_df.csv' not found. Run 'create_external_features.py' first!.")
+        exit()
 
-    # Run prediction on the first row of the features
-    prediction, message = rf_external.predict(features_df.iloc[[0]])
+    # Drop 'generated' column if it exists
+    if 'generated' in external_df.columns:
+        external_df = external_df.drop(columns=['generated'])
 
-    # Display results
-    print(f"Prediction: {prediction}, Message: {message}")
+    # Predict using the loaded data
+    if not external_df.empty and xgboost_external.model:
+        predictions = xgboost_external.model.predict(external_df)
+        print(f"Predictions: {predictions}")
+    else:
+        print("Model is not loaded or external_df is empty.")
