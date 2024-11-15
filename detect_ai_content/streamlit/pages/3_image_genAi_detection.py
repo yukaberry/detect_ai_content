@@ -59,6 +59,7 @@ if path_in is not None:
 
             files = {
                 'user_input': (uploaded_file.name, open(complete_name, 'rb'), 'image/jpg'),
+
             }
             # local http://0.0.0.0:8000/image_predict
             #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
