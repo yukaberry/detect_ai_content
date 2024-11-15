@@ -2,6 +2,7 @@ import re
 import string
 from nltk.corpus import stopwords
 import nltk
+import pandas as pd
 
 nltk.download('stopwords')
 
@@ -26,8 +27,21 @@ class TextPreprocessor:
         return text
 
     def apply_preprocessing(self, df, text_column='text'):
-        # Apply preprocessing to the text column
+    # Apply preprocessing to the text column
         df['cleaned_text'] = df[text_column].apply(lambda x: self.preprocess_text(x))
-        # Select only the necessary columns
-        cleaned_df = df[['cleaned_text', 'generated']]
+
+        # Select only the 'cleaned_text' column and 'generated' if it exists
+        if 'generated' in df.columns:
+            cleaned_df = df[['cleaned_text', 'generated']]
+        else:
+            cleaned_df = df[['cleaned_text']]
+
         return cleaned_df
+
+
+    # Local test
+if __name__ == '__main__':
+    text_preprocessor = TextPreprocessor()
+    sample_data = pd.DataFrame({"text": ["This is a sample sentence for preprocessing.", "Another example sentence here."]})
+    processed_data = text_preprocessor.apply_preprocessing(sample_data)
+    print(processed_data)

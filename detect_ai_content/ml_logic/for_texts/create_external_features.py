@@ -17,9 +17,15 @@ class ExternalFeatures:
         # Generate SBERT embeddings and apply PCA
         embeddings = df[text_column].apply(lambda x: self.sbert_model.encode(x)).tolist()
         embedding_df = pd.DataFrame(embeddings)
+
+        # Adjust n_components to be the minimum of 50 or the number of features in embeddings
+        n_components = min(n_components, embedding_df.shape[1])
         pca = PCA(n_components=n_components)
+
         reduced_embeddings = pca.fit_transform(embedding_df)
         reduced_df = pd.DataFrame(reduced_embeddings, columns=[f'pca_embedding_{i}' for i in range(n_components)])
+
+        # Concatenate the original dataframe with PCA embeddings
         return pd.concat([df.reset_index(drop=True), reduced_df], axis=1)
 
     def calculate_cosine_similarity(self, df, embeddings_column_prefix='pca_embedding_', n_components=50):
@@ -49,13 +55,18 @@ class ExternalFeatures:
     def process(self, df):
         # Apply SBERT with PCA embeddings
         df = self.generate_sbert_embeddings_with_pca(df)
+
         # Calculate cosine similarity
         df = self.calculate_cosine_similarity(df)
+
         # Generate LDA topics
         df = self.generate_topics_lda(df)
-        # Filter relevant columns
-        feature_columns = [col for col in df.columns if 'pca_embedding' in col or 'topic_' in col]
-        feature_columns += ['cosine_similarity']
+
+        # Define the correct column order for external_df
+        feature_columns = [f'pca_embedding_{i}' for i in range(50)] + \
+                        ['cosine_similarity', 'topic_0', 'topic_1', 'topic_2', 'topic_3', 'topic_4']
+
+        # Filter relevant columns and reorder them according to the specified order
         return df[feature_columns]
 
 
@@ -69,7 +80,7 @@ if __name__ == '__main__':
     # Define relative path to the test data
     base_path = os.path.dirname(__file__)
     data_path = os.path.join(base_path, "test_data", "new_dataset.csv")
-    output_path = os.path.join(base_path, "test_data", "test_output_externalfeature.csv")
+    output_path = os.path.join(base_path, "test_data", "external_df.csv")
 
     # Load the test data
     try:
