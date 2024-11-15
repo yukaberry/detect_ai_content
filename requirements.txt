@@ -10,7 +10,21 @@ colorama
 mlflow
 tensorflow
 python-multipart
-TextBlob
+textblob
+nltk
+# TextBlob
+# spacy
+# contextualSpellCheck
+# pyspellchecker
+textstat
+
+torch
+transformers
+
 spacy
 contextualSpellCheck
 pyspellchecker
+textstat
+tf-keras
+xgboost
+lightgbm

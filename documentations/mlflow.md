@@ -1,3 +1,6 @@
+@ -6,28 +6,37 @@ We are using [mlflow.lewagon.ai](https://mlflow.lewagon.ai/) to follow to key el
+- the params
+- the model itself
 
 # MLFLow
 
@@ -8,6 +11,9 @@ We are using [mlflow.lewagon.ai](https://mlflow.lewagon.ai/) to follow to key el
 
 ## Create a new model & use MLFlow ?
 
+## Create a new model & use MLFlow ?
+
+## TrueNetTextLogisticRegression
 - Find a new for your model (TrueNet{Text|Image}{Your_model_name})
 - Declare your Experiment on [MLFlow +](https://mlflow.lewagon.ai/#/experiments)
 - Declare your Model on [MLFlow - Create Model](https://mlflow.lewagon.ai/#/models)

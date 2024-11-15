@@ -10,21 +10,14 @@ nltk.download('words')
 nltk.download('wordnet')
 from nltk import tokenize
 
-import spacy
-import contextualSpellCheck
-nlp = spacy.load('en_core_web_sm')
-contextualSpellCheck.add_to_pipe(nlp)
-
 english_stopwords = stopwords.words('english')
 
 import string
 import re
+import numpy as np
 
 def extract_sentences(text):
     return tokenize.sent_tokenize(text)
-
-def spacy_sentences(text):
-    return nlp(text).sents
 
 def compute_punctuation_in_text(text):
     number_of_ponctuations = 0
@@ -76,33 +69,6 @@ def compute_repetitions_in_text(text):
 # 500   ⭐️  https://github.com/filyp/autocorrect
 # 612       Jamspell
 
-from spellchecker import SpellChecker
-spell = SpellChecker()
-
-def compute_number_of_text_corrections_using_pyspellchecker(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        for word in sentence.words:
-            correction = spell.correction(word)
-            if correction != word:
-                # print(f'{word} -> {correction}')
-                corrections += 1
-
-    return corrections
-
-def compute_number_of_text_corrections_using_TextBlob(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        for word in sentence.words:
-            correction = word.spellcheck()[0][0]
-            if correction != word:
-                # print(f'{word} -> {correction}')
-                corrections += 1
-
-    return corrections
-
 from nltk.corpus import wordnet
 from nltk.corpus import words
 wordnet_words = list(wordnet.words())
@@ -137,30 +103,81 @@ def compute_number_of_text_corrections_using_nltk_words(text):
 
     return corrections
 
-def _number_of_corrections_using_Spacy(text):
-    # print(f'_number_of_corrections_using_Spacy: {text}')
-    doc = nlp(f"{text}.")
-    return len(doc._.suggestions_spellCheck)
-
-def compute_number_of_text_corrections(text):
-    text_blob = TextBlob(text)
-    corrections = 0
-    for sentence in text_blob.sentences:
-        if len(sentence) < 500:
-            corr = _number_of_corrections_using_Spacy(sentence)
-            # print(f'{corr} in {sentence}')
-            corrections += corr
-        else:
-            print("skip number_of_corrections_using_Spacy ")
-
-    return corrections
-
-def compute_number_of_corrections_in_sentence(text):
-    return _number_of_corrections_using_Spacy(text)
-
 def number_of_sentences(text):
     text_blob = TextBlob(text)
     return len(text_blob.sentences)
 
 def text_lenght(text):
     return len(text)
+
+
+import torch
+print(f'torch.cuda.is_available:{torch.cuda.is_available()}')
+
+from transformers import BertTokenizer, BertForMaskedLM
+bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+bert_model = BertForMaskedLM.from_pretrained('bert-base-uncased').eval()
+
+import platform
+if platform.system() == 'Darwin':
+    device = torch.device("mps")
+else:
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+print(f'device:{device}')
+bert_model.to(device)
+
+import tensorflow as tf
+tf.config.experimental.list_physical_devices('GPU')
+list_physical_devices = tf.config.experimental.list_physical_devices('GPU')
+print(f'tf.config.experimental.list_physical_devices(GPU):{list_physical_devices}')
+
+def compute_masked_words_BERT_prediction(text):
+    text_blob = TextBlob(text)
+    number_of_test = 0
+    number_of_correct_prediction = 0
+
+    for sentence in text_blob.sentences:
+        if len(sentence) > 500:
+            # print('ignore the sentence')
+            continue
+
+        for word in sentence.words:
+            if len(word) > 5:
+                masked_sentence = sentence.replace(word, "<mask>")
+                # print(f'START_{masked_sentence}_END')
+                top_k = 10
+                top_clean = 5
+                input_ids, mask_idx = BERT_encode(bert_tokenizer, f'{masked_sentence}')
+                with torch.no_grad():
+                    predict = bert_model(input_ids)[0]
+                predict_words = BERT_decode(bert_tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_clean)
+                # print(predict_words)
+
+                number_of_test += 1
+                if word in predict_words:
+                    number_of_correct_prediction +=1
+
+    # print(f"number_of_test: {number_of_test}")
+    # print(f"number_of_correct_prediction: {number_of_correct_prediction}")
+    # print(f"prediction : {round(100 * number_of_correct_prediction/number_of_test)}%")
+    return (number_of_test, number_of_correct_prediction)
+
+def BERT_decode(tokenizer, pred_idx, top_clean):
+    ignore_tokens = string.punctuation + '[PAD]'
+    tokens = []
+    for w in pred_idx:
+        token = ''.join(tokenizer.decode(w).split())
+        if token not in ignore_tokens:
+            tokens.append(token.replace('##', ''))
+    return '\n'.join(tokens[:top_clean])
+
+
+def BERT_encode(tokenizer, text_sentence, add_special_tokens=True):
+    text_sentence = text_sentence.replace('<mask>', tokenizer.mask_token)
+    # if <mask> is the last token, append a "." so that models dont predict punctuation.
+    if tokenizer.mask_token == text_sentence.split()[-1]:
+        text_sentence += ' .'
+    input_ids = torch.tensor([tokenizer.encode(text_sentence, add_special_tokens=add_special_tokens)]).to(device)
+    mask_idx = torch.where(input_ids == tokenizer.mask_token_id)[1].tolist()[0]
+    return input_ids, mask_idx
