@@ -1,7 +1,7 @@
 import pandas as pd
 import pickle
 import os
-from create_external_features import ExternalFeatures
+from detect_ai_content.ml_logic.for_texts.create_external_features import ExternalFeatures
 from TextPreprocessor import TextPreprocessor
 
 class XGBoostExternal:

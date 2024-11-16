@@ -7,7 +7,7 @@ import pandas as pd
 # Add the outer detect_ai_content directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
-from ml_logic.for_texts.xgboost_external import XGBoostExternal  # nesteddd ask Jerome
+from detect_ai_content.ml_logic.for_texts.xgboost_external import XGBoostExternal  # nesteddd ask Jerome
 
 # Instantiate the model
 xgboost_external = XGBoostExternal()

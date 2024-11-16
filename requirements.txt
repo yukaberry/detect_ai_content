@@ -28,3 +28,5 @@ textstat
 tf-keras
 xgboost
 lightgbm
+sentence-transformers #TO CHEKCK
+text-preprocessor
