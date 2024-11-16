@@ -6,7 +6,7 @@ import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 # Import the LightGBM model class from lgbm_internal.py
-from ml_logic.for_texts.xgboost_internal import XgBoostInternal
+from detect_ai_content.ml_logic.for_texts.xgboost_internal import XgBoostInternal
 
 # Instantiate the model
 xgboost_internal = XgBoostInternal()

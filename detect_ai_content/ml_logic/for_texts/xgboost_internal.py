@@ -6,9 +6,10 @@ from detect_ai_content.ml_logic.for_texts.create_internal_features import Intern
 class XgBoostInternal:
     def __init__(self):
         self.description = "XgBoost Internal Model for AI Content Detection"
-        self.name = "XgBoost External Model"
+        self.name = "XgBoost Internal Model"
         # Adjust paths for model and features
-        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'xgboost_internal.pkl')
+        self.model_path = os.path.join(
+        os.path.dirname(__file__), '..', '..', 'models', 'linchenpal', 'xgboost_internal.pkl')
         self.model = self.load_model()
 
     def load_model(self):
@@ -24,7 +25,7 @@ class XgBoostInternal:
         """Generate a DataFrame of external features from the given text."""
         external_features = InternalFeatures()
         # Assume the ExternalFeatures class has a method to process single text input
-        df = external_features.process(pd.DataFrame({"text": [text]}))
+        df = external_features.main(pd.DataFrame({"text": [text]}))
         return df.drop(columns=['generated'], errors='ignore')  # Drop 'generated' if present
 
     def predict(self, text):
