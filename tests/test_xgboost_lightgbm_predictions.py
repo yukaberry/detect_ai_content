@@ -41,7 +41,7 @@ class TestExternalXgBoost(unittest.TestCase):
         """Test the predict function with AI-generated texts."""
         ai_texts = get_ai_texts()
         for text in ai_texts:
-            prediction, message = self.xgboost.predict(text)
+            prediction, message = self.xgboost_external.predict(text)
             self.assertEqual(prediction, 1, f"Expected 'AI generated', got {message}")
 
 # Run the tests
