@@ -2,6 +2,9 @@ import streamlit as st
 from typing import Optional
 import requests
 
+if 'single_prediction_done' not in st.session_state:
+    st.session_state['single_prediction_done'] = False
+
 def set_page_config():
     st.set_page_config(
         page_title="AI Text Analyzer",
@@ -175,6 +178,42 @@ def analyze_text(text: str) -> dict:
     st.success("Prediction done ✅")
     return response.json()
 
+import pandas as pd
+
+def analyze_text_multi_estimators(text: str) -> dict:
+    """
+    Placeholder for actual AI detection logic.
+    """
+
+    headers = {
+        'accept': 'application/json',
+    }
+    params = {
+        "text":text
+    }
+    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
+    st.success("Prediction done ✅")
+    return response.json()
+
+
+def display_multi_results(analysis: dict):
+    st.markdown("### Analysis Results")
+    print(analysis)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Prediction", analysis["prediction"])
+    with col2:
+        st.metric("Predict proba", analysis["predict_proba"])
+
+    st.markdown("#### Detailed Metrics")
+    details = analysis["details"]
+    models = details["models"]
+    df = pd.DataFrame(data=models)
+    df = df.T
+    df = df[['predict_proba_class', 'predicted_class']]
+    st.table(df)
+
 def display_results(analysis: dict):
     st.markdown("### Analysis Results")
     print(analysis)
@@ -220,14 +259,20 @@ def create_content():
                 with st.spinner('Wait for it...'):
                     analysis = analyze_text(text)
                     display_results(analysis)
+                    st.session_state.single_prediction_done = True
             else:
                 st.warning("Please enter some text to analyze.")
     with col2:
         if st.button("Clear", type="secondary"):
+            st.session_state.single_prediction_done = None
             st.session_state.clear()
             st.session_state.text_input = ''
             st.rerun()
 
+
+    if st.session_state.single_prediction_done == True:
+        if st.button("Do you want more ? Scan using all our estimators", type="primary"):
+            print('Discover all our estimators pressed')
 
 def main():
     set_page_config()
