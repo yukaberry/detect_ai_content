@@ -1,14 +1,14 @@
 import os
 import pandas as pd
 import pickle
-from detect_ai_content.ml_logic.for_texts.create_external_features import ExternalFeatures
+from create_internal_features import InternalFeatures
 
-class XgBoostExternal:
+class XgBoostInternal:
     def __init__(self):
-        self.description = "XgBoost External Model for AI Content Detection"
+        self.description = "XgBoost Internal Model for AI Content Detection"
         self.name = "XgBoost External Model"
         # Adjust paths for model and features
-        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'xgboost_external.pkl')
+        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'xgboost_internal.pkl')
         self.model = self.load_model()
 
     def load_model(self):
@@ -22,7 +22,7 @@ class XgBoostExternal:
 
     def get_external_features(self, text):
         """Generate a DataFrame of external features from the given text."""
-        external_features = ExternalFeatures()
+        external_features = InternalFeatures()
         # Assume the ExternalFeatures class has a method to process single text input
         df = external_features.process(pd.DataFrame({"text": [text]}))
         return df.drop(columns=['generated'], errors='ignore')  # Drop 'generated' if present
@@ -39,7 +39,7 @@ class XgBoostExternal:
 
 # Local test
 if __name__ == '__main__':
-    xgboost_ext = XgBoostExternal()
+    xgboost_ext = XgBoostInternal()
     test_text = 'I am from Paris but live in Munich at the moment. I dont like German food. I want to go back to Paris... '
     prediction, message = xgboost_ext.predict(test_text)
     print(f"Prediction: {prediction}, Message: {message}")

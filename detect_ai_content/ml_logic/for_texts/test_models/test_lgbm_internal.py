@@ -1,18 +1,17 @@
-
-#test_xgboost_external.py
 import sys
 import os
 import pandas as pd
 
-# Add the outer detect_ai_content directory to sys.path
+# Add the outer detect_ai_content directory to sys.path to access the ml_logic package
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
-from ml_logic.for_texts.xgboost_external import XGBoostExternal  # nesteddd ask Jerome
+# Import the LightGBM model class from lgbm_internal.py
+from ml_logic.for_texts.lgbm_internal import LgbmInternal
 
 # Instantiate the model
-xgboost_external = XGBoostExternal()
+lgbm_internal = LgbmInternal()
 
-# Define the correct path to cleaned_test_data.csv
+# Define the correct path to the test data (assuming the test data is named 'test_data.csv')
 test_data_path = os.path.join(os.path.dirname(__file__), "../test_data", "test_data.csv")
 
 # Load the test data
@@ -27,7 +26,7 @@ texts = test_data['text']
 true_labels = test_data['generated']
 
 # Make predictions
-predictions = [xgboost_external.predict(text)[0] for text in texts]
+predictions = [lgbm_internal.predict(text)[0] for text in texts]
 
 # Evaluate predictions
 accuracy = sum([1 for true, pred in zip(true_labels, predictions) if true == pred]) / len(true_labels)
