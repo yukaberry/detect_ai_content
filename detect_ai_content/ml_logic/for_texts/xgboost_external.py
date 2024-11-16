@@ -3,6 +3,7 @@ import pickle
 import os
 from detect_ai_content.ml_logic.for_texts.create_external_features import ExternalFeatures
 from detect_ai_content.ml_logic.for_texts.TextPreprocessor import TextPreprocessor
+import xgboost
 
 class XGBoostExternal:
     def __init__(self):
