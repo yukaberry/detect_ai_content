@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import pickle
-from create_internal_features import InternalFeatures
+from detect_ai_content.ml_logic.for_texts.create_internal_features import InternalFeatures
 
 class XgBoostInternal:
     def __init__(self):

@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from detect_ai_content.ml_logic.for_texts.XgBoost import XgBoost
+from detect_ai_content.ml_logic.for_texts.xgboost_external import XGBoostExternal
 
 def get_human_texts():
     return [
@@ -20,21 +20,21 @@ def get_ai_texts():
         "For example, those who are already motivated to learn and are self-disciplined may reap the full benefits of studying in the comfort of their own home."
     ]
 
-class TestXgBoost(unittest.TestCase):
+class TestExternalXgBoost(unittest.TestCase):
 
     def setUp(self):
         """Initialize the XgBoost instance before each test."""
-        self.xgboost = XgBoost()
+        self.xgboost_external = XGBoostExternal()
 
     def test_model_loading(self):
         """Test if the XgBoost model loads correctly."""
-        self.assertIsNotNone(self.xgboost.model, "Failed to load the XgBoost model.")
+        self.assertIsNotNone(self.xgboost_external.model, "Failed to load the XgBoost model.")
 
     def test_predict_human_texts(self):
         """Test the predict function with human-written texts."""
         human_texts = get_human_texts()
         for text in human_texts:
-            prediction, message = self.xgboost.predict(text)
+            prediction, message = self.xgboost_external.predict(text)
             self.assertEqual(prediction, 0, f"Expected 'Human generated', got {message}")
 
     def test_predict_ai_texts(self):

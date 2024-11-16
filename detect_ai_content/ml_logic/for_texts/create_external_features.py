@@ -5,7 +5,7 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import CountVectorizer
 import torch
 import numpy as np
-from TextPreprocessor import TextPreprocessor
+from detect_ai_content.ml_logic.for_texts.TextPreprocessor import TextPreprocessor
 
 class ExternalFeatures:
     def __init__(self):
