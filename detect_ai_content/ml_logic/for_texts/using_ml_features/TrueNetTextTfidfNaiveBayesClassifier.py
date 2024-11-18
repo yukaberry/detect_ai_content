@@ -2,9 +2,7 @@
 from sklearn.pipeline import make_pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import RobustScaler
 
 import pandas as pd
 import numpy as np
@@ -18,7 +16,7 @@ from detect_ai_content.params import *
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.mlflow import mlflow_save_metrics, mlflow_save_model, mlflow_save_params, load_model
 from detect_ai_content.ml_logic.evaluation import evaluate_model
-from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer, dataframeToSerieTransformer
+from detect_ai_content.ml_logic.preprocess import smartSelectionTransformer, dataframeToSerieTransformer
 
 from sklearn.pipeline import make_pipeline, Pipeline
 

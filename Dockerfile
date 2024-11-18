@@ -22,6 +22,9 @@ CMD uvicorn detect_ai_content.api.fast:app --host 0.0.0.0 --port $PORT
 # local : use this before deployment
 #CMD uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
 
+# api url
+#URL=https://detect-ai-content-667980218208.europe-west1.run.app
+
 
 # testing image api
 #CMD uvicorn detect_ai_content.api.aban371818_api.image_classifier_api:app --host 0.0.0.0 --port $PORT

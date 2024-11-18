@@ -9,7 +9,7 @@ from detect_ai_content.params import *
 from detect_ai_content.ml_logic.data import get_enriched_df
 from detect_ai_content.ml_logic.evaluation import evaluate_model
 from sklearn.pipeline import make_pipeline, Pipeline
-from detect_ai_content.ml_logic.preprocess import preprocess, smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer
+from detect_ai_content.ml_logic.preprocess import smartCleanerTransformer, smartEnrichTransformer, smartSelectionTransformer, smartEnrichFunction
 
 import os
 import pickle
@@ -41,7 +41,7 @@ class TrueNetTextSVC:
 
     def run_grid_search():
         df = get_enriched_df()
-        X = preprocess(data=df, auto_enrich=False)
+        X = smartEnrichFunction(data=df, auto_enrich=False)
         y = df['generated']
 
         param_grid = {
@@ -63,7 +63,7 @@ class TrueNetTextSVC:
         mlflow.start_run(experiment_id=experiment_id)
 
         df = get_enriched_df()
-        X = preprocess(data=df, auto_enrich=False)
+        X = smartEnrichFunction(data=df, auto_enrich=False)
         y = df['generated']
 
         model_param_C = 10 # param from run_grid_search
@@ -117,7 +117,6 @@ class TrueNetTextSVC:
             'text_corrections_ratio',
             'average_sentence_lenght',
             'average_neg_sentiment_polarity',
-            'pourcentage_of_correct_prediction',
             'lexical_diversity',
             'smog_index',
             'flesch_reading_ease',
@@ -126,7 +125,7 @@ class TrueNetTextSVC:
 
         model_param_C = 10 # param from run_grid_search
         model_param_gamma = 0.1 # param from run_grid_search
-        model = SVC(C=model_param_C, gamma=model_param_gamma)
+        model = SVC(C=model_param_C, gamma=model_param_gamma, probability=True)
 
         features_selection_transformer = smartSelectionTransformer(columns=columns)
         pipeline = Pipeline([

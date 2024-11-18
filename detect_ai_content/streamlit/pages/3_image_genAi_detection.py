@@ -58,10 +58,20 @@ if path_in is not None:
             }
 
             files = {
-                'img': ('image.jpg', open(complete_name, 'rb'), 'image/jpg'),
+                'user_input': (uploaded_file.name, open(complete_name, 'rb'), 'image/jpg'),
+
             }
             # local http://0.0.0.0:8000/image_predict
             #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
-            response = requests.post("https://detect-ai-content-667980218208.europe-west1.run.app/image_predict",headers=headers, files=files)
+            response = requests.post("https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/image_predict_cnn",headers=headers, files=files)
+            #response = requests.post("https://0.0.0.0:8000/image_predict_cnn",headers=headers, files=files)
+            # deploy                  https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
             # st.success(f"{response.json()}")
             st.success(response.text)
+            #st.success(response)
+
+# Ping server to preload things if needed
+import requests
+            #https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
+requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/ping')
+#requests.get('https://0.0.0.0:8000/ping')

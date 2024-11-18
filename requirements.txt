@@ -10,14 +10,13 @@ colorama
 mlflow
 tensorflow
 python-multipart
+spacy
+contextualSpellCheck
+pyspellchecker
+prefect
 textblob
 nltk
-# TextBlob
-# spacy
-# contextualSpellCheck
-# pyspellchecker
 textstat
-
 torch
 transformers
 

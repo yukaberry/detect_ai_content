@@ -227,3 +227,6 @@ mlruns
 
 # GCGLOUD
 gcloud_upload
+
+# local test images
+*.jpg
