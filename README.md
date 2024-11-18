@@ -62,13 +62,49 @@ response = requests.get('https://detect-ai-content-improved14nov-667980218208.eu
 
 (Visit our website)[https://lewagon1705.streamlit.app/text_genAi_detection]
 
-## Models
+## Modeling
 
-### TrueNetTextLogisticRegression
-### TrueNetTextTfidfNaiveBayesClassifier
-### TrueNetTextDecisionTreeClassifier
-### TrueNetTextSVC
-### TrueNetTextRNN
-### TrueNetTextKNeighborsClassifier
-### TrueNetTextUsingBERTMaskedPredictions
-### lgbm_internal
+
+### 1st batch of features features
+Those model are build around the same features.
+
+**TrueNetTextLogisticRegression**
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import TrueNetTextLogisticRegression
+```
+
+**TrueNetTextDecisionTreeClassifier**
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextDecisionTreeClassifier import TrueNetTextDecisionTreeClassifier
+
+
+**TrueNetTextSVC**
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import TrueNetTextSVC
+```
+
+**TrueNetTextRNN**
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import TrueNetTextRNN
+```
+
+**TrueNetTextKNeighborsClassifier**
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import TrueNetTextKNeighborsClassifier
+```
+
+## No features, just the text itself
+**TrueNetTextTfidfNaiveBayesClassifier**
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import TrueNetTextTfidfNaiveBayesClassifier
+```
+
+## One feature
+**TrueNetTextUsingBERTMaskedPredictions**
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
+```
+
+### 2nd feature approach
+**lgbm_internal**
+```Python
+from detect_ai_content.ml_logic.for_texts.lgbm_internal import LgbmInternal```
