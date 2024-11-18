@@ -19,3 +19,12 @@ nltk
 textstat
 torch
 transformers
+
+spacy
+contextualSpellCheck
+pyspellchecker
+textstat
+tf-keras
+xgboost
+lightgbm
+sentence_transformers

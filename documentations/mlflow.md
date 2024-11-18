@@ -2,6 +2,12 @@
 - the params
 - the model itself
 
+# MLFLow
+
+We are using [mlflow.lewagon.ai](https://mlflow.lewagon.ai/) to follow to key elements of each model & experiments :
+- the metrics
+- the params
+- the model itself
 
 ## Create a new model & use MLFlow ?
 

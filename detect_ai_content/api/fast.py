@@ -24,7 +24,6 @@ from detect_ai_content.ml_logic.for_images.vgg16_improved import load_model_vgg1
 from detect_ai_content.ml_logic.for_images.vgg16_improved import clean_img_vgg16
 from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_cnn
 
-
 from detect_ai_content.ml_logic.for_images.vgg16 import Vgg16
 from detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN import TrueNetImageUsinCustomCNN
 
@@ -228,9 +227,9 @@ def predict(
     }
 
 
-@app.post("/image_predict_vgg16")
-async def predict(user_input: UploadFile = File(...)):
 
+@app.post("/image_predict")
+async def predict(user_input: UploadFile = File(...)):
     """
     - make a single prediction prediction using user provided 'img'
     - img : jpg data type only  # TO BE IMPROVED
