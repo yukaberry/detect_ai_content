@@ -1,7 +1,6 @@
 import streamlit as st
 from typing import Optional
 import requests
-import pandas as pd
 
 def set_page_config():
     st.set_page_config(
@@ -172,7 +171,7 @@ def analyze_text(text: str) -> dict:
     params = {
         "text":text
     }
-    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
+    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
     st.success("Prediction done ✅")
     return response.json()
 
@@ -180,19 +179,28 @@ def display_results(analysis: dict):
     st.markdown("### Analysis Results")
     print(analysis)
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Prediction", analysis["prediction"])
     with col2:
+        if analysis["prediction"] == 0:
+
+            st.metric("Prediction", "Human")
+        if analysis["prediction"] == 1:
+
+            st.metric("Prediction", "AI")
+
+    with col3:
         st.metric("Predict proba", analysis["predict_proba"])
 
     st.markdown("#### Detailed Metrics")
-    details = analysis["details"]
-    models = details["models"]
-    df = pd.DataFrame(data=models)
-    df = df.T
-    df = df[['predict_proba_class', 'predicted_class']]
-    st.table(df)
+    metrics = analysis["details"]
+    cols = st.columns(len(metrics))
+    for col, (metric, value) in zip(cols, metrics.items()):
+        col.metric(
+            metric.replace("_", " ").title(),
+            value
+        )
 
 def create_content():
     st.title("More than an AI detector.")
