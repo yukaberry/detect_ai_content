@@ -68,7 +68,7 @@ def analyze_text(text: str) -> dict:
     params = {
         "text":text
     }
-    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
+    response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
     st.success("Prediction done ✅")
     return response.json()
 
@@ -83,22 +83,22 @@ def example_buttons():
 
     # Create all buttons and check their states
     if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
     if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
     if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
     if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
@@ -540,4 +540,4 @@ st.markdown(
 
 # hack to speed up the 1st prediction request
 import requests
-requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')
+requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/ping')
