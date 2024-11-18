@@ -20,8 +20,8 @@ class TrueNetTextKNeighborsClassifier:
     def local_trained_pipeline(self):
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
-        return pickle.load(open(model_path, 'rb'))
+        self.model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
+        return pickle.load(open(self.model_path, 'rb'))
 
     def get_mlflow_model(self, stage="Production"):
         """
@@ -31,6 +31,10 @@ class TrueNetTextKNeighborsClassifier:
             Cross Validate average result (0.2 test) : TBD
         """
         return load_model(self.mlflow_model_name, is_tensorflow=False, stage=stage)
+
+    def st_size(self):
+        import os
+        return os.stat(self.model_path).st_size
 
     def __init__(self):
         self.description = ""
