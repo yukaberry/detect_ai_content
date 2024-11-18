@@ -4,7 +4,7 @@ import os
 
 import pandas as pd
 
-from detect_ai_content.ml_logic.for_texts.using_ml_features.using_ml_features import enrich
+from detect_ai_content.ml_logic.data import enrich_text
 
 print(sys.argv)
 
@@ -33,7 +33,7 @@ for chunk in pd.read_csv(from_filepath, chunksize=chunksize):
     huggingface_ai_text_df['generated'] = 1
 
     huggingface_sample_text_df = pd.concat(objs=[huggingface_human_text_df, huggingface_ai_text_df])
-    huggingface_sample_text_df = enrich(huggingface_sample_text_df)
+    huggingface_sample_text_df = enrich_text(huggingface_sample_text_df)
 
     save(huggingface_sample_text_df, to_enrich_filepath)
     actual_dataset_size += chunksize
