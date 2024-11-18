@@ -64,47 +64,63 @@ response = requests.get('https://detect-ai-content-improved14nov-667980218208.eu
 
 ## Modeling
 
+All our models are based on pipelines.
+The pipeline compress all the steps to do a prediction (enrich data - preprocess - scaler - and finally a prediction)
+
+![alt text](https://github.com/yukaberry/detect_ai_content/blob/feature/jerome-add-model-comparison/images/pipeline_example.png)
 
 ### 1st batch of features features
 Those model are build around the same features.
 
-**TrueNetTextLogisticRegression**
+- **TrueNetTextLogisticRegression**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import TrueNetTextLogisticRegression
 ```
 
-**TrueNetTextDecisionTreeClassifier**
+- **TrueNetTextDecisionTreeClassifier**
+```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextDecisionTreeClassifier import TrueNetTextDecisionTreeClassifier
+```
 
-
-**TrueNetTextSVC**
+- **TrueNetTextSVC**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import TrueNetTextSVC
 ```
 
-**TrueNetTextRNN**
+- **TrueNetTextRNN**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN import TrueNetTextRNN
 ```
 
-**TrueNetTextKNeighborsClassifier**
+- **TrueNetTextKNeighborsClassifier**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import TrueNetTextKNeighborsClassifier
 ```
 
 ## No features, just the text itself
-**TrueNetTextTfidfNaiveBayesClassifier**
+- **TrueNetTextTfidfNaiveBayesClassifier**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import TrueNetTextTfidfNaiveBayesClassifier
 ```
 
 ## One feature
-**TrueNetTextUsingBERTMaskedPredictions**
+- **TrueNetTextUsingBERTMaskedPredictions**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
 ```
 
 ### 2nd feature approach
-**lgbm_internal**
+- **lgbm_internal**
 ```Python
-from detect_ai_content.ml_logic.for_texts.lgbm_internal import LgbmInternal```
+from detect_ai_content.ml_logic.for_texts.lgbm_internal import LgbmInternal
+```
+
+## Model benchmark ! 
+
+Prediction benchmark has been computed using 50 texts (103,010 letters)
+
+![alt text](https://github.com/yukaberry/detect_ai_content/blob/feature/jerome-add-model-comparison/images/predictors_by_accuracy.png)
+
+
+
+
