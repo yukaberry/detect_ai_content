@@ -409,11 +409,11 @@ st.markdown(
             <img src="data:image/png;base64,{logo_base64_logo}" alt="Your Logo">
         </div>
         <div class="nav-links">
-            <a href="#">Approach</a>
-            <a href="">Models</a>
-            <a href="#">Resources</a>
-            <a href="#">News</a>
-            <a href="#">Team</a>
+            <a href="page_approach">Approach</a>
+            <a href="page_models">Models</a>
+            <a href="page_resources">Resources</a>
+            <a href="page_news">News</a>
+            <a href="page_team">Team</a>
         </div>
         <div class="button-container">
             <div class="btn-dark">Dashboard</div>
