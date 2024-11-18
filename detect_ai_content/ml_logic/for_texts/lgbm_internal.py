@@ -1,14 +1,21 @@
 import os
 import pandas as pd
 import pickle
-from create_internal_features import InternalFeatures
+from detect_ai_content.ml_logic.for_texts.create_internal_features import InternalFeatures
+import lightgbm #important to keep, to be able to load the pickle file
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.preprocessing import RobustScaler
 
 class LgbmInternal:
     def __init__(self):
         self.description = "LightGBM Internal Model for AI Content Detection"
         self.name = "LightGBM Internal Model"
+
         # Adjust paths for model and features
-        self.model_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'models', 'lgbm_internal.pkl')
+        import detect_ai_content
+        module_dir_path = os.path.dirname(detect_ai_content.__file__)
+        self.model_path = f'{module_dir_path}/../detect_ai_content/models/linchenpal/lgbm_internal.pkl'
         self.model = self.load_model()
 
     def load_model(self):
@@ -25,7 +32,8 @@ class LgbmInternal:
         internal_features = InternalFeatures()
         # Assume the InternalFeatures class has a method to process single text input
         df = internal_features.process(pd.DataFrame({"text": [text]}))
-        return df.drop(columns=['generated'], errors='ignore')  # Drop 'generated' if present
+        return df
+        # return df.drop(columns=['generated'], errors='ignore')  # Drop 'generated' if present
 
     def predict(self, text):
         """Predict and return the class ('1' for AI or '0' for Human) and the corresponding message."""
@@ -36,6 +44,22 @@ class LgbmInternal:
             return prediction, message
         else:
             return None, "Model is not loaded."
+
+    def pretrained_model(self):
+        pipeline = Pipeline([
+            ('enricher', LgbmGenerateInternalFeaturesTransformer()),
+            ('estimator', self.model),
+        ])
+        return pipeline
+
+def LgbmGenerateInternalFeaturesFunction(df):
+    internal_features = InternalFeatures()
+    enriched_df = internal_features.process(df)
+    return enriched_df
+
+def LgbmGenerateInternalFeaturesTransformer():
+    return FunctionTransformer(LgbmGenerateInternalFeaturesFunction)
+
 
 # Local test
 if __name__ == '__main__':

@@ -28,6 +28,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 nlp = spacy.load("en_core_web_sm", disable=["tagger", "parser", "lemmatizer"])
 import os
 import json
+import torch
+import platform
 
 class InternalFeatures():
 
@@ -44,6 +46,7 @@ class InternalFeatures():
 
 
     def text_based_features(self, text_df, text_column='text'):
+        print("text_based_features")
 
         # TODO
         # not to use df type -->> numoy arry
@@ -68,6 +71,7 @@ class InternalFeatures():
 
 
     def lexical_diversity_readability(self, text_df, text_column='text'):
+        print("lexical_diversity_readability")
 
         # TODO
         # not to use df type -->> numoy arry
@@ -85,7 +89,7 @@ class InternalFeatures():
 
 
     def pos_tagging_features(self, text_df, text_column='text'):
-
+        print("pos_tagging_features")
 
         # TODO
         # change datatype
@@ -107,6 +111,7 @@ class InternalFeatures():
 
 
     def sentiment_emotion_features(self, text_df, text_column='text'):
+        print("sentiment_emotion_features")
 
         # TODO
         # change data type
@@ -119,11 +124,24 @@ class InternalFeatures():
         # Initialize sentiment analysis pipeline with GPU (device=0)
         # TODO
         # local test run (device=1)
-        sentiment_pipeline = pipeline('sentiment-analysis', device=-1, truncation=True, max_length=512)
+        device = torch.device("cpu")
+        if platform.system() == 'Darwin':
+            device = torch.device("mps")
+        else:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        sentiment_pipeline = pipeline('sentiment-analysis',
+                                      device=device,
+                                      truncation=True,
+                                      max_length=512)
+        print(sentiment_pipeline)
 
         # Apply sentiment analysis in batches
         texts = text_df[text_column].tolist()
+        print(texts)
+
         sentiment_results = sentiment_pipeline(texts, truncation=True, max_length=512, batch_size=32)
+        print(sentiment_results)
 
         # Extract sentiment labels from the results
         features['sentiment'] = [result['label'] for result in sentiment_results]
@@ -136,6 +154,7 @@ class InternalFeatures():
 
 
     def ngrams_keyword_features(self, text_df, text_column='text'):
+        print("ngrams_keyword_features")
 
         #TODO
         # change datatype
@@ -155,6 +174,7 @@ class InternalFeatures():
 
 
     def linguistic_complexity_features(self, text_df, text_column='text'):
+        print("linguistic_complexity_features")
 
         # TODO
         # datatype change
@@ -168,6 +188,7 @@ class InternalFeatures():
 
 
     def spelling_error_features(self, text_df, text_column='text'):
+        print("spelling_error_features")
 
         # TODO
         # Datatype change
@@ -185,6 +206,7 @@ class InternalFeatures():
 
 
     def repetition_features(self, text_df, text_column='text', n=2):
+        print("repetition_features")
 
         #TODO
         # CHANGE dataype
@@ -203,6 +225,7 @@ class InternalFeatures():
 
 
     def structural_formatting_features(self, text_df, text_column='text'):
+        print("structural_formatting_features")
 
         # TODO
         # change datatype
@@ -218,6 +241,7 @@ class InternalFeatures():
 
 
     def count_slang(self, raw_df, slang_dictobary):
+        print("count_slang")
 
         # TODO
         # change datatype
@@ -242,6 +266,7 @@ class InternalFeatures():
 
 
     def concat_features(self, raw_data, *features):
+        print("concat_features")
 
         """
         - return all of dataframes
@@ -363,9 +388,8 @@ class InternalFeatures():
 
         return final_internal_df
 
-
-    def main(self, raw_data):
-
+    def process(self, raw_data):
+        print("process")
         feature = self.text_based_features(raw_data)
         feature2 = self.lexical_diversity_readability(raw_data)
         feature3 = self.pos_tagging_features(raw_data)
