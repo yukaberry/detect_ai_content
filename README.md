@@ -9,9 +9,66 @@
 - [Kaggle - ai-generated-vs-human-text-95-accuracy](https://www.kaggle.com/code/syedali110/ai-generated-vs-human-text-95-accuracy/notebook), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-ai-generated-vs-human-text/AI_Human.csv.zip)
 - [Kaggle - daigt-v2-train-dataset](https://www.kaggle.com/datasets/thedrcat/daigt-v2-train-dataset), [dataset - public url](https://storage.googleapis.com/detect-human-ai-generated-raw-data/kaggle-daigt-v2-train-dataset/train_v2_drcat_02.csv.zip)
 
-
 ## Documentations
 
 - [How this repo is organized?](./documentations/git_repo_structure.md)
 - [Git branch Management](./documentations/git_branches.md)
 - [MLFlow & models](./documentations/mlflow.md)
+
+### How to use our work ?
+
+### Use the package
+
+- Make a local copy
+```
+git@github.com:yukaberry/detect_ai_content.git
+```
+
+- Install the package & dependencies
+```
+pip install -e .
+```
+
+- Load a model and use it for predictions ?
+```Python
+from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextLogisticRegression import TrueNetTextLogisticRegression
+from detect_ai_content.ml_logic.data import load_dataset
+
+# Load the Pipeline ! Everything is already package
+# Features Engineering + Scaler + model architecture + tuned hyperparameters
+pipeline = TrueNetTextLogisticRegression().local_trained_pipeline()
+
+# Pred using your dataframe or use on local datasets
+df = load_dataset(source="llama2_chat")
+preds = pipeline.predict(text_df)
+```
+
+### Use the API
+
+Call your endpoint
+
+```Python
+import requests
+headers = {
+   'accept': 'application/json',
+}
+params = {
+  "text":text
+}
+response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
+```
+
+### Use the Website
+
+(Visit our website)[https://lewagon1705.streamlit.app/text_genAi_detection]
+
+## Models
+
+### TrueNetTextLogisticRegression
+### TrueNetTextTfidfNaiveBayesClassifier
+### TrueNetTextDecisionTreeClassifier
+### TrueNetTextSVC
+### TrueNetTextRNN
+### TrueNetTextKNeighborsClassifier
+### TrueNetTextUsingBERTMaskedPredictions
+### lgbm_internal
