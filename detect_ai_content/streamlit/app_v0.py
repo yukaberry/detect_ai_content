@@ -1,7 +1,106 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import io
+import requests
 
+# define session_state variables
+if 'text_input' not in st.session_state:
+    st.session_state.text_input = f"This is example of text for"
+
+def display_results(analysis: dict):
+    prediction_class = analysis["prediction"]
+    prediction_proba = analysis["predict_proba"]
+    prediction_proba_cleaned = float(prediction_proba.replace('%', ''))
+
+    proba_what = "Human"
+    if prediction_class == 0:
+        proba_what = "Human"
+    else:
+        proba_what = "AI"
+
+    proba_human = 0.0
+    proba_ai = 0.0
+    if prediction_class == 0:
+        proba_human = prediction_proba_cleaned
+        proba_ai = 100 - proba_human
+    else:
+        proba_ai = prediction_proba_cleaned
+        proba_human = 100 - proba_ai
+
+    # dynamic styling
+    ring_chart_gradient_css = f"""background: conic-gradient(
+            #65c6ba 0% {proba_human}%, /* Dark green for Human */
+            #0e8c7d {proba_human}% 100% /* Gold for AI */
+        );
+    """
+
+    # HTML for the chart
+    st.markdown(
+        f"""
+        <div class="chart-container">
+            <!-- Ring Chart -->
+            <div class="ring-chart" style="{ring_chart_gradient_css}">
+                <div class="chart-label">
+                    {prediction_proba_cleaned}%<br><span style="color: #777; font-size: 12px;">{proba_what}</span>
+                </div>
+            </div>
+            <!-- Labels -->
+            <div class="labels-container">
+                <div class="label label-human">{proba_human}% Human</div>
+                <div class="label label-ai">{proba_ai}% AI</div>
+            </div>
+        </div>
+        <div class="chart-description">
+            The probability this text has been entirely written by Human, Mixed, or AI.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+def analyze_text(text: str) -> dict:
+    """
+    Placeholder for actual AI detection logic.
+    """
+
+    headers = {
+        'accept': 'application/json',
+    }
+    params = {
+        "text":text
+    }
+    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
+    st.success("Prediction done ✅")
+    return response.json()
+
+def example_buttons():
+    st.write("Try an example:")
+
+    # Create a container for the buttons
+    button_container = st.container()
+
+    # Use columns within the container
+    cols = button_container.columns(4)
+
+    # Create all buttons and check their states
+    if cols[0].button("Llama2", key="example1", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    if cols[1].button("Claude", key="example2", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    if cols[2].button("ChatGPT", key="example3", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    if cols[3].button("Human", key="example4", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
 
 # Page Configuration
 st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
@@ -311,7 +410,7 @@ st.markdown(
         </div>
         <div class="nav-links">
             <a href="#">Approach</a>
-            <a href="#">Models</a>
+            <a href="">Models</a>
             <a href="#">Resources</a>
             <a href="#">News</a>
             <a href="#">Team</a>
@@ -391,34 +490,37 @@ with col1:
 # Right Side Content with Ring Chart and Labels
 with col2:
     st.subheader("AI or Human?")
-    st.radio("Try an example:", ["ChatGPT", "Claude", "Human", "AI + Human"], horizontal=True)
-    st.text_area("Your text here", placeholder="Your text here...")
-    st.file_uploader("Upload File", type=["txt", "docx", "pdf"], key="uploader")
-    st.markdown('<button class="scan-button">Scan for AI</button>', unsafe_allow_html=True)
 
-    # HTML for the chart
-    st.markdown(
-        """
-        <div class="chart-container">
-            <!-- Ring Chart -->
-            <div class="ring-chart">
-                <div class="chart-label">
-                    60%<br><span style="color: #777; font-size: 12px;">Human</span>
-                </div>
-            </div>
-            <!-- Labels -->
-            <div class="labels-container">
-                <div class="label label-human">60% Human</div>
-                <div class="label label-mixed">10% Mixed</div>
-                <div class="label label-ai">30% AI</div>
-            </div>
-        </div>
-        <div class="chart-description">
-            The probability this text has been entirely written by Human, Mixed, or AI.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # st.radio("Try an example:", ["ChatGPT", "Claude", "Human", "AI + Human"], horizontal=True)
+    example_buttons()
+
+    text = st.text_area("Your text here",
+                 key="text_input",
+                 height=200,
+                 help="Enter the text you want to analyze")
+
+    st.file_uploader("Upload File", type=["txt", "docx", "pdf"], key="uploader")
+
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        if st.button("Scan for AI", type="primary"):
+            print(f'st.session_state: {st.session_state}')
+
+            if len(st.session_state.text_input) > 1:
+                with st.spinner('Wait for it...'):
+                    analysis = analyze_text(text)
+                    display_results(analysis)
+            else:
+                st.warning("Please enter some text to analyze.")
+    with col2:
+        if st.button("Clear", type="secondary"):
+            st.session_state.clear()
+            st.session_state.text_input = ''
+            st.session_state.selected_example = ''
+            st.rerun()
+
+    # st.markdown('<button class="scan-button">Scan for AI</button>', unsafe_allow_html=True)
+
 
 # Add a footer at the end of the page
 st.markdown(
