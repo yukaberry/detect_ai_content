@@ -82,3 +82,14 @@ def enrich_lexical_diversity_readability(data):
     enriched_data['avg_word_length'] = data['text'].apply(lambda x: np.mean([len(word) for word in word_tokenize(x)]))
 
     return enriched_data
+
+def load_dataset(source: str):
+    """
+    source can be : llama2_chat, darragh_claude_v6, chat_gpt_moth, persuade_corpus
+    persuade_corpus is to get thuman text
+    """
+    import detect_ai_content
+    module_dir_path = os.path.dirname(detect_ai_content.__file__)
+    df = pd.read_csv(f'{module_dir_path}/daigt-v2-samples.csv')
+    filtered_df = df[df["source"] == source] # chat_gpt_moth
+    return filtered_df
