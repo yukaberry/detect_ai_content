@@ -294,9 +294,7 @@ class InternalFeatures():
         #                         axis=1)
 
         # for user input 'genetrated' is not nessesary
-        internal_df = pd.concat([raw_data,
-                                internal_features],
-                            axis=1)
+        internal_df = pd.merge(left=raw_data, right=internal_features, left_index=True, right_index=True)
 
         # test
         print(internal_df.shape)
