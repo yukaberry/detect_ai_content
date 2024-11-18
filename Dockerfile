@@ -5,7 +5,10 @@ WORKDIR /production
 # install packages
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+# larger version
+RUN pip install --no-cache-dir --timeout=600 -r requirements.txt
+
 # RUN python -m spacy download en_core_web_sm
 # test comment
 # copy folders
@@ -22,8 +25,9 @@ CMD uvicorn detect_ai_content.api.fast:app --host 0.0.0.0 --port $PORT
 # local : use this before deployment
 #CMD uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
 
-# api url
-#URL=https://detect-ai-content-667980218208.europe-west1.run.app
+# api url 18 nov 2024
+#URL=https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app
+
 
 
 # testing image api
