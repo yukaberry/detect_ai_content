@@ -286,6 +286,8 @@ button {
 import base64
 import streamlit as st
 import base64
+import pathlib
+import os
 
 # Convert the image to Base64
 def get_base64_image(file_path):
@@ -293,8 +295,11 @@ def get_base64_image(file_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 # Encode all the images: (List of all images will be here)
-logo_base64_logo = get_base64_image("data/logo3_transparent.png")
-logo_base64_youtube = get_base64_image("data/youtube.jpg")
+parent_path = pathlib.Path(__file__).parent.resolve()
+save_path = os.path.join(parent_path, "data")
+
+logo_base64_logo = get_base64_image(f"{save_path}/logo3_transparent.png")
+logo_base64_youtube = get_base64_image(f"{save_path}/youtube.jpg")
 
 # Embed the Base64 image into the HTML
 st.markdown(

@@ -16,6 +16,9 @@ run_preprocess:
 run_local_fast_api:
 	fastapi dev detect_ai_content/api/fast.py
 
+run_local_streamlit:
+	streamlit ./detect_ai_content/streamlit/app_v0.py
+
 ## run api locally
 run_local_uvicorn:
 	uvicorn detect_ai_content.api.fast:app --host 0.0.0.0
