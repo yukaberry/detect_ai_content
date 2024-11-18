@@ -20,8 +20,12 @@ class TrueNetTextUsingBERTMaskedPredictions:
     def local_trained_pipeline(self):
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
-        return pickle.load(open(model_path, 'rb'))
+        self.model_path = f'{module_dir_path}/../detect_ai_content/models/leverdewagon/{self.mlflow_model_name}_pipeline.pickle'
+        return pickle.load(open(self.model_path, 'rb'))
+
+    def st_size(self):
+        import os
+        return os.stat(self.model_path).st_size
 
     def get_mlflow_model(self, stage="Production"):
         """

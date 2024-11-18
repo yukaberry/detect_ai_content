@@ -18,6 +18,10 @@ class LgbmInternal:
         self.model_path = f'{module_dir_path}/../detect_ai_content/models/linchenpal/lgbm_internal.pkl'
         self.model = self.load_model()
 
+    def st_size(self):
+        import os
+        return os.stat(self.model_path).st_size
+
     def load_model(self):
         """Load the LightGBM model from a pickle file."""
         try:
