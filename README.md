@@ -67,7 +67,7 @@ response = requests.get('https://detect-ai-content-improved14nov-667980218208.eu
 All our models are based on pipelines.
 The pipeline compress all the steps to do a prediction (enrich data - preprocess - scaler - and finally a prediction)
 
-![alt text](https://github.com/yukaberry/detect_ai_content/blob/feature/jerome-add-model-comparison/images/pipeline_example.png)
+![alt text](https://github.com/yukaberry/detect_ai_content/blob/master/images/pipeline_example.png)
 
 ### 1st batch of features
 Those model are build around the same features.
@@ -117,7 +117,7 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiv
 ## One feature
 The funny idea of this model is to masked some words of the text and use a [BERT Masked model](https://huggingface.co/docs/transformers/v4.46.3/en/model_doc/bert#transformers.BertForMaskedLM) to predict the removed words. If the transformer is able to find the correct missing word, it's a successfull prediction. In our study we discover that we are making less correct predictions for Human texts.
 
-![alt text](https://github.com/yukaberry/detect_ai_content/images/f1st_batch_features_shap.png)
+![alt text](https://github.com/yukaberry/detect_ai_content/blob/master/images/f1st_batch_features_shap.png)
 
 - **TrueNetTextUsingBERTMaskedPredictions**
 ```Python
@@ -148,4 +148,4 @@ from detect_ai_content.ml_logic.for_texts.lgbm_internal import LgbmInternal
 
 Prediction benchmark has been computed using 50 texts (103,010 letters)
 
-![alt text](https://github.com/yukaberry/detect_ai_content/blob/feature/jerome-add-model-comparison/images/predictors_by_accuracy.png)
+![alt text](https://github.com/yukaberry/detect_ai_content/blob/master/images/predictors_by_accuracy.png)
