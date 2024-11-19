@@ -7,7 +7,6 @@ import requests
 # Page Configuration
 st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
 
-
 # define session_state variables
 if 'text_input' not in st.session_state:
     st.session_state.text_input = f"This is example of text for"
@@ -109,8 +108,9 @@ def example_buttons():
 
 
 
-# CSS for Styling
-st.markdown("""
+# CSS for Style
+def local_css():
+ css_code = """"""
     <style>
     body {
         background-color: #f7f7f7;
@@ -118,21 +118,21 @@ st.markdown("""
     }
 
     /* Style for the header */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f5f5f5; /* Light gray background */
-    padding: 10px 20px; /* Add some spacing */
-    border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
-}
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f5f5f5; /* Light gray background */
+        padding: 10px 20px; /* Add some spacing */
+        border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
+    }
 
-/* Style for the logo */
-.logo img {
-    height: 60px; /* Adjust the logo size */
-    width: auto; /* Maintain aspect ratio */
-    margin-right: 20px; /* Add some spacing to the right of the logo */
-}
+    /* Style for the logo */
+    .logo img {
+        height: 60px; /* Adjust the logo size */
+        width: auto; /* Maintain aspect ratio */
+        margin-right: 20px; /* Add some spacing to the right of the logo */
+    }
 
 /* Style for the navigation links */
 .nav-links {
