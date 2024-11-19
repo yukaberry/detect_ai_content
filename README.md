@@ -69,8 +69,17 @@ The pipeline compress all the steps to do a prediction (enrich data - preprocess
 
 ![alt text](https://github.com/yukaberry/detect_ai_content/blob/feature/jerome-add-model-comparison/images/pipeline_example.png)
 
-### 1st batch of features features
+### 1st batch of features
 Those model are build around the same features.
+- repetitions_ratio
+- punctuations_ratio
+- text_corrections_ratio
+- average_sentence_lenght
+- average_neg_sentiment_polarity
+- lexical_diversity
+- smog_index
+- flesch_reading_ease
+- avg_word_length
 
 - **TrueNetTextLogisticRegression**
 ```Python
@@ -97,30 +106,44 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN impor
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextKNeighborsClassifier import TrueNetTextKNeighborsClassifier
 ```
 
-## No features, just the text itself
+## No feature, just the text itself
+In this model we use a [TF-IDF](https://scikit-learn.org/1.5/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html) and a [Naive Bayes method](https://scikit-learn.org/dev/modules/naive_bayes.html) to analyze the text features.
+
 - **TrueNetTextTfidfNaiveBayesClassifier**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import TrueNetTextTfidfNaiveBayesClassifier
 ```
 
 ## One feature
+The funny idea of this model is to masked some words of the text and use a [BERT Masked model](https://huggingface.co/docs/transformers/v4.46.3/en/model_doc/bert#transformers.BertForMaskedLM) to predict the removed words. If the transformer is able to find the correct missing word, it's a successfull prediction. In our study we discover that we are making less correct predictions for Human texts.
+
 - **TrueNetTextUsingBERTMaskedPredictions**
 ```Python
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
 ```
 
-### 2nd feature approach
+### 2nd batch of features
+Those model are build around the same features.
+- stopwords_ratio
+- punctuation_ratio
+- repetition_ratio
+- dependency_ratio
+- spelling_errors_ratio
+- pos__ratio
+- avg_word_length
+- lexical_diversity
+- flesch_reading_ease
+- smog_index
+- flesch_kincaid_grade
+- sentiment
+
 - **lgbm_internal**
 ```Python
 from detect_ai_content.ml_logic.for_texts.lgbm_internal import LgbmInternal
 ```
 
-## Model benchmark ! 
+## Model benchmark !
 
 Prediction benchmark has been computed using 50 texts (103,010 letters)
 
 ![alt text](https://github.com/yukaberry/detect_ai_content/blob/feature/jerome-add-model-comparison/images/predictors_by_accuracy.png)
-
-
-
-
