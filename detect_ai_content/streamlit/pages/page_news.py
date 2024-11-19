@@ -28,12 +28,9 @@ def app():
 
     # Main content of the page
     st.write("""
-    ## News
+    ## Catch up on the latest updates and developments
 
-    - **Data Collection**: We gather diverse datasets to train our models, ensuring robust performance.
-    - **Algorithm Development**: We develop state-of-the-art algorithms to efficiently analyze the data.
-    - **Implementation**: We implement these solutions in real-world scenarios to test their effectiveness and refine them based on feedback.
-    - **Scalability**: Our product is designed to learn and scale to new features, adapting to new data and evolving threats.
+    - ** place some links here
     """)
 
     # Footer
