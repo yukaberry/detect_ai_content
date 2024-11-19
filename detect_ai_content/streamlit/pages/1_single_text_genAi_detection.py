@@ -215,7 +215,7 @@ def create_content():
 
     col1, col2 = st.columns([2, 1])
     with col1:
-        if st.button("Scan for AI", type="primary"):
+        if st.button("Analyse Text", type="primary"):
             if text:
                 with st.spinner('Wait for it...'):
                     analysis = analyze_text(text)
