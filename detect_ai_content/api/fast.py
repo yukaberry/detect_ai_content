@@ -27,10 +27,15 @@ from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_
 from detect_ai_content.ml_logic.for_images.vgg16 import Vgg16
 from detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN import TrueNetImageUsinCustomCNN
 
+from detect_ai_content.ml_logic.for_images.image_classifier_cnn import image_classifier_cnn
+
 app = FastAPI()
 app.state.model_image = None
 app.state.model_image_cnn = None
 app.state.models = {}
+
+
+classifier = image_classifier_cnn()
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
@@ -131,6 +136,19 @@ def prediction_to_result(model, model_name, df):
 
     model_prediction_dict["model_name"] = model_name
     return model_prediction_dict
+
+
+def prediction_to_result_img(model, model_name, img):
+
+    y_pred = model.predict(img)
+    predicted_class = int(y_pred[0])
+    model_prediction_dict = {}
+    model_prediction_dict["predicted_class"] = predicted_class
+
+    model_prediction_dict["model_name"] = model_name
+    return model_prediction_dict
+
+
 
 @app.get("/text_multi_predict")
 def predict(
@@ -249,6 +267,7 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
         'message': vgg16_message
     }
 
+    # TODO replace with updated cnn
     # Initialize and use CNN model
     cnn = TrueNetImageUsinCustomCNN()
     cnn_prediction, cnn_message = cnn.predict(img)
@@ -256,6 +275,12 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
         'predicted_class': cnn_prediction,
         'message': cnn_message
     }
+    
+    # model_cnn = image_classifier_cnn().load_model()
+    # model_vgg16 =  Vgg16.load_model()
+
+    # predictions["CNN"] = prediction_to_result_img(model_cnn, 'CNN', img)
+    # predictions['VGG16'] = prediction_to_result_img(model_vgg16, 'VGG16', img)
 
     # Aggregate results
     y_preds = [predictions['VGG16']['predicted_class'], predictions['CNN']['predicted_class']]
@@ -280,7 +305,7 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
 
 
 
-@app.post("/image_predict")
+@app.post("/image_predict_vgg16")
 async def predict(user_input: UploadFile = File(...)):
     """
     - make a single prediction prediction using user provided 'img'
@@ -336,6 +361,18 @@ async def predict(user_input: UploadFile = File(...)):
     return {"prediction": prediction,
             "message": message}
 
+
+@app.post("/image_predict_most_updated_cnn")
+async def cnn_prediction(file: UploadFile = File(...)):
+
+    image_bytes = await file.read()
+
+    file_path = os.path.join(os.path.dirname(__file__), "temp_image.jpg")
+    with open(file_path, "wb") as f:
+        f.write(image_bytes)
+
+    prediction_result = classifier.predict(file_path)
+    return {"prediction": prediction_result}
 
 
 @app.get("/")
