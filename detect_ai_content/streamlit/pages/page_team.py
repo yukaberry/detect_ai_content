@@ -17,52 +17,67 @@ def app():
     save_path = os.path.join(parent_path, "data")
     logo_base64 = get_base64_image(f"{save_path}/logo3_transparent.png")
 
-    # Custom CSS for styling
-    st.markdown("""
-        <style>
-        .team-container {
-            text-align: center;
-            margin-bottom: 40px; /* Add space between members */
-        }
-        .team-image {
-            margin: 0 auto;
-            border-radius: 50%; /* Round borders */
-        }
-        .team-caption {
-            font-size: 24px; /* Increased font size for names */
-            font-weight: bold;
-            margin-top: 10px;
-            font-family: 'Arial', sans-serif;
-        }
-        .team-caption span {
-            color: #65c6ba; /* Color for last names */
-        }
-        .team-role {
-            font-size: 18px; /* Increased font size for roles */
-            font-weight: normal;
-            color: #555;
-            margin-top: 10px; /* Space between name and role */
-            max-width: 200px; /* Limit the width of the role description */
-            margin-left: auto; /* Center text horizontally */
-            margin-right: auto; /* Center text horizontally */
-            line-height: 1.5; /* Improve readability */
-            text-align: center;
-        }
-        .title-custom {
-            font-size: 36px; /* Bigger title */
-            font-weight: bold;
-            margin-bottom: 40px; /* Add space below title */
-            font-family: 'Arial', sans-serif;
-            text-align: left; /* Align to the left */
-        }
-        .title-custom span {
-            color: #65c6ba; /* Color for TrueNet in title */
-        }
-        footer {
-            margin-top: 80px; /* Push footer lower */
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    # Consolidated Custom CSS
+    st.markdown(
+    """
+    <style>
+
+    .title-custom {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        font-family: 'Arial', sans-serif;
+        text-align: left;
+    }
+    .title-custom span {
+        color: #65c6ba;
+    }
+
+    .team-container {
+        text-align: center;
+        margin-bottom: 40px; /* Add consistent spacing between members */
+    }
+    .team-container img {
+        border-radius: 50% !important; /* Ensures round images */
+        margin-bottom: 10px;
+        max-width: 150px;
+        height: 150px;
+        object-fit: cover !important; /* Prevents distortion */
+        display: block;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
+    }
+    .team-caption {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .team-caption span {
+        color: #65c6ba; /* Last name in green */
+    }
+    .team-role {
+        font-size: 16px;
+        line-height: 1.8;
+        max-width: 220px;
+        margin: 0 auto !important; /* Centers text relative to the image */
+        text-align: center !important; /* Align text in the center */
+        margin-top: 10px;
+        margin-bottom: 25px; /* Adds space below */
+    }
+
+    hr {
+        border: 1px solid #e0e0e0; /* Light gray */
+        margin-top: 40px; /* Space before footer */
+        margin-bottom: 10px;
+    }
+    footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-bottom: 20px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
 
     # Display custom header with logo
     st.markdown(f"""
@@ -72,7 +87,7 @@ def app():
     """, unsafe_allow_html=True)
 
     # Title with colored "TrueNet"
-    st.markdown('<div class="title-custom">Meet the people behind <span>TrueNet</span>:</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title-custom">Meet the people behind <span>TrueNet</span></div>', unsafe_allow_html=True)
 
     # Display each team member in separate columns
     team_members = [
@@ -80,23 +95,26 @@ def app():
         {"name": "JÉRÔME <span>MORISSARD</span>", "role": "iOS Fullstack Developer. Entrepreneur. Based in Biarritz.", "image": "jerome.png"},
         {"name": "ABHINAV <span>BANERJEE</span>", "role": "Tech Consultant at Deloitte. Based in London.", "image": "abhi.png"},
         {"name": "MOHAMED <span>TARAWALLI</span>", "role": "Accountant at KPMG.", "image": "achmed.png"},
-        {"name": "LINA <span>PALACIOS</span>", "role": "Mathematician at Milliman.", "image": "lina.png"}
+        {"name": "LINA <span>PALACIOS</span>", "role": "Mathematician at Milliman. Based in Munich.", "image": "lina.png"}
     ]
 
+    # Create columns dynamically
     columns = st.columns(len(team_members))  # Create a column for each team member
 
     for col, member in zip(columns, team_members):
         with col:
             st.markdown('<div class="team-container">', unsafe_allow_html=True)
-            st.image(os.path.join(save_path, member["image"]), width=150, use_column_width=False, caption="", output_format="PNG", class_="team-image")
+            st.image(os.path.join(save_path, member["image"]), width=150, use_column_width=False)  # Simplified st.image
             st.markdown(f'<div class="team-caption">{member["name"]}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="team-role">{member["role"]}</div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
+     # Add a horizontal line before the footer
+    st.markdown("<hr>", unsafe_allow_html=True)
+
     # Footer
-    st.markdown("---")
     st.markdown("""
-        <footer style="text-align:center;">
+        <footer>
             © 2024 TrueNet AI Detection. All rights reserved.
         </footer>
     """, unsafe_allow_html=True)
