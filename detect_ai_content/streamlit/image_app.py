@@ -63,7 +63,7 @@ if st.button("Run Prediction") and image is not None:
     if response.status_code == 200:
         st.markdown('<p style="color:#141414; font-weight: bold; background-color: #00FF00; padding: 10px 20px; border-radius: 5px; font-size: 16px;">Prediction complete ✅</p>', unsafe_allow_html=True)
         time.sleep(2)
-        prediction_text = "Model has predicted your image to be: " + response.json().get("prediction", "No prediction found")
+        prediction_text = "Model has predicted: " + response.json().get("prediction", "No prediction found")
         st.markdown(f'<p style="color:#141414; font-weight: bold; background-color: #00FF00; padding: 10px 20px; border-radius: 5px; font-size: 16px;">{prediction_text}</p>', unsafe_allow_html=True)
     else:
         st.error("Error: " + response.text)
