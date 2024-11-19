@@ -226,6 +226,58 @@ def predict(
         }
     }
 
+@app.post("/image_multi_predict")
+async def image_multi_predict(user_input: UploadFile = File(...)):
+    """
+    - Make predictions using both VGG16 and CNN models on user-provided image.
+    - Aggregate predictions and provide a confidence score.
+    """
+    from io import BytesIO
+    from PIL import Image
+
+    # Read and preprocess the user input image
+    user_input = await user_input.read()
+    img = Image.open(BytesIO(user_input))
+
+    predictions = {}
+
+    # Initialize and use VGG16 model
+    vgg16 = Vgg16()
+    vgg16_prediction, vgg16_message = vgg16.predict(img)
+    predictions['VGG16'] = {
+        'predicted_class': vgg16_prediction,
+        'message': vgg16_message
+    }
+
+    # Initialize and use CNN model
+    cnn = TrueNetImageUsinCustomCNN()
+    cnn_prediction, cnn_message = cnn.predict(img)
+    predictions['CNN'] = {
+        'predicted_class': cnn_prediction,
+        'message': cnn_message
+    }
+
+    # Aggregate results
+    y_preds = [predictions['VGG16']['predicted_class'], predictions['CNN']['predicted_class']]
+    number_of_zeros = y_preds.count(0)
+    number_of_ones = y_preds.count(1)
+
+    # Final aggregated prediction
+    if np.mean(y_preds) < 0.5:
+        prediction = 0
+        prediction_confidence = round(100 * (number_of_zeros / len(y_preds)))
+    else:
+        prediction = 1
+        prediction_confidence = round(100 * (number_of_ones / len(y_preds)))
+
+    return {
+        'prediction': prediction,
+        'predict_proba': f'{prediction_confidence}%',
+        'details': {
+            'models': predictions
+        }
+    }
+
 
 
 @app.post("/image_predict")

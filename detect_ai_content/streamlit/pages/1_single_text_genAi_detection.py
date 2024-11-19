@@ -213,9 +213,10 @@ def create_content():
 
     text = text_input_section()
 
+    # TODO @lina change colour
     col1, col2 = st.columns([2, 1])
     with col1:
-        if st.button("Analyse Text", type="primary"):
+        if st.button("Analyse Test", type="primary"):
             if text:
                 with st.spinner('Wait for it...'):
                     analysis = analyze_text(text)
