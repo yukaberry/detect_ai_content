@@ -28,18 +28,19 @@ def app():
 
     # Title
     st.markdown("""
-        ## **Is your image Real or AI Generated?**
+        ## **Is your image Human or AI Generated?**
     """)
 
     # Instruction
     st.write("""
-    Upload an image below to find out if it's AI-generated or real:
+    Upload an image below to find out if it's created by AI or a human:
     """)
 
     # File uploader
     image = st.file_uploader("", type=["JPG", "JPEG", "PNG"])
 
     # Run Prediction Button
+    # TODO @Lina can you make it green?
     if st.button("Run Prediction") and image is not None:
         # API URL (Replace with actual deployed API)
         api_url = "https://detect-ai-content-image-api-334152645738.europe-west1.run.app/predict"
