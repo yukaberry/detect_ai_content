@@ -537,3 +537,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# hack to speed up the 1st prediction request
+import requests
+requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')
