@@ -80,34 +80,33 @@ def analyze_text(text: str) -> dict:
 def example_buttons():
     st.write("Try an example:")
 
-    # Use st.radio for selecting an example
-    selected_example = st.radio(
-        "",
-        options=["Llama2", "Claude", "ChatGPT", "Human"],
-        index=0,  # Default selected option
-        horizontal=True,  # Align horizontally
-    )
+    # Create a container for the buttons
+    button_container = st.container()
 
-    # Fetch text based on the selected example
-    if selected_example == "Llama2":
+    # Use columns within the container
+    cols = button_container.columns(4)
+
+    # Create all buttons and check their states
+    if cols[0].button("Llama2", key="example1", type="secondary"):
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-    elif selected_example == "Claude":
+    if cols[1].button("Claude", key="example2", type="secondary"):
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-    elif selected_example == "ChatGPT":
+    if cols[2].button("ChatGPT", key="example3", type="secondary"):
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-    elif selected_example == "Human":
+    if cols[3].button("Human", key="example4", type="secondary"):
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
         print(response.json())
         st.session_state.text_input = response.json()['text']
+
 
 # CSS for Styling
 st.markdown("""
@@ -175,7 +174,7 @@ st.markdown("""
 
 /* Style for the file uploader button */
 
-.button {
+button {
         background-color: #65c6ba; /* Default background color */
         color: white; /* Text color */
         font-weight: bold; /* Bold text */
@@ -205,8 +204,6 @@ st.markdown("""
 
 
 /* END Style for the file uploader button */
-
-
 
 /* START Style for CHARTS */
 

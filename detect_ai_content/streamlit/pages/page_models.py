@@ -1,4 +1,8 @@
 # pages/page_models.py
+import streamlit as st
+import base64
+import os
+import pathlib
 
 import streamlit as st
 import base64
@@ -14,44 +18,85 @@ def get_base64_image(file_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 def app():
-    # Prepare base64 string for the logo
+
+    # Prepare Base64 string for the logo
     parent_path = pathlib.Path(__file__).parent.parent.resolve()
     save_path = os.path.join(parent_path, "data")
     logo_base64 = get_base64_image(f"{save_path}/logo3_transparent.png")
 
-    # Display custom header with logo
-    st.markdown(f"""
-        <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px;">
-            <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto;">
-        </div>
+    st.markdown("""
+   <style>
+    .streamlit-expanderHeader {
+        font-size: 24px !important;
+        font-weight: bold !important;
+        color: #65c6ba !important;
+    }
+    </style>
     """, unsafe_allow_html=True)
 
-    # Main content of the page
+    # Header
+    st.markdown(f"""
+    <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:20px; display:flex; align-items:center;">
+        <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; margin-right:20px;">
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Page Title
+    st.markdown('<h2 style="text-align:left; font-weight:bold;">Our Models</h2>', unsafe_allow_html=True)
+
+    # Baseline Models
+    with st.expander("Baseline Models", expanded=False):
+        st.markdown("""
+        ### Logistic Regression
+        - **Overview:** A simple yet effective statistical model used as a baseline for comparison with more advanced algorithms.
+        - **Purpose:** Measures the relationship between input features and the likelihood of text being AI-generated or human-written.
+        - **Advantages:** Computationally efficient, easy to implement, and interpretable.
+
+        ### Support Vector Machines (SVM)
+        - **Overview:** A robust supervised learning algorithm for text classification.
+        - **Kernel Trick:** Projects data into higher-dimensional spaces for better classification.
+        - **Advantages:** Works well with small-to-medium datasets and captures complex patterns.
+        """, unsafe_allow_html=True)
+
+    with st.expander("Advanced Models", expanded=False):
+        st.markdown("""
+        ### Neural Networks
+        - **Overview:** Mimics human brain functionality to detect nuanced differences in text.
+        - **Applications:** Capturing nonlinear patterns in text data for accurate detection.
+        - **Architectures:**
+            - **Feedforward Networks:** For straightforward classification.
+            - **RNNs:** To handle sequential text data effectively.
+
+        ### Transformer-Based Models
+        - **Overview:** Leverages models like BERT for deep contextual understanding.
+        - **Advantages:** Captures both preceding and succeeding context for enhanced classification.
+        - **Use Cases:** State-of-the-art text classification tasks.
+        """, unsafe_allow_html=True)
+
+    # Model Performance Section
     st.markdown("""
-    ## Models
-
-    ### Baseline Models:
-    - **Logistic Regression**: A simple yet effective model used as a baseline to compare more complex algorithms.
-    - **Support Vector Machines (SVM)**: Employed for its effectiveness in high-dimensional spaces and versatility in text classification tasks.
-
-    ### Advanced Models:
-    - **Neural Networks**: Implementing deep learning architectures to capture complex patterns in the data.
-    - **Transformer-Based Models**: Utilizing models like BERT (Bidirectional Encoder Representations from Transformers) to leverage contextual information in text, enhancing detection accuracy.
-
-    ### Model Performance:
-    - **Evaluation Metrics**: Reporting on key metrics such as accuracy, precision, recall, and F1-score to provide a comprehensive view of model performance.
-    - **Confusion Matrix**: Visualizing true positives, false positives, true negatives, and false negatives to understand the model’s strengths and areas for improvement.
+    ### Model Performance
+    - **Accuracy:** Overall correctness of predictions.
+    - **Precision:** Focuses on the quality of positive predictions.
+    - **Recall:** Measures the ability to capture actual AI-generated texts.
+    - **F1-Score:** A harmonic mean of precision and recall.
     """)
 
+    # Confusion Matrix Example Section
+    st.markdown("### Model Benchmark:")
+    confusion_matrix_path = os.path.join(save_path, "model_benchmark.png")
+    if os.path.exists(confusion_matrix_path):
+        st.image(confusion_matrix_path, caption="Model Benchmark", use_column_width=False, width=700)
+    else:
+        st.warning("Confusion Matrix image not found. Please check the path.")
+
     # Footer
-    st.markdown("---")
     st.markdown("""
-        <div style="text-align:center;">
-            © 2024 TrueNet AI Detection. All rights reserved.
-        </div>
+    <div style="text-align:center; margin-top:40px; font-size:14px; color:#777;">
+        © 2024 TrueNet AI Detection. All rights reserved.
+    </div>
     """, unsafe_allow_html=True)
 
 # This allows the models page to be run as a standalone app for testing
 if __name__ == "__main__":
-    st.sidebar.title('Navigation')
     app()
