@@ -1,77 +1,74 @@
 import streamlit as st
-from PIL import Image
-import numpy as np
+import base64
 import os
 import pathlib
-import io
 import requests
 import time
 
-# https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader
-# SUPPORT PNG in the futur
-# Complex to support the 4th layer on the Api & model
-uploaded_file = st.file_uploader("Upload an image", type=["jpg"], accept_multiple_files=False)
+# Set page configuration
+st.set_page_config(page_title="TrueNet – Image AI Detection", layout="wide")
 
-if uploaded_file is not None:
-    path_in = uploaded_file.name
-    print(path_in)
-else:
-    path_in = None
+# Convert the image to Base64
+def get_base64_image(file_path):
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
-if path_in is not None:
-
-    st.subheader("Your image")
-    img_array = np.array(uploaded_file)
-    st.image(
-        uploaded_file,
-        caption=f"You amazing image has shape {img_array.shape[0:2]}",
-        use_column_width=True,
-    )
-
-    image_bytes = uploaded_file.read()
-    image = Image.open(io.BytesIO(image_bytes))
-
+def app():
+    # Prepare base64 string for the logo
     parent_path = pathlib.Path(__file__).parent.parent.resolve()
     save_path = os.path.join(parent_path, "data")
+    logo_base64 = get_base64_image(f"{save_path}/logo3_transparent.png")
 
-    # Create the directory if it doesn't exist
-    #os.makedirs(save_path, exist_ok=True)
-    #
+    # Display custom header with logo
+    st.markdown(f"""
+        <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px;">
+            <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto;">
+        </div>
+    """, unsafe_allow_html=True)
 
-    complete_name = os.path.join(save_path, uploaded_file.name)
+    # Title
+    st.markdown("""
+        ## **Is your image Real or AI Generated?**
+    """)
 
-    with open(complete_name, "wb") as f:
-        f.write(image_bytes)
+    # Instruction
+    st.write("""
+    Upload an image below to find out if it's AI-generated or real:
+    """)
 
-    st.subheader("Image saved at ")
-    st.write(f"{complete_name}")
+    # File uploader
+    image = st.file_uploader("", type=["JPG", "JPEG", "PNG"])
 
-    if st.button('Evaluate this image'):
-        st.subheader("Prediction - predict")
-        with st.spinner('Wait for it...'):
-            time.sleep(2)
+    # Run Prediction Button
+    if st.button("Run Prediction") and image is not None:
+        # API URL (Replace with actual deployed API)
+        api_url = "https://detect-ai-content-image-api-334152645738.europe-west1.run.app/predict"
+        files = {"file": image.getvalue()}
 
-            headers = {
-                'accept': 'application/json',
-                # requests won't add a boundary if this header is set when you pass files=
-                # 'Content-Type': 'multipart/form-data',
-            }
+        try:
+            response = requests.post(api_url, files=files)
 
-            files = {
-                'user_input': (uploaded_file.name, open(complete_name, 'rb'), 'image/jpg'),
+            if response.status_code == 200:
+                prediction = response.json().get("prediction", "No prediction found")
+                st.markdown(f"""
+                    <div style="background-color:#65c6ba; color:white; padding:10px; border-radius:5px; text-align:center; font-size:18px; margin-top:20px;">
+                        Prediction complete ✅ <br><b>{prediction}</b>
+                    </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.error("Error: " + response.text)
+        except Exception as e:
+            st.error("Error while connecting to the API. Please try again later.")
 
-            }
-            # local http://0.0.0.0:8000/image_predict
-            #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
-            response = requests.post("https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/image_predict_cnn",headers=headers, files=files)
-            #response = requests.post("https://0.0.0.0:8000/image_predict_cnn",headers=headers, files=files)
-            # deploy                  https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
-            # st.success(f"{response.json()}")
-            st.success(response.text)
-            #st.success(response)
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+        <div style="text-align:center;">
+            © 2024 TrueNet AI Detection. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)
 
-# Ping server to preload things if needed
-import requests
-            #https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
-requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/ping')
-#requests.get('https://0.0.0.0:8000/ping')
+# This allows the app to run as a standalone page for testing
+if __name__ == "__main__":
+    st.sidebar.title('Navigation')
+    app()

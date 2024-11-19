@@ -1,3 +1,5 @@
+# app_v0.py
+
 import streamlit as st
 import matplotlib.pyplot as plt
 import io
@@ -9,7 +11,6 @@ import os
 
 # Page Configuration
 st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
-
 
 # define session_state variables
 if 'text_input' not in st.session_state:
@@ -65,52 +66,48 @@ def display_results(analysis: dict):
         unsafe_allow_html=True
     )
 
+# Function: Analyze Text
 def analyze_text(text: str) -> dict:
-    """
-    Placeholder for actual AI detection logic.
-    """
-
-    headers = {
-        'accept': 'application/json',
-    }
-    params = {
-        "text":text
-    }
-    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
+    headers = {'accept': 'application/json'}
+    params = {"text": text}
+    response = requests.get(
+        'https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict',
+        headers=headers, params=params
+    )
     st.success("Prediction done ✅")
     return response.json()
 
 def example_buttons():
     st.write("Try an example:")
 
-    # Create a container for the buttons
-    button_container = st.container()
+    # Use st.radio for selecting an example
+    selected_example = st.radio(
+        "",
+        options=["Llama2", "Claude", "ChatGPT", "Human"],
+        index=0,  # Default selected option
+        horizontal=True,  # Align horizontally
+    )
 
-    # Use columns within the container
-    cols = button_container.columns(4)
-
-    # Create all buttons and check their states
-    if cols[0].button("Llama2", key="example1", type="secondary"):
+    # Fetch text based on the selected example
+    if selected_example == "Llama2":
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-    if cols[1].button("Claude", key="example2", type="secondary"):
+    elif selected_example == "Claude":
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-    if cols[2].button("ChatGPT", key="example3", type="secondary"):
+    elif selected_example == "ChatGPT":
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-    if cols[3].button("Human", key="example4", type="secondary"):
+    elif selected_example == "Human":
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
         print(response.json())
         st.session_state.text_input = response.json()['text']
-
-
 
 # CSS for Styling
 st.markdown("""
@@ -178,7 +175,7 @@ st.markdown("""
 
 /* Style for the file uploader button */
 
-button {
+.button {
         background-color: #65c6ba; /* Default background color */
         color: white; /* Text color */
         font-weight: bold; /* Bold text */
@@ -208,6 +205,8 @@ button {
 
 
 /* END Style for the file uploader button */
+
+
 
 /* START Style for CHARTS */
 
@@ -304,6 +303,7 @@ button {
 /* END Style for CHARTS */
 
 
+
     .title-big, .title-small {
         font-size: 36px;
         font-weight: bold;
@@ -336,6 +336,15 @@ button {
 
     }
 
+    .logo_image {
+           margin-top: 20px;
+           text-align: center;
+           background-color: #f9f9f9;
+           padding: 15px;
+           border-radius: 8px;
+           box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+    }
 
 
 
@@ -346,7 +355,6 @@ button {
 
 
 # Header Section
-# METHOD : Use a Base64-Encoded Image
 
 # Convert the image to Base64
 def get_base64_image(file_path):
@@ -412,7 +420,7 @@ with col1:
 # Insert Base64-encoded image inside a styled div
     st.markdown(
         f"""
-        <div style="margin-top: 20px; text-align: center; background-color: #f9f9f9; padding: 15px; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
+        <div class="logo_image_manu">
             <img src="data:image/png;base64,{logo_base64_youtube}" alt="Your Image" style="max-width: 100%; border-radius: 8px;">
         </div>
         """,
