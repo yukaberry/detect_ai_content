@@ -2,6 +2,9 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import io
 import requests
+import base64
+import pathlib
+import os
 
 
 # Page Configuration
@@ -343,54 +346,7 @@ button {
 
 
 # Header Section
-
-
-# DEBUGGING:
-# check full path of streamlit
-
-#import os
-#st.write(os.getcwd())
-
-
-
-# METHOD 1: PYTHON (Works)
-
-#Python method that always works but with not good HTML Integration
-
-#st.markdown(
-#    """
-#    <div id="logo">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-#st.image("logo.png", caption="Your Logo", use_column_width=True)
-
-
-# METHOD 2: HTLM (Not working)
-
-# Using html but that DOESNT WORK
-# what is the correct path ??
-# If i use an http link it works
-# if I use internal path of img i am not able to find the proper path to display the picture
-
-# Embed the image directly into the <div> using HTML
-#st.markdown(
-#    """
-#    <div id="logo">
-#        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/230px-Python-logo-notext.svg.png" alt="Your Logo" style="width: 100px;">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-
-# METHOD 3: Use a Base64-Encoded Image
-
-import base64
-import streamlit as st
-import base64
-import pathlib
-import os
+# METHOD : Use a Base64-Encoded Image
 
 # Convert the image to Base64
 def get_base64_image(file_path):
