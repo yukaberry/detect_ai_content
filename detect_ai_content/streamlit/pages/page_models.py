@@ -23,18 +23,24 @@ def app():
     st.markdown(f"""
         <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px;">
             <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto;">
-
         </div>
     """, unsafe_allow_html=True)
 
     # Main content of the page
-    st.write("""
-    ## Machine and Deep learning Models
+    st.markdown("""
+    ## Models
 
-    - **Data Collection**: We gather diverse datasets to train our models, ensuring robust performance.
-    - **Algorithm Development**: We develop state-of-the-art algorithms to efficiently analyze the data.
-    - **Implementation**: We implement these solutions in real-world scenarios to test their effectiveness and refine them based on feedback.
-    - **Scalability**: Our product is designed to learn and scale to new features, adapting to new data and evolving threats.
+    ### Baseline Models:
+    - **Logistic Regression**: A simple yet effective model used as a baseline to compare more complex algorithms.
+    - **Support Vector Machines (SVM)**: Employed for its effectiveness in high-dimensional spaces and versatility in text classification tasks.
+
+    ### Advanced Models:
+    - **Neural Networks**: Implementing deep learning architectures to capture complex patterns in the data.
+    - **Transformer-Based Models**: Utilizing models like BERT (Bidirectional Encoder Representations from Transformers) to leverage contextual information in text, enhancing detection accuracy.
+
+    ### Model Performance:
+    - **Evaluation Metrics**: Reporting on key metrics such as accuracy, precision, recall, and F1-score to provide a comprehensive view of model performance.
+    - **Confusion Matrix**: Visualizing true positives, false positives, true negatives, and false negatives to understand the model’s strengths and areas for improvement.
     """)
 
     # Footer
@@ -45,7 +51,7 @@ def app():
         </div>
     """, unsafe_allow_html=True)
 
-# This allows the approach page to be run as a standalone app for testing
+# This allows the models page to be run as a standalone app for testing
 if __name__ == "__main__":
     st.sidebar.title('Navigation')
     app()

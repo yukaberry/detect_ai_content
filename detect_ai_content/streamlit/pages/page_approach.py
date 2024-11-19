@@ -24,18 +24,28 @@ def app():
     st.markdown(f"""
         <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px;">
             <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto;">
-
         </div>
     """, unsafe_allow_html=True)
 
     # Main content of the page
-    st.write("""
-    ## Our Approach to AI Detection
+    st.markdown("""
+    ## Our Approach
 
-    - **Data Collection**: We gather diverse datasets to train our models, ensuring robust performance.
-    - **Algorithm Development**: We develop state-of-the-art algorithms to efficiently analyze the data.
-    - **Implementation**: We implement these solutions in real-world scenarios to test their effectiveness and refine them based on feedback.
-    - **Scalability**: Our product is designed to learn and scale to new features, adapting to new data and evolving threats.
+    ### Data Collection and Preprocessing:
+    - **Data Gathering**: Collecting a balanced dataset comprising both AI-generated and human-written content.
+    - **Preprocessing**: Cleaning the data by removing noise, normalizing text, and tokenizing sentences to prepare it for model training.
+
+    ### Model Development:
+    - **Feature Extraction**: Utilizing techniques such as TF-IDF (Term Frequency-Inverse Document Frequency) to convert text data into numerical features that machine learning models can process.
+    - **Model Selection**: Experimenting with various algorithms, including logistic regression, support vector machines, and neural networks, to identify the most effective model for detecting AI-generated content.
+
+    ### Training and Evaluation:
+    - **Training**: Feeding the preprocessed data into the selected models and adjusting parameters to optimize performance.
+    - **Evaluation**: Assessing model accuracy, precision, recall, and F1-score using the testing dataset to ensure reliability.
+
+    ### Deployment:
+    - **Integration with Streamlit**: Developing an interactive web application that allows users to input text and receive real-time analysis on whether the content is AI-generated.
+    - **User Interface Design**: Creating a user-friendly interface that displays results clearly and provides insights into the detection process.
     """)
 
     # Footer

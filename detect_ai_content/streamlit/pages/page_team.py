@@ -94,7 +94,7 @@ def app():
         {"name": "YUKA <span>KUDO</span>", "role": "Team Leader and Data Engineer at German Biology Institute. Based in Berlin.", "image": "yuka.png"},
         {"name": "JÉRÔME <span>MORISSARD</span>", "role": "iOS Fullstack Developer. Entrepreneur. Based in Biarritz.", "image": "jerome.png"},
         {"name": "ABHINAV <span>BANERJEE</span>", "role": "Tech Consultant at Deloitte. Based in London.", "image": "abhi.png"},
-        {"name": "MOHAMED <span>TARAWALLI</span>", "role": "Accountant at KPMG.", "image": "achmed.png"},
+        {"name": "MOHAMED <span>TARAWALLI</span>", "role": "Accountant at KPMG. Based in Nigeria", "image": "achmed.png"},
         {"name": "LINA <span>PALACIOS</span>", "role": "Mathematician at Milliman. Based in Munich.", "image": "lina.png"}
     ]
 
