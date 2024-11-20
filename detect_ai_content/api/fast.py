@@ -28,6 +28,7 @@ from detect_ai_content.ml_logic.for_images.vgg16 import Vgg16
 from detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN import TrueNetImageUsinCustomCNN
 
 from detect_ai_content.ml_logic.for_images.image_classifier_cnn import image_classifier_cnn
+from detect_ai_content.ml_logic.for_images.TrueNetImageResNet50 import TrueNetImageResNet50
 
 
 app = FastAPI()
@@ -256,7 +257,18 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
         'model_name': 'VGG16',
         'message': vgg16_message
     }
+
 ##################
+
+    resNet50 = TrueNetImageResNet50()
+    resNet50_prediction, resNet50_message, resNet50_proba  = resNet50.predict(img)
+    predictions['TrueNetImageResNet50'] = {
+        'predicted_class': resNet50_prediction,
+        'predict_proba_class' : f'{np.round(100 * resNet50_proba)}%',
+        'model_name': 'TrueNetImageResNet50',
+        'message': resNet50_message
+    }
+
     # TODO replace with updated cnn
     # Initialize and use CNN model
     # cnn = TrueNetImageUsinCustomCNN()
@@ -286,7 +298,6 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
     }
 
    #############
-
 
     # Aggregate results
     y_preds = [predictions['VGG16']['predicted_class'], predictions['CNN']['predicted_class']]
