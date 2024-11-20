@@ -89,7 +89,7 @@ def app():
     # Main content of the page
     st.markdown("""
     <h2>More than an AI Detector</h2>
-    <h3>Preserve what\'s <span style="color: #65c6ba;">human.</span></h3>
+    <h3>Preserve what\'s <span style="color: #65c6ba;">Human.</span></h3>
     <p>Since inventing AI detection, we incorporate the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.</p>
     """, unsafe_allow_html=True)
 

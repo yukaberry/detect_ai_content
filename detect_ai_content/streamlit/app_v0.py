@@ -1,7 +1,6 @@
 # app_v0.py
 
 import streamlit as st
-import matplotlib.pyplot as plt
 import io
 import requests
 import base64
@@ -122,8 +121,8 @@ def example_buttons():
     # Create a container for the buttons
     button_container = st.container()
 
-    # Use columns within the container
-    cols = button_container.columns(4)
+    # Adjust the column width to reduce space
+    cols = button_container.columns([1, 1, 1, 1])  # Use equal width for all buttons
 
     # Create all buttons and check their states
     if cols[0].button("Llama2", key="example1", type="secondary"):
@@ -145,6 +144,9 @@ def example_buttons():
         response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
         print(response.json())
         st.session_state.text_input = response.json()['text']
+
+    # Add custom CSS to reduce space between buttons
+
 
 
 # CSS for Styling
@@ -229,7 +231,9 @@ button {
         background-color:#0e8c7d; /* Darker hover color */
         color:#0e8c7d;
     }
-
+    .stButton>button {
+                margin: 0px 0px;  /* Reduce the space between buttons */
+                }
     /* Optional: Style for Streamlit-specific buttons (if needed) */
     div[data-testid="stButton"] > button {
         background-color: #65c6ba;
@@ -380,10 +384,15 @@ button {
            border-radius: 8px;
            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 
-    }
+    .content-text {
+            font-size: 20px;
+            color: #333;
+            margin: 20px;
+        }
 
-
-
+        .paragraph {
+            margin-bottom: 15px;
+        }
     </style>
 
 
@@ -400,12 +409,20 @@ col1, col2 = st.columns([1.5, 2])
 with col1:
     st.markdown('<div class="title-big">Beyond the Surface</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-small">Identify the <span>Creator</span></div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="paragraph">'
-        'Since inventing AI detection, TrueNet incorporates the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="content-text">
+        <div class="paragraph">
+            In a world of exponential AI-generated content, distinguishing genuine human effort is more critical than ever. TrueNet goes beyond detection—it's your partner for transparency, integrity, and productivity.
+        </div>
+        <div class="paragraph">
+            With advanced AI algorithms and intuitive tools, TrueNet empowers businesses, educators, and creators to protect what’s genuine while embracing responsible AI use.
+        </div>
+        <div class="paragraph">
+            TrueNet<span style="color:#65c6ba;">: Because <span style="color:#0e8c7d;">truth</span> matters.</span>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 
 # Insert video (Check issue with encoding)
    # st.video("data/dummy_video.mp4")
