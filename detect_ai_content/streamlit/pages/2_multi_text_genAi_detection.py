@@ -131,22 +131,22 @@ def example_buttons():
 
     # Create all buttons and check their states
     if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
         print(response.json())
         selected_example = response.json()['text']
 
     if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
         print(response.json())
         selected_example = response.json()['text']
 
     if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
         print(response.json())
         selected_example = response.json()['text']
 
     if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
+        response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
         print(response.json())
         selected_example = response.json()['text']
 
@@ -172,7 +172,7 @@ def analyze_text(text: str) -> dict:
     params = {
         "text":text
     }
-    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
+    response = requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
     st.success("Prediction done ✅")
     return response.json()
 
@@ -180,10 +180,19 @@ def display_results(analysis: dict):
     st.markdown("### Analysis Results")
     print(analysis)
 
-    col1, col2 = st.columns(2)
+    col1, col2 , col3= st.columns(3)
     with col1:
-        st.metric("Prediction", analysis["prediction"])
+        st.metric("Prediction Class", analysis["prediction"])
+
     with col2:
+        if analysis["prediction"] == 0:
+
+            st.metric("Prediction", "Human")
+        if analysis["prediction"] == 1:
+
+            st.metric("Prediction", "AI")
+
+    with col3:
         st.metric("Predict proba", analysis["predict_proba"])
 
     st.markdown("#### Detailed Metrics")
@@ -192,8 +201,40 @@ def display_results(analysis: dict):
     df = pd.DataFrame(data=models)
     df = df.T
     df = df[['predict_proba_class', 'predicted_class']]
-    st.table(df)
 
+    # rename columns for urser
+    df.columns = ['Probability', 'Predicted Class']
+    df['AI or Human'] = df['Predicted Class'].apply(lambda x: "Human" if x == 0 else "AI")
+
+     # Reset the index so that model names become a column (so we can style them)
+    df.reset_index(inplace=True)
+    df.rename(columns={'index': 'Model Name'}, inplace=True)
+
+
+    # st.table(df)
+    # st.dataframe(df, use_container_width=True)
+
+
+    def highlight_ai(row):
+        # Use a light red color for highlighting if 'predicted_class' is 1
+        style = [''] * len(row)  # Default style: no highlight
+        if row['Predicted Class'] == 1:
+            # Highlight the entire row with light red if predicted_class is AI
+            style = ['background-color: #FFE6E6'] * len(row)
+
+        # Highlight the model name (now a column) with a different color if it's predicted as AI
+        if row['Predicted Class'] == 1:
+            #  Soft red for model names (first column)
+            style[0] = 'background-color: #FFE6E6'  #
+
+        return style
+
+
+    df = df.set_index('Model Name')
+    # Apply the style function to the DataFrame
+    styled_df = df.style.apply(highlight_ai, axis=1)
+
+    st.write(styled_df, use_container_width=True)
 def create_content():
     st.title("More than an AI detector.")
     st.markdown("### Preserve what's human.")
@@ -244,4 +285,4 @@ if __name__ == "__main__":
     main()
 
 import requests
-requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/ping')
+requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/ping')
