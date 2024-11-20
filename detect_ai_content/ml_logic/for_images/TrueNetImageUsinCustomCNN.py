@@ -9,7 +9,9 @@ from PIL import Image
 class TrueNetImageUsinCustomCNN:
 
     """
-    Updated model 'aban371818', 'CNN-FINAL-MODEL.h5'
+    Ab's model
+
+    'cnn_model_4-11_0.1.h5'
 
     """
 
@@ -17,7 +19,11 @@ class TrueNetImageUsinCustomCNN:
     def load_model():
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models','aban371818', 'CNN-FINAL-MODEL.h5') #'ab', 'cnn_model_4-11_0.1.h5')
+
+        model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models','ab', 'cnn_model_4-11_0.1.h5')
+        # Should update this as below
+        #model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models','aban371818', 'CNN-FINAL-MODEL.h5')
+
         model = keras_models.load_model(model_path)
         return model
 
@@ -51,9 +57,10 @@ class TrueNetImageUsinCustomCNN:
         predicted_class = int(class_prediction > 0.5)
 
         # 0 likely representing 'FAKE' and 1 representing 'REAL'
-        if predicted_class == 1:
+        # TODO clarify
+        if predicted_class == 0:
             prediction_message = "Predicted as AI"
-        elif predicted_class == 0 :
+        elif predicted_class == 1 :
             prediction_message = "Predicted as Human"
 
         return predicted_class, prediction_message, predict_prob_confidence
