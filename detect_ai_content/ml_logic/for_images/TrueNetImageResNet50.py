@@ -50,6 +50,13 @@ gpu = len(tf.config.list_physical_devices('GPU'))>0
 print("GPU is", "available" if gpu else "NOT AVAILABLE")
 
 class TrueNetImageResNet50:
+
+    """
+    achmed's model
+
+
+    """
+
     def _load_model(self):
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)

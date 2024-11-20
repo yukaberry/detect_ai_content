@@ -246,8 +246,10 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
     user_input = await user_input.read()
     img = Image.open(BytesIO(user_input))
 
+    # save all prediction results
     predictions = {}
 
+    # model1
     # Initialize and use VGG16 model
     vgg16 = Vgg16()
     vgg16_prediction, vgg16_message, vgg16_proba  = vgg16.predict(img)
@@ -258,10 +260,13 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
         'message': vgg16_message
     }
 
-##################
-
+    # model2
     resNet50 = TrueNetImageResNet50()
+
+    # prediction
     resNet50_prediction, resNet50_message, resNet50_proba  = resNet50.predict(img)
+
+    # save results
     predictions['TrueNetImageResNet50'] = {
         'predicted_class': resNet50_prediction,
         'predict_proba_class' : f'{np.round(100 * resNet50_proba)}%',
@@ -269,27 +274,18 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
         'message': resNet50_message
     }
 
-    # TODO replace with updated cnn
-    # Initialize and use CNN model
-    # cnn = TrueNetImageUsinCustomCNN()
-    # cnn_prediction, cnn_message, cnn_predict_proba = cnn.predict(img)
-    # predictions['CNN'] = {
-    #     'predicted_class': cnn_prediction,
-    #     'predict_proba_class' : f'{np.round(100 * cnn_predict_proba)}%',
-    #     'model_name': 'TrueNetImageUsinCustomCNN',
-    #     'message': cnn_message
-    # }
-    #######
 
+    # model3
     classifier = image_classifier_cnn()
-    #image_bytes = await user_input.read()
-
+    # read user_input
     file_path = os.path.join(os.path.dirname(__file__), "temp_image.jpg")
     with open(file_path, "wb") as f:
         f.write(user_input)
 
+    # prediction
     cnn_prediction,  cnn_message , cnn_predict_proba = classifier.predict(file_path)
 
+    # save results
     predictions['CNN'] = {
         'predicted_class': cnn_prediction,
         'predict_proba_class' : f'{np.round(100 * cnn_predict_proba)}%',
@@ -297,13 +293,15 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
         'message': cnn_message
     }
 
-   #############
+    # Aggregate all models' results
+    y_preds = [predictions['VGG16']['predicted_class'],
+               predictions['CNN']['predicted_class'],
+               predictions['TrueNetImageResNet50']['predicted_class']]
 
-    # Aggregate results
-    y_preds = [predictions['VGG16']['predicted_class'], predictions['CNN']['predicted_class']]
     number_of_zeros = y_preds.count(0)
     number_of_ones = y_preds.count(1)
 
+    # TODO??
     # Final aggregated prediction
     if np.mean(y_preds) < 0.5:
         prediction = 0
