@@ -13,6 +13,7 @@ from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow.keras.models as keras_models
 
 from keras.layers import Dense, Input
 import keras.layers as layers
@@ -22,7 +23,10 @@ from keras.models import Sequential
 from keras._tf_keras.keras.preprocessing import image_dataset_from_directory
 
 import os
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.preprocessing import image
 
+import numpy as np
 
 ## CHECK GPU Capabiliteis
 import sys
@@ -46,7 +50,7 @@ gpu = len(tf.config.list_physical_devices('GPU'))>0
 print("GPU is", "available" if gpu else "NOT AVAILABLE")
 
 class TrueNetImageResNet50:
-    def load_model():
+    def _load_model(self):
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
         model_path = os.path.join(f'{module_dir_path}/..', 'detect_ai_content', 'models', 'achmed', 'achmed_ResNet50.keras')
@@ -132,3 +136,45 @@ class TrueNetImageResNet50:
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
         model_path = os.path.join(f'{module_dir_path}/..', 'detect_ai_content', 'models', 'achmed', 'achmed_ResNet50.keras')
         model.save(model_path)
+
+    def pre_process(img):
+
+        # Resize to 128, 128
+        img = img.resize((128, 128))
+        img_array = image.img_to_array(img)
+        img_array = img_array/255
+        img_array = np.expand_dims(img_array, axis=0)
+        return img_array
+
+    def predict(self, user_input):
+
+        """
+        Return
+        1. prediciton class '1' or '0'
+        2. prediction message 'AI' or ' Human'
+
+        """
+        # preprocess img
+        to_predict_img_array = TrueNetImageResNet50.pre_process(user_input)
+
+        # predict probablity
+        # output is a probability value (between 0 and 1)
+        prediction_results = self.model.predict(to_predict_img_array)
+        class_prediction = prediction_results[0][0]
+        print(prediction_results)
+        predict_prob_confidence = abs(class_prediction - 0.5)/0.5
+
+        # Get predicted indices
+        # do not use np.argmax for binary, it is for multi-class!!
+        # predicted_probabilities = np.argmax(predicted_class, axis=1)
+
+        # predict class
+        predicted_class = int(class_prediction > 0.5)
+
+        # 0 likely representing 'FAKE' and 1 representing 'REAL'
+        if predicted_class == 1:
+            prediction_message = "Predicted as AI"
+        elif predicted_class == 0:
+            prediction_message = "Predicted as Human"
+
+        return predicted_class, prediction_message, predict_prob_confidence
