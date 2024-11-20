@@ -116,23 +116,6 @@ def image_input_section():
         help="Upload the image you want to analyze"
     )
 
-# def analyze_image(image_file) -> dict:
-#     """
-#     Sends the uploaded image to the image classification endpoint.
-#     """
-#     headers = {
-#         'accept': 'application/json',
-#     }
-#     files = {
-#         'user_input': (image_file.name, image_file, image_file.type)
-#     }
-#     # dev
-#     # response = requests.post('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/image_multi_predict', headers=headers, files=files)
-#     # local
-#     response = requests.post('http://0.0.0.0:8000/image_multi_predict', headers=headers, files=files)
-#     st.success("Prediction done ✅")
-#     return response.json()
-
 
 def analyze_image(image_file) -> dict:
     """
@@ -165,10 +148,34 @@ def display_results(analysis: dict):
     st.markdown("### Analysis Results")
     print(analysis)
 
-    col1, col2 = st.columns(2)
+    # col1, col2 = st.columns(2)
+    # with col1:
+    #     st.metric("Prediction", analysis["prediction"])
+    # with col2:
+    #     st.metric("Predict proba", analysis["predict_proba"])
+
+    # st.markdown("#### Detailed Metrics")
+    # details = analysis["details"]
+    # models = details["models"]
+    # df = pd.DataFrame(data=models)
+    # df = df.T
+    # df = df[['predict_proba_class', 'predicted_class']]
+    # st.table(df)
+
+    col1, col2 , col3= st.columns(3)
+
     with col1:
-        st.metric("Prediction", analysis["prediction"])
+        st.metric("Prediction Class", analysis["prediction"])
+
     with col2:
+        if analysis["prediction"] == 0:
+
+            st.metric("Prediction", "Human")
+        if analysis["prediction"] == 1:
+
+            st.metric("Prediction", "AI")
+
+    with col3:
         st.metric("Predict proba", analysis["predict_proba"])
 
     st.markdown("#### Detailed Metrics")
@@ -177,7 +184,38 @@ def display_results(analysis: dict):
     df = pd.DataFrame(data=models)
     df = df.T
     df = df[['predict_proba_class', 'predicted_class']]
-    st.table(df)
+
+    # rename columns for urser
+    df.columns = ['Probability', 'Predicted Class']
+    df['AI or Human'] = df['Predicted Class'].apply(lambda x: "Human" if x == 0 else "AI")
+
+     # Reset the index so that model names become a column (so we can style them)
+    df.reset_index(inplace=True)
+    df.rename(columns={'index': 'Model Name'}, inplace=True)
+
+
+    def highlight_ai(row):
+            # Use a light red color for highlighting if 'predicted_class' is 1
+            style = [''] * len(row)  # Default style: no highlight
+            if row['Predicted Class'] == 1:
+                # Highlight the entire row with light red if predicted_class is AI
+                style = ['background-color: #FFE6E6'] * len(row)
+
+            # Highlight the model name (now a column) with a different color if it's predicted as AI
+            if row['Predicted Class'] == 1:
+                #  Soft red for model names (first column)
+                style[0] = 'background-color: #FFE6E6'  #
+
+            return style
+
+
+    df = df.set_index('Model Name')
+    # Apply the style function to the DataFrame
+    styled_df = df.style.apply(highlight_ai, axis=1)
+
+    st.write(styled_df, use_container_width=True)
+
+
 
 def create_content():
     st.title("AI Detector for Images")
@@ -189,13 +227,13 @@ def create_content():
 
     col1, col2 = st.columns([2, 1])
     with col1:
-        if st.button("Analyze Image", type="primary"):
+        if st.button("Analyse Image", type="primary"):
             if image_file:
-                with st.spinner('Analyzing...'):
+                with st.spinner('Analysing...'):
                     analysis = analyze_image(image_file)
                     display_results(analysis)
             else:
-                st.warning("Please upload an image to analyze.")
+                st.warning("Please upload an image to analyse.")
     with col2:
         if st.button("Clear", type="secondary"):
             st.session_state.clear()
