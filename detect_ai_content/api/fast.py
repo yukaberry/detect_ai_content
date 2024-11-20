@@ -137,19 +137,6 @@ def prediction_to_result(model, model_name, df):
     model_prediction_dict["model_name"] = model_name
     return model_prediction_dict
 
-
-def prediction_to_result_img(model, model_name, img):
-
-    y_pred = model.predict(img)
-    predicted_class = int(y_pred[0])
-    model_prediction_dict = {}
-    model_prediction_dict["predicted_class"] = predicted_class
-
-    model_prediction_dict["model_name"] = model_name
-    return model_prediction_dict
-
-
-
 @app.get("/text_multi_predict")
 def predict(
         text: str
@@ -261,21 +248,25 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
 
     # Initialize and use VGG16 model
     vgg16 = Vgg16()
-    vgg16_prediction, vgg16_message = vgg16.predict(img)
+    vgg16_prediction, vgg16_message, vgg16_proba  = vgg16.predict(img)
     predictions['VGG16'] = {
         'predicted_class': vgg16_prediction,
+        'predict_proba_class' : f'{np.round(100 * vgg16_proba)}%',
+        'model_name': 'VGG16',
         'message': vgg16_message
     }
 
     # TODO replace with updated cnn
     # Initialize and use CNN model
     cnn = TrueNetImageUsinCustomCNN()
-    cnn_prediction, cnn_message = cnn.predict(img)
+    cnn_prediction, cnn_message, cnn_predict_proba = cnn.predict(img)
     predictions['CNN'] = {
         'predicted_class': cnn_prediction,
+        'predict_proba_class' : f'{np.round(100 * cnn_predict_proba)}%',
+        'model_name': 'TrueNetImageUsinCustomCNN',
         'message': cnn_message
     }
-    
+
     # model_cnn = image_classifier_cnn().load_model()
     # model_vgg16 =  Vgg16.load_model()
 
