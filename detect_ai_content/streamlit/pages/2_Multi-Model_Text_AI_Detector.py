@@ -1,6 +1,8 @@
 import streamlit as st
+
 from typing import Optional
 import requests
+import pandas as pd
 from params import *
 
 def set_page_config():
@@ -172,7 +174,7 @@ def analyze_text(text: str) -> dict:
     params = {
         "text":text
     }
-    response = requests.get(f'{BASEURL}/text_single_predict', headers=headers, params=params)
+    response = requests.get(f'{BASEURL}/text_multi_predict', headers=headers, params=params)
     st.success("Prediction done ✅")
     return response.json()
 
@@ -180,20 +182,58 @@ def display_results(analysis: dict):
     st.markdown("### Analysis Results")
     print(analysis)
 
-    col1, col2 = st.columns(2)
+    col1, col2 , col3= st.columns(3)
     with col1:
-        st.metric("Prediction", analysis["prediction"])
+        st.metric("Prediction Class", analysis["prediction"])
+
     with col2:
+        if analysis["prediction"] == 0:
+
+            st.metric("Prediction", "Human")
+        if analysis["prediction"] == 1:
+
+            st.metric("Prediction", "AI")
+
+    with col3:
         st.metric("Predict proba", analysis["predict_proba"])
 
     st.markdown("#### Detailed Metrics")
-    metrics = analysis["details"]
-    cols = st.columns(len(metrics))
-    for col, (metric, value) in zip(cols, metrics.items()):
-        col.metric(
-            metric.replace("_", " ").title(),
-            value
-        )
+    details = analysis["details"]
+    models = details["models"]
+    df = pd.DataFrame(data=models)
+    df = df.T
+    df = df[['predict_proba_class', 'predicted_class']]
+
+    # rename columns for urser
+    df.columns = ['Probability', 'Predicted Class']
+    df['AI or Human'] = df['Predicted Class'].apply(lambda x: "Human" if x == 0 else "AI")
+
+     # Reset the index so that model names become a column (so we can style them)
+    df.reset_index(inplace=True)
+    df.rename(columns={'index': 'Model Name'}, inplace=True)
+
+    # st.table(df)
+    # st.dataframe(df, use_container_width=True)
+
+    def highlight_ai(row):
+        # Use a light red color for highlighting if 'predicted_class' is 1
+        style = [''] * len(row)  # Default style: no highlight
+        if row['Predicted Class'] == 1:
+            # Highlight the entire row with light red if predicted_class is AI
+            style = ['background-color: #FFE6E6'] * len(row)
+
+        # Highlight the model name (now a column) with a different color if it's predicted as AI
+        if row['Predicted Class'] == 1:
+            #  Soft red for model names (first column)
+            style[0] = 'background-color: #FFE6E6'  #
+
+        return style
+
+
+    df = df.set_index('Model Name')
+    # Apply the style function to the DataFrame
+    styled_df = df.style.apply(highlight_ai, axis=1)
+    st.write(styled_df, use_container_width=True)
 
 def create_content():
     st.title("More than an AI detector.")
@@ -214,10 +254,9 @@ def create_content():
 
     text = text_input_section()
 
-    # TODO @lina change colour
     col1, col2 = st.columns([2, 1])
     with col1:
-        if st.button("Analyse Test", type="primary"):
+        if st.button("Analyse Text", type="primary"):
             if text:
                 with st.spinner('Wait for it...'):
                     analysis = analyze_text(text)

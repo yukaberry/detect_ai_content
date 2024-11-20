@@ -73,6 +73,4 @@ if path_in is not None:
 
 # Ping server to preload things if needed
 import requests
-            #https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
 requests.get(f'{BASEURL}/ping')
-#requests.get('https://0.0.0.0:8000/ping')

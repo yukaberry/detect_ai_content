@@ -35,7 +35,7 @@ st.write(f"What are our results ?")
 
 # API URL will need to be replaced by the service URL that Yuka will generate after deploying to Cloud Run
 if st.button("Hit me!") and image is not None:
-    api_url = "https://detect-ai-content-image-api-334152645738.europe-west1.run.app/predict"
+    api_url = "https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/predict"
     files = {"file": image.getvalue()}
     response = requests.post(api_url, files=files)
 
@@ -46,4 +46,4 @@ if st.button("Hit me!") and image is not None:
 
 # Ping server to preload things if needed
 import requests
-requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')
+requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/ping')
