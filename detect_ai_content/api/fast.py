@@ -289,7 +289,7 @@ async def image_multi_predict(user_input: UploadFile = File(...)):
     predictions['CNN'] = {
         'predicted_class': cnn_prediction,
         'predict_proba_class' : f'{np.round(100 * cnn_predict_proba)}%',
-        'model_name': 'TrueNetImageUsinCustomCNN',
+        'model_name': 'CNN',
         'message': cnn_message
     }
 
