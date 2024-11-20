@@ -7,10 +7,23 @@ from io import BytesIO
 from PIL import Image
 
 class TrueNetImageUsinCustomCNN:
+
+    """
+    Ab's model
+
+    'cnn_model_4-11_0.1.h5'
+
+    """
+
+
     def load_model():
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models', 'ab', 'cnn_model_4-11_0.1.h5')
+
+        model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models','ab', 'cnn_model_4-11_0.1.h5')
+        # Should update this as below
+        #model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models','aban371818', 'CNN-FINAL-MODEL.h5')
+
         model = keras_models.load_model(model_path)
         return model
 
@@ -35,18 +48,22 @@ class TrueNetImageUsinCustomCNN:
 
         # predict probablity
         # output is a probability value (between 0 and 1)
-        predict_proba = self.model.predict(to_predict_img_array)[0][0]
+        prediction_results = self.model.predict(to_predict_img_array)
+        class_prediction = prediction_results[0][0]
+        print(prediction_results)
+        predict_prob_confidence = abs(class_prediction - 0.5)/0.5
 
         # predict class
-        predicted_class = int(predict_proba > 0.5)
+        predicted_class = int(class_prediction > 0.5)
 
         # 0 likely representing 'FAKE' and 1 representing 'REAL'
+        # TODO clarify
         if predicted_class == 0:
             prediction_message = "Predicted as AI"
         elif predicted_class == 1 :
             prediction_message = "Predicted as Human"
 
-        return predicted_class, prediction_message
+        return predicted_class, prediction_message, predict_prob_confidence
 
 
 # local test

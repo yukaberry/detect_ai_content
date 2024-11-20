@@ -1,7 +1,7 @@
 # Current version as of 19-11-2024
 
 from fastapi import FastAPI, File, UploadFile
-from detect_ai_content.ml_logic.image_classifier_cnn import image_classifier_cnn
+from detect_ai_content.ml_logic.for_images.image_classifier_cnn import image_classifier_cnn
 from io import BytesIO
 import os
 
