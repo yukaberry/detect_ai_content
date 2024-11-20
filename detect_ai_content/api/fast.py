@@ -27,10 +27,17 @@ from detect_ai_content.ml_logic.for_images.cnn import load_cnn_model, clean_img_
 from detect_ai_content.ml_logic.for_images.vgg16 import Vgg16
 from detect_ai_content.ml_logic.for_images.TrueNetImageUsinCustomCNN import TrueNetImageUsinCustomCNN
 
+from detect_ai_content.ml_logic.for_images.image_classifier_cnn import image_classifier_cnn
+from detect_ai_content.ml_logic.for_images.TrueNetImageResNet50 import TrueNetImageResNet50
+
+
 app = FastAPI()
 app.state.model_image = None
 app.state.model_image_cnn = None
 app.state.models = {}
+
+
+
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
@@ -226,9 +233,94 @@ def predict(
         }
     }
 
+@app.post("/image_multi_predict")
+async def image_multi_predict(user_input: UploadFile = File(...)):
+    """
+    - Make predictions using both VGG16 and CNN models on user-provided image.
+    - Aggregate predictions and provide a confidence score.
+    """
+    from io import BytesIO
+    from PIL import Image
+
+    # Read and preprocess the user input image
+    user_input = await user_input.read()
+    img = Image.open(BytesIO(user_input))
+
+    # save all prediction results
+    predictions = {}
+
+    # model1
+    # Initialize and use VGG16 model
+    vgg16 = Vgg16()
+    vgg16_prediction, vgg16_message, vgg16_proba  = vgg16.predict(img)
+    predictions['VGG16'] = {
+        'predicted_class': vgg16_prediction,
+        'predict_proba_class' : f'{np.round(100 * vgg16_proba)}%',
+        'model_name': 'VGG16',
+        'message': vgg16_message
+    }
+
+    # model2
+    resNet50 = TrueNetImageResNet50()
+
+    # prediction
+    resNet50_prediction, resNet50_message, resNet50_proba  = resNet50.predict(img)
+
+    # save results
+    predictions['TrueNetImageResNet50'] = {
+        'predicted_class': resNet50_prediction,
+        'predict_proba_class' : f'{np.round(100 * resNet50_proba)}%',
+        'model_name': 'TrueNetImageResNet50',
+        'message': resNet50_message
+    }
 
 
-@app.post("/image_predict")
+    # model3
+    classifier = image_classifier_cnn()
+    # read user_input
+    file_path = os.path.join(os.path.dirname(__file__), "temp_image.jpg")
+    with open(file_path, "wb") as f:
+        f.write(user_input)
+
+    # prediction
+    cnn_prediction,  cnn_message , cnn_predict_proba = classifier.predict(file_path)
+
+    # save results
+    predictions['CNN'] = {
+        'predicted_class': cnn_prediction,
+        'predict_proba_class' : f'{np.round(100 * cnn_predict_proba)}%',
+        'model_name': 'CNN',
+        'message': cnn_message
+    }
+
+    # Aggregate all models' results
+    y_preds = [predictions['VGG16']['predicted_class'],
+               predictions['CNN']['predicted_class'],
+               predictions['TrueNetImageResNet50']['predicted_class']]
+
+    number_of_zeros = y_preds.count(0)
+    number_of_ones = y_preds.count(1)
+
+    # TODO??
+    # Final aggregated prediction
+    if np.mean(y_preds) < 0.5:
+        prediction = 0
+        prediction_confidence = round(100 * (number_of_zeros / len(y_preds)))
+    else:
+        prediction = 1
+        prediction_confidence = round(100 * (number_of_ones / len(y_preds)))
+
+    return {
+        'prediction': prediction,
+        'predict_proba': f'{prediction_confidence}%',
+        'details': {
+            'models': predictions
+        }
+    }
+
+
+
+@app.post("/image_predict_vgg16")
 async def predict(user_input: UploadFile = File(...)):
     """
     - make a single prediction prediction using user provided 'img'
@@ -248,11 +340,12 @@ async def predict(user_input: UploadFile = File(...)):
     # load model
     # predict
     # return message
-    prediction, message = vgg16.predict(img)
+    prediction, message, proba = vgg16.predict(img)
 
 
     return {"prediction": prediction,
-            "message": message}
+            "message": message,
+            'probability' : proba}
 
 
 @app.post("/image_predict_cnn")
@@ -276,15 +369,30 @@ async def predict(user_input: UploadFile = File(...)):
     # load model
     # predict
     # return message
-    prediction, message = cnn.predict(img)
+    prediction, message,  proba = cnn.predict(img)
 
     # # 0 likely representing 'FAKE' and 1 representing 'REAL'
     # # TODO label change to avoid confusion
 
     return {"prediction": prediction,
-            "message": message}
+            "message": message,
+            'probability' : proba}
 
 
+@app.post("/image_predict_most_updated_cnn")
+async def cnn_prediction(file: UploadFile = File(...)):
+
+    classifier = image_classifier_cnn()
+    image_bytes = await file.read()
+
+    file_path = os.path.join(os.path.dirname(__file__), "temp_image.jpg")
+    with open(file_path, "wb") as f:
+        f.write(image_bytes)
+
+    prediction,  message , proba= classifier.predict(file_path)
+    return {"prediction": prediction,
+            "message": message,
+            'probability':proba}
 
 @app.get("/")
 def root():

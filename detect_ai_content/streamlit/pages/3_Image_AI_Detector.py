@@ -6,6 +6,7 @@ import pathlib
 import io
 import requests
 import time
+from params import *
 
 # https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader
 # SUPPORT PNG in the futur
@@ -63,7 +64,7 @@ if path_in is not None:
             }
             # local http://0.0.0.0:8000/image_predict
             #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
-            response = requests.post("https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/image_predict_cnn",headers=headers, files=files)
+            response = requests.post(f"{BASEURL}/image_predict_cnn",headers=headers, files=files)
             #response = requests.post("https://0.0.0.0:8000/image_predict_cnn",headers=headers, files=files)
             # deploy                  https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
             # st.success(f"{response.json()}")
@@ -72,6 +73,4 @@ if path_in is not None:
 
 # Ping server to preload things if needed
 import requests
-            #https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
-requests.get('https://detect-ai-content-improved18nov-667980218208.europe-west1.run.app/ping')
-#requests.get('https://0.0.0.0:8000/ping')
+requests.get(f'{BASEURL}/ping')

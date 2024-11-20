@@ -17,7 +17,7 @@ run_local_fast_api:
 	fastapi dev detect_ai_content/api/fast.py
 
 run_local_streamlit:
-	streamlit ./detect_ai_content/streamlit/app_v0.py
+	streamlit run ./detect_ai_content/streamlit/app_v0.py
 
 ## run api locally
 run_local_uvicorn:
@@ -86,10 +86,7 @@ run_train_production_pipelines:
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import *; TrueNetTextSVC.retrain_production_pipeline()'
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import *; TrueNetTextTfidfNaiveBayesClassifier.retrain_production_pipeline()'
 	python3 -c 'from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import *; TrueNetTextUsingBERTMaskedPredictions.retrain_production_pipeline()'
-
-
-
-
+	python3 -c 'from detect_ai_content.ml_logic.for_images.TrueNetImageResNet50 import *; TrueNetImageResNet50.retrain_full_model()'
 
 
 ## TOOLS
