@@ -4,6 +4,7 @@ import os
 import pathlib
 import requests
 import time
+from params import *
 
 # # Set page configuration
 # st.set_page_config(page_title="TrueNet – Image AI Detection", layout="wide")
@@ -128,7 +129,8 @@ def analyze_image(image_file) -> dict:
         'user_input': (image_file.name, image_file, image_file.type)
     }
     response = requests.post(
-        'http://0.0.0.0:8000/image_multi_predict',
+        # f'{BASEURL}/image_multi_predict',
+        'http://0.0.0.0:8080/image_multi_predict',
         headers=headers,
         files=files
     )
