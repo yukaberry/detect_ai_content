@@ -1,7 +1,54 @@
+# app_v0.py
+
 import streamlit as st
-import matplotlib.pyplot as plt
 import io
 import requests
+import base64
+import pathlib
+import os
+
+
+# Page Configuration
+st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
+
+# Header
+
+# Convert the image to Base64
+def get_base64_image(file_path):
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+# Encode all the images: (List of all images will be here)
+parent_path = pathlib.Path(__file__).parent.resolve()
+save_path = os.path.join(parent_path, "data")
+
+logo_base64_logo = get_base64_image(f"{save_path}/logo3_transparent.png")
+logo_base64_youtube = get_base64_image(f"{save_path}/youtube.jpg")
+
+# Embed the Base64 image into the HTML
+st.markdown(
+    f"""
+   <body>
+   <div class="header">
+        <div class="logo">
+            <img src="data:image/png;base64,{logo_base64_logo}" alt="Your Logo">
+        </div>
+        <div class="nav-links">
+            <a href="page_approach">Approach</a>
+            <a href="page_models">Models</a>
+            <a href="page_resources">Resources</a>
+            <a href="page_news">News</a>
+            <a href="page_team">Team</a>
+        </div>
+        <div class="button-container">
+            <div class="btn-dark">Dashboard</div>
+        </div>
+    </div>
+</body>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # define session_state variables
 if 'text_input' not in st.session_state:
@@ -57,18 +104,14 @@ def display_results(analysis: dict):
         unsafe_allow_html=True
     )
 
+# Function: Analyze Text
 def analyze_text(text: str) -> dict:
-    """
-    Placeholder for actual AI detection logic.
-    """
-
-    headers = {
-        'accept': 'application/json',
-    }
-    params = {
-        "text":text
-    }
-    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
+    headers = {'accept': 'application/json'}
+    params = {"text": text}
+    response = requests.get(
+        'https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict',
+        headers=headers, params=params
+    )
     st.success("Prediction done ✅")
     return response.json()
 
@@ -78,8 +121,8 @@ def example_buttons():
     # Create a container for the buttons
     button_container = st.container()
 
-    # Use columns within the container
-    cols = button_container.columns(4)
+    # Adjust the column width to reduce space
+    cols = button_container.columns([1, 1, 1, 1])  # Use equal width for all buttons
 
     # Create all buttons and check their states
     if cols[0].button("Llama2", key="example1", type="secondary"):
@@ -102,8 +145,9 @@ def example_buttons():
         print(response.json())
         st.session_state.text_input = response.json()['text']
 
-# Page Configuration
-st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
+    # Add custom CSS to reduce space between buttons
+
+
 
 # CSS for Styling
 st.markdown("""
@@ -187,7 +231,9 @@ button {
         background-color:#0e8c7d; /* Darker hover color */
         color:#0e8c7d;
     }
-
+    .stButton>button {
+                margin: 0px 0px;  /* Reduce the space between buttons */
+                }
     /* Optional: Style for Streamlit-specific buttons (if needed) */
     div[data-testid="stButton"] > button {
         background-color: #65c6ba;
@@ -297,6 +343,7 @@ button {
 /* END Style for CHARTS */
 
 
+
     .title-big, .title-small {
         font-size: 36px;
         font-weight: bold;
@@ -329,103 +376,27 @@ button {
 
     }
 
+    .logo_image {
+           margin-top: 20px;
+           text-align: center;
+           background-color: #f9f9f9;
+           padding: 15px;
+           border-radius: 8px;
+           box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 
+    .content-text {
+            font-size: 20px;
+            color: #333;
+            margin: 20px;
+        }
 
-
+        .paragraph {
+            margin-bottom: 15px;
+        }
     </style>
 
 
 """, unsafe_allow_html=True)
-
-
-# Header Section
-
-
-# DEBUGGING:
-# check full path of streamlit
-
-#import os
-#st.write(os.getcwd())
-
-
-
-# METHOD 1: PYTHON (Works)
-
-#Python method that always works but with not good HTML Integration
-
-#st.markdown(
-#    """
-#    <div id="logo">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-#st.image("logo.png", caption="Your Logo", use_column_width=True)
-
-
-# METHOD 2: HTLM (Not working)
-
-# Using html but that DOESNT WORK
-# what is the correct path ??
-# If i use an http link it works
-# if I use internal path of img i am not able to find the proper path to display the picture
-
-# Embed the image directly into the <div> using HTML
-#st.markdown(
-#    """
-#    <div id="logo">
-#        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/230px-Python-logo-notext.svg.png" alt="Your Logo" style="width: 100px;">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-
-# METHOD 3: Use a Base64-Encoded Image
-
-import base64
-import streamlit as st
-import base64
-import pathlib
-import os
-
-# Convert the image to Base64
-def get_base64_image(file_path):
-    with open(file_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-# Encode all the images: (List of all images will be here)
-parent_path = pathlib.Path(__file__).parent.resolve()
-save_path = os.path.join(parent_path, "data")
-
-logo_base64_logo = get_base64_image(f"{save_path}/logo3_transparent.png")
-logo_base64_youtube = get_base64_image(f"{save_path}/youtube.jpg")
-
-# Embed the Base64 image into the HTML
-st.markdown(
-    f"""
-   <body>
-   <div class="header">
-        <div class="logo">
-            <img src="data:image/png;base64,{logo_base64_logo}" alt="Your Logo">
-        </div>
-        <div class="nav-links">
-            <a href="page_approach">Approach</a>
-            <a href="page_models">Models</a>
-            <a href="page_resources">Resources</a>
-            <a href="page_news">News</a>
-            <a href="page_team">Team</a>
-        </div>
-        <div class="button-container">
-            <div class="btn-dark">Dashboard</div>
-        </div>
-    </div>
-
-
-
-</body>
-    """,
-    unsafe_allow_html=True
-)
 
 
 # Divider
@@ -438,12 +409,20 @@ col1, col2 = st.columns([1.5, 2])
 with col1:
     st.markdown('<div class="title-big">Beyond the Surface</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-small">Identify the <span>Creator</span></div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="paragraph">'
-        'Since inventing AI detection, TrueNet incorporates the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="content-text">
+        <div class="paragraph">
+            In a world of exponential AI-generated content, distinguishing genuine human effort is more critical than ever. TrueNet goes beyond detection—it's your partner for transparency, integrity, and productivity.
+        </div>
+        <div class="paragraph">
+            With advanced AI algorithms and intuitive tools, TrueNet empowers businesses, educators, and creators to protect what’s genuine while embracing responsible AI use.
+        </div>
+        <div class="paragraph">
+            TrueNet<span style="color:#65c6ba;">: Because <span style="color:#0e8c7d;">truth</span> matters.</span>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 
 # Insert video (Check issue with encoding)
    # st.video("data/dummy_video.mp4")
@@ -452,7 +431,7 @@ with col1:
 # Insert Base64-encoded image inside a styled div
     st.markdown(
         f"""
-        <div style="margin-top: 20px; text-align: center; background-color: #f9f9f9; padding: 15px; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
+        <div class="logo_image_manu">
             <img src="data:image/png;base64,{logo_base64_youtube}" alt="Your Image" style="max-width: 100%; border-radius: 8px;">
         </div>
         """,

@@ -27,19 +27,9 @@ def app():
 
     # Main content of the page
     st.markdown("""
-    ## Resources
+    ## Dashboard
 
-    ### Datasets:
-    - **Training Data**: The project utilizes a diverse set of datasets to train models capable of detecting AI-generated content. These datasets include both human-written and AI-generated texts to ensure comprehensive learning.
-    - **Testing Data**: Separate datasets are employed to evaluate the model’s performance, ensuring that the detection system generalizes well to unseen data.
 
-    ### Tools and Libraries:
-    - **Python**: The primary programming language used for developing the detection algorithms.
-    - **Streamlit**: A framework for building interactive web applications, used here to create the user interface for the AI detection tool.
-
-    ### Machine and Deep Learning Libraries:
-    - **scikit-learn**: For implementing various machine learning algorithms and evaluation metrics.
-    - **TensorFlow/PyTorch**: For building and training deep learning models.
     """)
 
     # Footer

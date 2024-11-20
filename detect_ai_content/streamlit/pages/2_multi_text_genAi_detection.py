@@ -1,79 +1,55 @@
 import streamlit as st
-from typing import Optional
-import requests
+import base64
+import os
+import pathlib
 import pandas as pd
+import requests
 
-def set_page_config():
-    st.set_page_config(
-        page_title="AI Text Analyzer",
-        page_icon="🔍",
-        layout="wide"  # Changed to wide to accommodate the menu
-    )
+# Set page configuration as the first Streamlit command
+st.set_page_config(page_title="TrueNet – AI Text Analyzer", layout="wide")
 
-def local_css():
-    st.markdown("""
+def get_base64_image(file_path):
+    """Convert an image to a base64 string."""
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+def app():
+    # Prepare base64 string for the logo
+    parent_path = pathlib.Path(__file__).parent.parent.resolve()
+    save_path = os.path.join(parent_path, "data")
+    logo_path = os.path.join(save_path, "logo3_transparent.png")
+
+    st.markdown(
+        """
         <style>
-        .main {
-            padding: 2rem;
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
         }
-        /* Navigation Styles */
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: white;
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 2rem;
-        }
-        .nav-logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-            text-decoration: none;
+        /* Header */
+        .header {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
-        .nav-logo img {
-            height: 30px;
+        .header img {
+            height: 60px;
+            width: auto;
             margin-right: 10px;
         }
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        .nav-item {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-        .demo-button {
-            background: white;
-            border: 1px solid #333;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
             color: #333;
         }
-        .dashboard-button {
-            background: #333;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            color: white;
-        }
-        /* Content Styles */
+        /* Buttons */
         .stButton>button {
             width: 100%;
             border-radius: 4px;
             padding: 0.5rem;
-        }
-        .text-input {
-            min-height: 200px;
         }
         .example-btn {
             margin: 0.25rem;
@@ -83,165 +59,88 @@ def local_css():
             background: white;
             cursor: pointer;
         }
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
         /* Hide Streamlit's default menu */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         </style>
-    """, unsafe_allow_html=True)
-
-def create_navigation():
-    nav_html = """
-        <div class="nav-container">
-            <a href="#" class="nav-logo">
-                <span>AI Text Analyzer</span>
-            </a>
-            <div class="nav-menu">
-                <div class="dropdown">
-                    <a href="#" class="nav-item">Products</a>
-                </div>
-                <div class="dropdown">
-                    <a href="#" class="nav-item">Solutions</a>
-                </div>
-                <div class="dropdown">
-                    <a href="#" class="nav-item">Resources</a>
-                </div>
-                <a href="#" class="nav-item">Pricing</a>
-                <a href="#" class="nav-item">News</a>
-                <a href="#" class="nav-item">Team</a>
-            </div>
-            <div class="nav-buttons">
-                <button class="demo-button">Request Demo</button>
-                <button class="dashboard-button">Dashboard</button>
-            </div>
-        </div>
-    """
-    st.markdown(nav_html, unsafe_allow_html=True)
-
-def example_buttons():
-    st.write("Try an example:")
-
-    # Create a container for the buttons
-    button_container = st.container()
-
-    # Use columns within the container
-    cols = button_container.columns(4)
-
-    # Track which button was clicked
-    selected_example = None
-
-    # Create all buttons and check their states
-    if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    return selected_example
-
-
-def text_input_section():
-    return st.text_area(
-        "Paste your text",
-        height=200,
-        key="text_input",
-        help="Enter the text you want to analyze"
+        """,
+        unsafe_allow_html=True
     )
 
-def analyze_text(text: str) -> dict:
-    """
-    Placeholder for actual AI detection logic.
-    """
+    # Display custom header with logo
+    if os.path.exists(logo_path):
+        logo_base64 = get_base64_image(logo_path)
+        st.markdown(f"""
+            <div class="header">
+                <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo">
+                <span class="header-title">TrueNet AI Text Analyzer</span>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.warning("Logo file not found. Please check the path.")
 
-    headers = {
-        'accept': 'application/json',
-    }
-    params = {
-        "text":text
-    }
-    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
-    st.success("Prediction done ✅")
-    return response.json()
+    # Main content of the page
+    st.markdown("""
+        ## More than an AI Detector
+        ### Preserve what's human.
 
-def display_results(analysis: dict):
-    st.markdown("### Analysis Results")
-    print(analysis)
+        Since inventing AI detection, we incorporate the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.
+    """)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Prediction", analysis["prediction"])
-    with col2:
-        st.metric("Predict proba", analysis["predict_proba"])
+    # Example buttons for selecting text sources
+    st.write("Try an example:")
+    cols = st.columns(4)
 
-    st.markdown("#### Detailed Metrics")
-    details = analysis["details"]
-    models = details["models"]
-    df = pd.DataFrame(data=models)
-    df = df.T
-    df = df[['predict_proba_class', 'predicted_class']]
-    st.table(df)
+    selected_example = None
+    if cols[0].button("Llama2"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
+        selected_example = response.json().get('text', '')
 
-def create_content():
-    st.title("More than an AI detector.")
-    st.markdown("### Preserve what's human.")
-    st.write("Since inventing AI detection, we incorporate the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.")
+    if cols[1].button("Claude"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
+        selected_example = response.json().get('text', '')
 
-    # Store the selected example in session state if it's not already there
-    if 'selected_example' not in st.session_state:
-        st.session_state.selected_example = None
+    if cols[2].button("ChatGPT"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
+        selected_example = response.json().get('text', '')
 
-    # Get newly selected example
-    new_selection = example_buttons()
+    if cols[3].button("Human"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
+        selected_example = response.json().get('text', '')
 
-    # Update session state if a new selection was made
-    if new_selection is not None:
-        st.session_state.selected_example = new_selection
-        st.session_state.text_input = f"This is example text for {new_selection}"
-
-    text = text_input_section()
-
+    # Text input and analyze/clear buttons
+    text = st.text_area("Paste your text", height=200, key="text_input", help="Enter the text you want to analyze")
     col1, col2 = st.columns([2, 1])
     with col1:
-        if st.button("Scan for AI", type="primary"):
+        if st.button("Analyze"):
             if text:
-                with st.spinner('Wait for it...'):
-                    analysis = analyze_text(text)
-                    display_results(analysis)
+                with st.spinner('Analyzing...'):
+                    headers = {'accept': 'application/json'}
+                    params = {"text": text}
+                    response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict', headers=headers, params=params)
+                    analysis = response.json()
+                    st.write("### Analysis Results")
+                    st.write(analysis)
             else:
                 st.warning("Please enter some text to analyze.")
     with col2:
-        if st.button("Clear", type="secondary"):
-            st.session_state.clear()
-            st.session_state.text_input = ''
+        if st.button("Clear"):
+            st.session_state.text_input = ""
             st.rerun()
 
-
-def main():
-    set_page_config()
-    local_css()
-
-    # Add navigation
-    # create_navigation()
-
-    # Create main content in a container
-    with st.container():
-        create_content()
+    # Footer
+    st.markdown("""
+        <div class="footer">
+            © 2024 TrueNet AI Detection. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    main()
-
-import requests
-requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/ping')
+    app()
