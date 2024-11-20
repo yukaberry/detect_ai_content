@@ -49,7 +49,7 @@ class TrueNetImageResNet50:
     def load_model():
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
-        model_path = os.path.join(f'{module_dir_path}/../detect_ai_content', 'models','aban371818', 'CNN-FINAL-MODEL.h5') #'ab', 'cnn_model_4-11_0.1.h5')
+        model_path = os.path.join(f'{module_dir_path}/..', 'detect_ai_content', 'models', 'achmed', 'achmed_ResNet50.keras')
         model = keras_models.load_model(model_path)
         return model
 
@@ -126,7 +126,7 @@ class TrueNetImageResNet50:
             callbacks=[early_stopping]
         )
 
-        print(model)
+        # print(model)
 
         import detect_ai_content
         module_dir_path = os.path.dirname(detect_ai_content.__file__)
