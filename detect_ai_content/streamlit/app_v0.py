@@ -12,6 +12,45 @@ import os
 # Page Configuration
 st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
 
+# Header
+
+# Convert the image to Base64
+def get_base64_image(file_path):
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+# Encode all the images: (List of all images will be here)
+parent_path = pathlib.Path(__file__).parent.resolve()
+save_path = os.path.join(parent_path, "data")
+
+logo_base64_logo = get_base64_image(f"{save_path}/logo3_transparent.png")
+logo_base64_youtube = get_base64_image(f"{save_path}/youtube.jpg")
+
+# Embed the Base64 image into the HTML
+st.markdown(
+    f"""
+   <body>
+   <div class="header">
+        <div class="logo">
+            <img src="data:image/png;base64,{logo_base64_logo}" alt="Your Logo">
+        </div>
+        <div class="nav-links">
+            <a href="page_approach">Approach</a>
+            <a href="page_models">Models</a>
+            <a href="page_resources">Resources</a>
+            <a href="page_news">News</a>
+            <a href="page_team">Team</a>
+        </div>
+        <div class="button-container">
+            <div class="btn-dark">Dashboard</div>
+        </div>
+    </div>
+</body>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # define session_state variables
 if 'text_input' not in st.session_state:
     st.session_state.text_input = f"This is example of text for"
@@ -349,48 +388,6 @@ button {
 
 
 """, unsafe_allow_html=True)
-
-
-# Header Section
-
-# Convert the image to Base64
-def get_base64_image(file_path):
-    with open(file_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-# Encode all the images: (List of all images will be here)
-parent_path = pathlib.Path(__file__).parent.resolve()
-save_path = os.path.join(parent_path, "data")
-
-logo_base64_logo = get_base64_image(f"{save_path}/logo3_transparent.png")
-logo_base64_youtube = get_base64_image(f"{save_path}/youtube.jpg")
-
-# Embed the Base64 image into the HTML
-st.markdown(
-    f"""
-   <body>
-   <div class="header">
-        <div class="logo">
-            <img src="data:image/png;base64,{logo_base64_logo}" alt="Your Logo">
-        </div>
-        <div class="nav-links">
-            <a href="page_approach">Approach</a>
-            <a href="page_models">Models</a>
-            <a href="page_resources">Resources</a>
-            <a href="page_news">News</a>
-            <a href="page_team">Team</a>
-        </div>
-        <div class="button-container">
-            <div class="btn-dark">Dashboard</div>
-        </div>
-    </div>
-
-
-
-</body>
-    """,
-    unsafe_allow_html=True
-)
 
 
 # Divider
