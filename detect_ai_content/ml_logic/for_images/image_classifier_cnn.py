@@ -40,7 +40,6 @@ class image_classifier_cnn:
 
         """
         to_predict_img_array = self.pre_process(image_path)
-
         prediction_results = self.model.predict(to_predict_img_array)
         class_prediction = float(prediction_results[0][0])
         print(prediction_results)
