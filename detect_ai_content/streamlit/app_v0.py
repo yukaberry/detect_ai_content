@@ -6,10 +6,259 @@ import requests
 import base64
 import pathlib
 import os
-
-
 # Page Configuration
 st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
+
+# CSS for Styling
+st.markdown("""
+    <style>
+    body {
+        background-color: #f7f7f7;
+    }
+
+    /* Style for the header */
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f5f5f5; /* Light gray background */
+        padding: 10px 20px; /* Add some spacing */
+        border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
+    }
+
+    /* Style for the logo */
+    .logo img {
+        height: 60px; /* Adjust the logo size */
+        width: auto; /* Maintain aspect ratio */
+        margin-right: 20px; /* Add some spacing to the right of the logo */
+    }
+
+    /* Style for the navigation links */
+    .nav-links {
+        display: flex; /* Arrange links horizontally */
+        gap: 15px; /* Space between links */
+    }
+
+    .nav-links a {
+        text-decoration: none; /* Remove underline */
+        color: #65c6ba; /* Blue color */
+        font-weight: bold; /* Bold text */
+        transition: color 0.3s; /* Smooth transition for hover effect */
+    }
+
+    .nav-links a:hover {
+        color: #0e8c7d; /* Darker blue on hover */
+    }
+
+    /* Style for the button container */
+    .button-container {
+        margin-left: auto; /* Push the button to the far right */
+    }
+
+    .btn-dark {
+        background-color: #65c6ba; /* Blue background */
+        color: white; /* White text */
+        padding: 8px 16px; /* Add padding */
+        border-radius: 5px; /* Rounded corners */
+        text-align: center;
+        cursor: pointer; /* Show pointer on hover */
+        font-weight: bold; /* Bold text */
+        transition: background-color 0.3s; /* Smooth hover effect */
+    }
+
+    .btn-dark:hover {
+        background-color: #0e8c7d; /* Darker blue on hover */
+    }
+
+    /* End of Header */
+
+    /* Style for the file uploader button */
+    button {
+        background-color: #65c6ba; /* Default background color */
+        color: white; /* Text color */
+        font-weight: bold; /* Bold text */
+        padding: 10px 20px; /* Padding inside buttons */
+        border: none; /* Remove default border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+
+    /* Hover effect for all buttons */
+    button:hover {
+        background-color:#0e8c7d; /* Darker hover color */
+        color:#0e8c7d;
+    }
+
+    .stButton>button {
+        margin: 0px 0px;  /* Reduce the space between buttons */
+    }
+
+    /* Optional: Style for Streamlit-specific buttons (if needed) */
+    div[data-testid="stButton"] > button {
+        background-color: #65c6ba;
+        color: white;
+    }
+
+    /* Additional specificity for Streamlit's default button style */
+    div[data-testid="stButton"] > button:hover {
+        background-color: #0e8c7d !important; /* Force custom hover color */
+    }
+
+    /* END Style for the file uploader button */
+
+    /* START Style for CHARTS */
+    .chart-container {
+        display: flex;
+        flex-direction: row; /* Horizontal layout for chart and labels */
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        width: 100%;
+    }
+
+    /* Ring chart styling */
+    .ring-chart {
+        width: 150px; /* Chart size */
+        height: 150px;
+        border-radius: 50%;
+        background: conic-gradient(
+            #65c6ba 0% 60%, /* Dark green for Human */
+            #eed20a 60% 70%, /* Purple for Mixed */
+            #0e8c7d 70% 100% /* Gold for AI */
+        );
+        position: relative;
+        margin-right: 20px; /* Space between chart and labels */
+    }
+
+    /* Inner circle for ring effect */
+    .ring-chart::before {
+        content: "";
+        width: 100px; /* Inner circle size */
+        height: 100px;
+        border-radius: 50%;
+        background-color: white;
+        position: absolute;
+        top: 25px;
+        left: 25px;
+    }
+
+    /* Center text inside the ring */
+    .chart-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
+
+    /* Labels container */
+    .labels-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        margin-left: 20px;
+    }
+
+    /* Individual label styling */
+    .label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .label span {
+        font-weight: normal;
+        color: #777;
+    }
+
+    .label-human {
+        color: #65c6ba; /* Green */
+    }
+
+    .label-mixed {
+        color: #6A5ACD; /* Purple */
+    }
+
+    .label-ai {
+        color: #0e8c7d; /* Green Dark */
+    }
+
+    /* Chart description styling */
+    .chart-description {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #777;
+        text-align: center;
+    }
+
+    /* END Style for CHARTS */
+
+    .title-big, .title-small {
+        font-size: 36px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .title-small span {
+        color: #65c6ba;  /* Green for 'Creator' */
+    }
+
+    .paragraph {
+        font-size: 18px;
+        margin-top: 20px;
+    }
+
+    .scan-button {
+        background-color: #65c6ba;
+        color: white;
+        font-size: 18px;
+        padding: 15px 40px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        margin-left: 0;
+        display: block;
+        transition: background-color 0.3s; /* Smooth hover effect */
+    }
+
+    .scan-button:hover {
+        background-color:#0e8c7d;
+        color:black;
+    }
+
+    .logo_image {
+        margin-top: 20px;
+        text-align: center;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-text {
+        font-size: 20px;  /* Increased font size */
+        color: #333;
+        margin: 20px;
+    }
+
+    .paragraph {
+        font-size: 20px;  /* Increase font size for paragraphs */
+        margin-top: 20px;
+        margin-bottom: 15px; /* You had this but now explicitly placed it here */
+    }
+
+    </style>
+""", unsafe_allow_html=True)
+
+
 
 # Header
 
@@ -48,7 +297,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 # define session_state variables
 if 'text_input' not in st.session_state:
@@ -149,256 +397,6 @@ def example_buttons():
 
 
 
-# CSS for Styling
-st.markdown("""
-    <style>
-    body {
-        background-color: #f7f7f7;
-
-    }
-
-    /* Style for the header */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f5f5f5; /* Light gray background */
-    padding: 10px 20px; /* Add some spacing */
-    border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
-}
-
-/* Style for the logo */
-.logo img {
-    height: 60px; /* Adjust the logo size */
-    width: auto; /* Maintain aspect ratio */
-    margin-right: 20px; /* Add some spacing to the right of the logo */
-}
-
-/* Style for the navigation links */
-.nav-links {
-    display: flex; /* Arrange links horizontally */
-    gap: 15px; /* Space between links */
-}
-
-.nav-links a {
-    text-decoration: none; /* Remove underline */
-    color: #65c6ba; /* Blue color */
-    font-weight: bold; /* Bold text */
-    transition: color 0.3s; /* Smooth transition for hover effect */
-}
-
-.nav-links a:hover {
-    color: #0e8c7d; /* Darker blue on hover */
-}
-
-/* Style for the button container */
-.button-container {
-    margin-left: auto; /* Push the button to the far right */
-}
-
-.btn-dark {
-    background-color: #65c6ba; /* Blue background */
-    color: white; /* White text */
-    padding: 8px 16px; /* Add padding */
-    border-radius: 5px; /* Rounded corners */
-    text-align: center;
-    cursor: pointer; /* Show pointer on hover */
-    font-weight: bold; /* Bold text */
-    transition: background-color 0.3s; /* Smooth hover effect */
-}
-
-.btn-dark:hover {
-    background-color: #0e8c7d; /* Darker blue on hover */
-}
-
-/* End of Header */
-
-/* Style for the file uploader button */
-
-button {
-        background-color: #65c6ba; /* Default background color */
-        color: white; /* Text color */
-        font-weight: bold; /* Bold text */
-        padding: 10px 20px; /* Padding inside buttons */
-        border: none; /* Remove default border */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        transition: background-color 0.3s ease; /* Smooth hover effect */
-    }
-
-    /* Hover effect for all buttons */
-    button:hover {
-        background-color:#0e8c7d; /* Darker hover color */
-        color:#0e8c7d;
-    }
-    .stButton>button {
-                margin: 0px 0px;  /* Reduce the space between buttons */
-                }
-    /* Optional: Style for Streamlit-specific buttons (if needed) */
-    div[data-testid="stButton"] > button {
-        background-color: #65c6ba;
-        color: white;
-    }
-
-         /* Additional specificity for Streamlit's default button style */
-    div[data-testid="stButton"] > button:hover {
-        background-color: #0e8c7d !important; /* Force custom hover color */
-    }
-
-
-/* END Style for the file uploader button */
-
-/* START Style for CHARTS */
-
-.chart-container {
-        display: flex;
-        flex-direction: row; /* Horizontal layout for chart and labels */
-        align-items: center;
-        justify-content: center;
-        margin-top: 20px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        width: 100%;
-    }
-
-    /* Ring chart styling */
-    .ring-chart {
-        width: 150px; /* Chart size */
-        height: 150px;
-        border-radius: 50%;
-        background: conic-gradient(
-            #65c6ba 0% 60%, /* Dark green for Human */
-            #eed20a 60% 70%, /* Purple for Mixed */
-            #0e8c7d 70% 100% /* Gold for AI */
-        );
-        position: relative;
-        margin-right: 20px; /* Space between chart and labels */
-    }
-
-    /* Inner circle for ring effect */
-    .ring-chart::before {
-        content: "";
-        width: 100px; /* Inner circle size */
-        height: 100px;
-        border-radius: 50%;
-        background-color: white;
-        position: absolute;
-        top: 25px;
-        left: 25px;
-    }
-
-    /* Center text inside the ring */
-    .chart-label {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 14px;
-        font-weight: bold;
-        color: #333;
-        text-align: center;
-    }
-
-    /* Labels container */
-    .labels-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        margin-left: 20px;
-    }
-
-    /* Individual label styling */
-    .label {
-        font-size: 14px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .label span {
-        font-weight: normal;
-        color: #777;
-    }
-
-    .label-human {
-        color: #65c6ba; /* Green */
-    }
-
-    .label-mixed {
-        color: #6A5ACD; /* Purple */
-    }
-
-    .label-ai {
-        color: #0e8c7d; /* Gree Dark */
-    }
-
-    /* Chart description styling */
-    .chart-description {
-        margin-top: 15px;
-        font-size: 12px;
-        color: #777;
-        text-align: center;
-    }
-
-/* END Style for CHARTS */
-
-
-
-    .title-big, .title-small {
-        font-size: 36px;
-        font-weight: bold;
-        color: black;
-    }
-    .title-small span {
-        color: #65c6ba;  /* Green for 'Creator' */
-    }
-    .paragraph {
-        font-size: 18px;
-        margin-top: 20px;
-    }
-    .scan-button {
-        background-color: #65c6ba;
-        color: white;
-        font-size: 18px;
-        padding: 15px 40px;
-        border-radius: 30px;
-        border: none;
-        cursor: pointer;
-        margin-left: 0;
-        display: block;
-        transition: background-color 0.3s; /* Smooth hover effect */
-    }
-
-
-    .scan-button:hover {
-        background-color:#0e8c7d;
-        color:black;
-
-    }
-
-    .logo_image {
-           margin-top: 20px;
-           text-align: center;
-           background-color: #f9f9f9;
-           padding: 15px;
-           border-radius: 8px;
-           box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-
-    .content-text {
-            font-size: 20px;
-            color: #333;
-            margin: 20px;
-        }
-
-        .paragraph {
-            margin-bottom: 15px;
-        }
-    </style>
-
-
-""", unsafe_allow_html=True)
-
-
 # Divider
 st.markdown("---")
 
@@ -412,13 +410,13 @@ with col1:
     st.markdown("""
     <div class="content-text">
         <div class="paragraph">
-            In a world of exponential AI-generated content, distinguishing genuine human effort is more critical than ever. TrueNet goes beyond detection—it's your partner for transparency, integrity, and productivity.
+        In a world of exponential AI-generated content, distinguishing genuine human effort is more critical than ever. TrueNet goes beyond detection—it's your partner for transparency, integrity, and productivity.
         </div>
         <div class="paragraph">
-            With advanced AI algorithms and intuitive tools, TrueNet empowers businesses, educators, and creators to protect what’s genuine while embracing responsible AI use.
+        With advanced AI algorithms and intuitive tools, TrueNet empowers businesses, educators, and creators to protect what’s genuine while embracing responsible AI use.
         </div>
         <div class="paragraph">
-            TrueNet<span style="color:#65c6ba;">: Because <span style="color:#0e8c7d;">truth</span> matters.</span>
+        TrueNet<span style="color:#65c6ba;">: Because <span style="color:#0e8c7d;">truth</span> matters.</span>
         </div>
     </div>
 """, unsafe_allow_html=True)
