@@ -30,7 +30,4 @@ class image_classifier_cnn:
     def predict(self, image_path):
         to_predict_img_array = self.pre_process(image_path)
         prediction = self.model.predict(to_predict_img_array)
-        if round(float(prediction[0][0]) * 100, 2) > 0.5:
-            return "The image is probably real :D"
-        return "Ah ha! You've uploaded an AI image!"
-        #return f"Likelihood of your image being real is: {round(float(prediction[0][0]) * 100, 2)} "
+        return float(prediction[0][0])
