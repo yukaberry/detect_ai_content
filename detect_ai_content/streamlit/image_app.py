@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import time
+from params import *
 
 st.set_page_config(
     page_title="TrueNet - AI Detection",

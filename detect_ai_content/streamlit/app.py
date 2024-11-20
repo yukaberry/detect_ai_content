@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from params import *
 
 st.markdown(
     """
