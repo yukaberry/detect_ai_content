@@ -1,108 +1,10 @@
+# app_v0.py
 import streamlit as st
-#import matplotlib.pyplot as plt
 import io
 import requests
-from params import *
-
-# define session_state variables
-if 'text_input' not in st.session_state:
-    st.session_state.text_input = f"This is example of text for"
-
-def display_results(analysis: dict):
-    prediction_class = analysis["prediction"]
-    prediction_proba = analysis["predict_proba"]
-    prediction_proba_cleaned = float(prediction_proba.replace('%', ''))
-
-    proba_what = "Human"
-    if prediction_class == 0:
-        proba_what = "Human"
-    else:
-        proba_what = "AI"
-
-    proba_human = 0.0
-    proba_ai = 0.0
-    if prediction_class == 0:
-        proba_human = prediction_proba_cleaned
-        proba_ai = 100 - proba_human
-    else:
-        proba_ai = prediction_proba_cleaned
-        proba_human = 100 - proba_ai
-
-    # dynamic styling
-    ring_chart_gradient_css = f"""background: conic-gradient(
-            #65c6ba 0% {proba_human}%, /* Dark green for Human */
-            #0e8c7d {proba_human}% 100% /* Gold for AI */
-        );
-    """
-
-    # HTML for the chart
-    st.markdown(
-        f"""
-        <div class="chart-container">
-            <!-- Ring Chart -->
-            <div class="ring-chart" style="{ring_chart_gradient_css}">
-                <div class="chart-label">
-                    {prediction_proba_cleaned}%<br><span style="color: #777; font-size: 12px;">{proba_what}</span>
-                </div>
-            </div>
-            <!-- Labels -->
-            <div class="labels-container">
-                <div class="label label-human">{proba_human}% Human</div>
-                <div class="label label-ai">{proba_ai}% AI</div>
-            </div>
-        </div>
-        <div class="chart-description">
-            The probability this text has been entirely written by Human, Mixed, or AI.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-def analyze_text(text: str) -> dict:
-    """
-    Placeholder for actual AI detection logic.
-    """
-
-    headers = {
-        'accept': 'application/json',
-    }
-    params = {
-        "text":text
-    }
-    response = requests.get(f'{BASEURL}/text_single_predict', headers=headers, params=params)
-    st.success("Prediction done ✅")
-    return response.json()
-
-def example_buttons():
-    st.write("Try an example:")
-
-    # Create a container for the buttons
-    button_container = st.container()
-
-    # Use columns within the container
-    cols = button_container.columns(4)
-
-    # Create all buttons and check their states
-    if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=llama2_chat')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
-    if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=darragh_claude_v6')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
-    if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=chat_gpt_moth')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
-    if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=persuade_corpus')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
+import base64
+import pathlib
+import os
 # Page Configuration
 st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
 
@@ -111,68 +13,67 @@ st.markdown("""
     <style>
     body {
         background-color: #f7f7f7;
-
     }
 
     /* Style for the header */
-.header {
+
+    .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #f5f5f5; /* Light gray background */
-    padding: 10px 20px; /* Add some spacing */
-    border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
-}
+        background-color: #f5f5f5; /* Light gray background */
+        padding: 10px 20px; /* Add some spacing */
+        border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
+    }
 
-/* Style for the logo */
-.logo img {
-    height: 60px; /* Adjust the logo size */
-    width: auto; /* Maintain aspect ratio */
-    margin-right: 20px; /* Add some spacing to the right of the logo */
-}
+    /* Style for the logo */
+    .logo img {
+        height: 60px; /* Adjust the logo size */
+        width: auto; /* Maintain aspect ratio */
+        margin-right: 20px; /* Add some spacing to the right of the logo */
+    }
 
-/* Style for the navigation links */
-.nav-links {
-    display: flex; /* Arrange links horizontally */
-    gap: 15px; /* Space between links */
-}
+    /* Style for the navigation links */
+    .nav-links {
+        display: flex; /* Arrange links horizontally */
+        gap: 15px; /* Space between links */
+    }
 
-.nav-links a {
-    text-decoration: none; /* Remove underline */
-    color: #65c6ba; /* Blue color */
-    font-weight: bold; /* Bold text */
-    transition: color 0.3s; /* Smooth transition for hover effect */
-}
+    .nav-links a {
+        text-decoration: none; /* Remove underline */
+        color: #65c6ba; /* Blue color */
+        font-weight: bold; /* Bold text */
+        transition: color 0.3s; /* Smooth transition for hover effect */
+    }
 
-.nav-links a:hover {
-    color: #0e8c7d; /* Darker blue on hover */
-}
+    .nav-links a:hover {
+        color: #0e8c7d; /* Darker blue on hover */
+    }
 
-/* Style for the button container */
-.button-container {
-    margin-left: auto; /* Push the button to the far right */
-}
+    /* Style for the button container */
+    .button-container {
+        margin-left: auto; /* Push the button to the far right */
+    }
 
-.btn-dark {
-    background-color: #65c6ba; /* Blue background */
-    color: white; /* White text */
-    padding: 8px 16px; /* Add padding */
-    border-radius: 5px; /* Rounded corners */
-    text-align: center;
-    cursor: pointer; /* Show pointer on hover */
-    font-weight: bold; /* Bold text */
-    transition: background-color 0.3s; /* Smooth hover effect */
-}
+    .btn-dark {
+        background-color: #65c6ba; /* Blue background */
+        color: white; /* White text */
+        padding: 8px 16px; /* Add padding */
+        border-radius: 5px; /* Rounded corners */
+        text-align: center;
+        cursor: pointer; /* Show pointer on hover */
+        font-weight: bold; /* Bold text */
+        transition: background-color 0.3s; /* Smooth hover effect */
+    }
 
-.btn-dark:hover {
-    background-color: #0e8c7d; /* Darker blue on hover */
-}
+    .btn-dark:hover {
+        background-color: #0e8c7d; /* Darker blue on hover */
+    }
 
-/* End of Header */
+    /* End of Header */
 
-/* Style for the file uploader button */
-
-button {
+    /* Style for the file uploader button */
+    button {
         background-color: #65c6ba; /* Default background color */
         color: white; /* Text color */
         font-weight: bold; /* Bold text */
@@ -189,23 +90,25 @@ button {
         color:#0e8c7d;
     }
 
+    .stButton>button {
+        margin: 0px 0px;  /* Reduce the space between buttons */
+    }
+
     /* Optional: Style for Streamlit-specific buttons (if needed) */
     div[data-testid="stButton"] > button {
         background-color: #65c6ba;
         color: white;
     }
 
-         /* Additional specificity for Streamlit's default button style */
+    /* Additional specificity for Streamlit's default button style */
     div[data-testid="stButton"] > button:hover {
         background-color: #0e8c7d !important; /* Force custom hover color */
     }
 
+    /* END Style for the file uploader button */
 
-/* END Style for the file uploader button */
-
-/* START Style for CHARTS */
-
-.chart-container {
+    /* START Style for CHARTS */
+    .chart-container {
         display: flex;
         flex-direction: row; /* Horizontal layout for chart and labels */
         align-items: center;
@@ -270,6 +173,7 @@ button {
         font-weight: bold;
         margin-bottom: 8px;
     }
+
     .label span {
         font-weight: normal;
         color: #777;
@@ -284,7 +188,7 @@ button {
     }
 
     .label-ai {
-        color: #0e8c7d; /* Gree Dark */
+        color: #0e8c7d; /* Green Dark */
     }
 
     /* Chart description styling */
@@ -295,21 +199,45 @@ button {
         text-align: center;
     }
 
-/* END Style for CHARTS */
+    /* END Style for CHARTS */
 
-
+    /* Title Styling */
     .title-big, .title-small {
         font-size: 36px;
         font-weight: bold;
         color: black;
+        text-align: left; /* Align titles to the left */
+        margin-bottom: 15px; /* Space between title and paragraphs */
     }
+
     .title-small span {
         color: #65c6ba;  /* Green for 'Creator' */
     }
-    .paragraph {
-        font-size: 18px;
-        margin-top: 20px;
+
+    /* Paragraph and Content Text Styling */
+    .content-text {
+        font-size: 20px; /* Increased font size */
+        color: #333;
+        margin: 20px;
+        text-align: left; /* Ensure the text is aligned to the left */
     }
+
+    /* Styling for paragraphs inside content-text */
+    .paragraph {
+        font-size: 20px; /* Increased font size for paragraphs */
+        margin-top: 20px;
+        margin-bottom: 15px;
+        line-height: 1.6; /* Add line spacing to paragraphs */
+    }
+
+    /* Additional customizations to ensure responsiveness and alignment */
+    @media (max-width: 768px) {
+        .title-big, .title-small, .content-text, .paragraph {
+            text-align: left;
+            margin-left: 15px; /* Adjust left margin for smaller screens */
+        }
+    }
+
     .scan-button {
         background-color: #65c6ba;
         color: white;
@@ -323,71 +251,38 @@ button {
         transition: background-color 0.3s; /* Smooth hover effect */
     }
 
-
     .scan-button:hover {
         background-color:#0e8c7d;
         color:black;
-
     }
 
+    .logo_image {
+        margin-top: 20px;
+        text-align: center;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
+    .content-text {
+        font-size: 20px;  /* Increased font size */
+        color: #333;
+        margin: 20px;
+    }
 
+    .paragraph {
+        font-size: 20px;  /* Increase font size for paragraphs */
+        margin-top: 20px;
+        margin-bottom: 15px; /* You had this but now explicitly placed it here */
+    }
 
     </style>
-
-
 """, unsafe_allow_html=True)
 
 
-# Header Section
 
-
-# DEBUGGING:
-# check full path of streamlit
-
-#import os
-#st.write(os.getcwd())
-
-
-
-# METHOD 1: PYTHON (Works)
-
-#Python method that always works but with not good HTML Integration
-
-#st.markdown(
-#    """
-#    <div id="logo">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-#st.image("logo.png", caption="Your Logo", use_column_width=True)
-
-
-# METHOD 2: HTLM (Not working)
-
-# Using html but that DOESNT WORK
-# what is the correct path ??
-# If i use an http link it works
-# if I use internal path of img i am not able to find the proper path to display the picture
-
-# Embed the image directly into the <div> using HTML
-#st.markdown(
-#    """
-#    <div id="logo">
-#        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/230px-Python-logo-notext.svg.png" alt="Your Logo" style="width: 100px;">
-#    </div>
-#    """,
-#    unsafe_allow_html=True
-#)
-
-# METHOD 3: Use a Base64-Encoded Image
-
-import base64
-import streamlit as st
-import base64
-import pathlib
-import os
+# Header
 
 # Convert the image to Base64
 def get_base64_image(file_path):
@@ -420,13 +315,108 @@ st.markdown(
             <div class="btn-dark">Dashboard</div>
         </div>
     </div>
-
-
-
 </body>
     """,
     unsafe_allow_html=True
 )
+
+# define session_state variables
+if 'text_input' not in st.session_state:
+    st.session_state.text_input = f"This is example of text for"
+
+def display_results(analysis: dict):
+    prediction_class = analysis["prediction"]
+    prediction_proba = analysis["predict_proba"]
+    prediction_proba_cleaned = float(prediction_proba.replace('%', ''))
+
+    proba_what = "Human"
+    if prediction_class == 0:
+        proba_what = "Human"
+    else:
+        proba_what = "AI"
+
+    proba_human = 0.0
+    proba_ai = 0.0
+    if prediction_class == 0:
+        proba_human = prediction_proba_cleaned
+        proba_ai = 100 - proba_human
+    else:
+        proba_ai = prediction_proba_cleaned
+        proba_human = 100 - proba_ai
+
+    # dynamic styling
+    ring_chart_gradient_css = f"""background: conic-gradient(
+            #65c6ba 0% {proba_human}%, /* Dark green for Human */
+            #0e8c7d {proba_human}% 100% /* Gold for AI */
+        );
+    """
+
+    # HTML for the chart
+    st.markdown(
+        f"""
+        <div class="chart-container">
+            <!-- Ring Chart -->
+            <div class="ring-chart" style="{ring_chart_gradient_css}">
+                <div class="chart-label">
+                    {prediction_proba_cleaned}%<br><span style="color: #777; font-size: 12px;">{proba_what}</span>
+                </div>
+            </div>
+            <!-- Labels -->
+            <div class="labels-container">
+                <div class="label label-human">{proba_human}% Human</div>
+                <div class="label label-ai">{proba_ai}% AI</div>
+            </div>
+        </div>
+        <div class="chart-description">
+            The probability this text has been entirely written by Human, Mixed, or AI.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Function: Analyze Text
+def analyze_text(text: str) -> dict:
+    headers = {'accept': 'application/json'}
+    params = {"text": text}
+    response = requests.get(
+        'https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_single_predict',
+        headers=headers, params=params
+    )
+    st.success("Prediction done ✅")
+    return response.json()
+
+def example_buttons():
+    st.write("Try an example:")
+
+    # Create a container for the buttons
+    button_container = st.container()
+
+    # Adjust the column width to reduce space
+    cols = button_container.columns([1, 1, 1, 1])  # Use equal width for all buttons
+
+    # Create all buttons and check their states
+    if cols[0].button("Llama2", key="example1", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=llama2_chat')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    if cols[1].button("Claude", key="example2", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=darragh_claude_v6')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    if cols[2].button("ChatGPT", key="example3", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=chat_gpt_moth')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    if cols[3].button("Human", key="example4", type="secondary"):
+        response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/random_text?source=persuade_corpus')
+        print(response.json())
+        st.session_state.text_input = response.json()['text']
+
+    # Add custom CSS to reduce space between buttons
+
 
 
 # Divider
@@ -439,12 +429,20 @@ col1, col2 = st.columns([1.5, 2])
 with col1:
     st.markdown('<div class="title-big">Beyond the Surface</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-small">Identify the <span>Creator</span></div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="paragraph">'
-        'Since inventing AI detection, TrueNet incorporates the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="content-text">
+        <div class="paragraph">
+        In a world of exponential AI-generated content, distinguishing genuine human effort is more critical than ever. TrueNet goes beyond detection—it's your partner for transparency, integrity, and productivity.
+        </div>
+        <div class="paragraph">
+        With advanced AI algorithms and intuitive tools, TrueNet empowers businesses, educators, and creators to protect what’s genuine while embracing responsible AI use.
+        </div>
+        <div class="paragraph">
+        TrueNet<span style="color:#65c6ba;">: Because <span style="color:#0e8c7d;">truth</span> matters.</span>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 
 # Insert video (Check issue with encoding)
    # st.video("data/dummy_video.mp4")
@@ -453,7 +451,7 @@ with col1:
 # Insert Base64-encoded image inside a styled div
     st.markdown(
         f"""
-        <div style="margin-top: 20px; text-align: center; background-color: #f9f9f9; padding: 15px; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
+        <div class="logo_image_manu">
             <img src="data:image/png;base64,{logo_base64_youtube}" alt="Your Image" style="max-width: 100%; border-radius: 8px;">
         </div>
         """,
@@ -541,4 +539,4 @@ st.markdown(
 
 # hack to speed up the 1st prediction request
 import requests
-requests.get(f'{BASEURL}/ping')
+requests.get('https://detect-ai-content-667980218208.europe-west1.run.app/ping')
