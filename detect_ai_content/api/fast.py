@@ -16,6 +16,7 @@ from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextRNN impor
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextSVC import TrueNetTextSVC
 from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextTfidfNaiveBayesClassifier import TrueNetTextTfidfNaiveBayesClassifier
 # from detect_ai_content.ml_logic.for_texts.using_ml_features.TrueNetTextUsingBERTMaskedPredictions import TrueNetTextUsingBERTMaskedPredictions
+from detect_ai_content.ml_logic.for_texts.lgbm_internal import LgbmInternal
 
 
 from detect_ai_content.ml_logic.data import enrich_text, enrich_lexical_diversity_readability
@@ -86,9 +87,9 @@ def predict(
     Assumes `text` is provided as a string
     """
 
-    if "TrueNetTextLogisticRegression" not in app.state.models:
-        app.state.models["TrueNetTextLogisticRegression"] = TrueNetTextLogisticRegression().local_trained_pipeline()
-    best_model = app.state.models["TrueNetTextLogisticRegression"]
+    if "LgbmInternal" not in app.state.models:
+        app.state.models["LgbmInternal"] = LgbmInternal().pretrained_model()
+    best_model = app.state.models["LgbmInternal"]
 
     text_df = pd.DataFrame(data=[text],columns=['text'])
     y_pred = best_model.predict(text_df)
@@ -105,8 +106,8 @@ def predict(
         'prediction': predicted_class,
         'predict_proba': predict_proba_class,
         'details': {
-            'model_name': 'TrueNetTextLogisticRegression',
-            'version': 'v0.134'
+            'model_name': 'LgbmInternal',
+            'version': 'v15'
         }
     }
 
