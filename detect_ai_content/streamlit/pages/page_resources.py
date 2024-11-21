@@ -4,9 +4,6 @@ import base64
 import os
 import pathlib
 
-# Set page configuration as the first Streamlit command
-st.set_page_config(page_title="TrueNet – Resources", layout="wide")
-
 # Convert the image to Base64
 def get_base64_image(file_path):
     with open(file_path, "rb") as image_file:
@@ -50,7 +47,4 @@ def app():
         </div>
     """, unsafe_allow_html=True)
 
-# This allows the resources page to be run as a standalone app for testing
-if __name__ == "__main__":
-    st.sidebar.title('Navigation')
-    app()
+app()

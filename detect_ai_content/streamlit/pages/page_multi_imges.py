@@ -242,12 +242,5 @@ def create_content():
             st.session_state.image_input = None
             st.rerun()
 
-def main():
-    st.set_page_config(page_title="AI Detector", page_icon="🤖", layout="wide")
-
-    # Create main content in a container
-    with st.container():
-        create_content()
-
-if __name__ == "__main__":
-    main()
+with st.container():
+    create_content()
