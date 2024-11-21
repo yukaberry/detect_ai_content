@@ -129,8 +129,9 @@ def analyze_image(image_file) -> dict:
         'user_input': (image_file.name, image_file, image_file.type)
     }
     response = requests.post(
-        # f'{BASEURL}/image_multi_predict',
-        'http://0.0.0.0:8080/image_multi_predict',
+         f'{BASEURL}/image_multi_predict',
+        # local test
+        #'http://0.0.0.0:8080/image_multi_predict',
         headers=headers,
         files=files
     )

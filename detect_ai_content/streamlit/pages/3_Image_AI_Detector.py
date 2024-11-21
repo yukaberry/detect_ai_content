@@ -95,17 +95,19 @@ def app():
                 }
 
                 files = {
-                    'user_input': (uploaded_file.name, open(complete_name, 'rb'), 'image/jpg'),
+                    'file': (uploaded_file.name, open(complete_name, 'rb'), 'image/jpg'),
 
                 }
-                # local http://0.0.0.0:8000/image_predict
-                #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict', headers=headers, files=files)
-                response = requests.post(f"{BASEURL}/image_predict_cnn",headers=headers, files=files)
-                #response = requests.post("https://0.0.0.0:8000/image_predict_cnn",headers=headers, files=files)
-                # deploy                  https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/
-                # st.success(f"{response.json()}")
+                # local test
+                # http://0.0.0.0:8000/image_predict_most_updated_cnn
+                # deploy
+                #'https://detect-ai-content-j-mvp-667980218208.europe-west1.run.app/image_predict_most_updated_cnn', headers=headers, files=files)
+
+                # final mode from  Ab
+                import requests
+                response = requests.post(f"{BASEURL}/image_predict_most_updated_cnn",headers=headers, files=files)
+
                 st.success(response.text)
-                #st.success(response)
 
 
 
