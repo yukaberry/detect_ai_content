@@ -76,15 +76,18 @@ def app():
     unsafe_allow_html=True
     )
 
-   # Display custom header with logo and left-aligned title
+    # Display custom header with logo
     st.markdown(f"""
-        <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px; text-align: left;">
-            <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto; margin-left: 0;">
+        <div style="background-color:#f5f5f5; 
+        padding:10px; 
+        border-radius:10px; 
+        margin-bottom:10px;">
+            <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto;">
         </div>
     """, unsafe_allow_html=True)
 
-    # Title with colored "TrueNet" aligned to the left
-    st.markdown('<div class="title-custom" style="text-align: left;">Meet the people behind <span>TrueNet</span></div>', unsafe_allow_html=True)
+    # Title with colored "TrueNet"
+    st.markdown('<div class="title-custom">Meet the people behind <span>TrueNet</span></div>', unsafe_allow_html=True)
 
     # Display each team member in separate columns
     team_members = [
