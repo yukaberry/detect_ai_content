@@ -9,9 +9,6 @@ import time
 from params import *
 import base64
 
-# Set page configuration
-st.set_page_config(page_title="TrueNet – Image AI Detection", layout="wide")
-
 # Convert the image to Base64
 def get_base64_image(file_path):
     with open(file_path, "rb") as image_file:
@@ -118,7 +115,4 @@ def app():
         </div>
     """, unsafe_allow_html=True)
 
-# This allows the app to run as a standalone page for testing
-if __name__ == "__main__":
-    st.sidebar.title('Navigation')
-    app()
+app()

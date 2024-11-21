@@ -7,13 +7,6 @@ import base64
 import os
 import pathlib
 
-def set_page_config():
-    st.set_page_config(
-        page_title="AI Text Analyzer",
-        page_icon="🔍",
-        layout="wide"  # Changed to wide to accommodate the menu
-    )
-
 def get_base64_image(file_path):
     """Convert an image to a base64 string."""
     with open(file_path, "rb") as image_file:
@@ -314,19 +307,9 @@ def create_content():
         </div>
     """, unsafe_allow_html=True)
 
-def main():
-    set_page_config()
+with st.container():
     local_css()
-
-    # Add navigation
-    # create_navigation()
-
-    # Create main content in a container
-    with st.container():
-        create_content()
-
-if __name__ == "__main__":
-    main()
+    create_content()
 
 import requests
 requests.get(f'{BASEURL}/ping')
