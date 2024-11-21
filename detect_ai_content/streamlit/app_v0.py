@@ -5,8 +5,9 @@ import requests
 import base64
 import pathlib
 import os
+
 # Page Configuration
-st.set_page_config(page_title="TrueNet - AI Detection", layout="wide")
+st.set_page_config(page_title="TrueNet - AI Detection", layout="wide", initial_sidebar_state="collapsed")
 
 # CSS for Styling
 st.markdown("""

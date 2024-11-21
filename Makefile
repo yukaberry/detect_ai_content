@@ -17,7 +17,7 @@ run_local_fast_api:
 	fastapi dev detect_ai_content/api/fast.py
 
 run_local_streamlit:
-	streamlit run ./detect_ai_content/streamlit/app_v0.py
+	streamlit run ./detect_ai_content/streamlit/navigation.py
 
 ## run api locally
 run_local_uvicorn:
