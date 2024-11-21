@@ -1,9 +1,11 @@
 import streamlit as st
-
 from typing import Optional
 import requests
 import pandas as pd
 from params import *
+import base64
+import os
+import pathlib
 
 def set_page_config():
     st.set_page_config(
@@ -12,121 +14,156 @@ def set_page_config():
         layout="wide"  # Changed to wide to accommodate the menu
     )
 
+def get_base64_image(file_path):
+    """Convert an image to a base64 string."""
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
 def local_css():
+    # Prepare base64 string for the logo
+    parent_path = pathlib.Path(__file__).parent.parent.resolve()
+    save_path = os.path.join(parent_path, "data")
+    logo_path = os.path.join(save_path, "logo3_transparent.png")
+
     st.markdown("""
         <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Main Container */
         .main {
             padding: 2rem;
+
         }
-        /* Navigation Styles */
-        .nav-container {
+
+        /* Header */
+
+        .header {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background: white;
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 2rem;
         }
-        .nav-logo {
-            font-size: 1.5rem;
+        .header img { /*logo*/
+            height: 60px;
+            width: auto;
+            margin-right: 20px;
+        }
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+        .header-title h2 {
+            font-size: 2rem;
             font-weight: bold;
-            color: #333;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
+            color: #333333;
+            margin: 0;
         }
-        .nav-logo img {
-            height: 30px;
-            margin-right: 10px;
+        .header-title h3 {
+            font-size: 1.5rem;
+            color: #65c6ba;
+            margin: 0;
         }
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        .nav-item {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-        .demo-button {
-            background: white;
-            border: 1px solid #333;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            color: #333;
-        }
-        .dashboard-button {
-            background: #333;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            color: white;
-        }
-        /* Content Styles */
+
+        /* Top Buttons */
+
         .stButton>button {
-            width: 100%;
             border-radius: 4px;
-            padding: 0.5rem;
-        }
-        .text-input {
-            min-height: 200px;
-        }
-        .example-btn {
-            margin: 0.25rem;
             padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid #e0e0e0;
-            background: white;
-            cursor: pointer;
+            background-color: #65c6ba !important; /* Blue from logo */
+            color: white !important;
+            border: none;
         }
+        .stButton>button:hover {
+            background-color: #0e8c7d !important; /* Darker blue */
+            color: white !important;
+        }
+
+        /* Analyze and Clear Buttons */
+
+        .stButton.analyze {
+            background: #65c6ba;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            margin: 1rem 0;
+        }
+        .stButton.clear {
+            background: #f5f5f5;
+            border: 1px solid #d9d9d9;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            color: #333333;
+            font-size: 1rem;
+            margin: 1rem 0;
+        }
+        .stButton.clear:hover {
+            background: #e0e0e0;
+        }
+        /* Text Input */
+
+        .stTextArea textarea {
+            min-height: 150px; /* Adjust the height as needed */
+            padding: 1rem; /* Add some inner spacing */
+            font-size: 1rem; /* Text size */
+            border: none; /* Remove the border */
+            outline: none; /* Remove focus outline */
+            background-color: #f5f5f5; /* Optional: Light gray background for distinction */
+            border-radius: 10px; /* Optional: Rounded corners for a cleaner look */
+        }
+
+        .stTextArea textarea:focus {
+            border: none; /* Ensure no border appears on focus */
+            outline: none; /* Remove any browser-generated focus outline */
+            box-shadow: none; /* Prevent any shadow effects */
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777777;
+        }
+
         /* Hide Streamlit's default menu */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         </style>
+
     """, unsafe_allow_html=True)
 
-def create_navigation():
-    nav_html = """
-        <div class="nav-container">
-            <a href="#" class="nav-logo">
-                <span>AI Text Analyzer</span>
-            </a>
-            <div class="nav-menu">
-                <div class="dropdown">
-                    <a href="#" class="nav-item">Products</a>
-                </div>
-                <div class="dropdown">
-                    <a href="#" class="nav-item">Solutions</a>
-                </div>
-                <div class="dropdown">
-                    <a href="#" class="nav-item">Resources</a>
-                </div>
-                <a href="#" class="nav-item">Pricing</a>
-                <a href="#" class="nav-item">News</a>
-                <a href="#" class="nav-item">Team</a>
+    if os.path.exists(logo_path):
+        logo_base64 = get_base64_image(logo_path)
+        st.markdown(f"""
+            <div class="header">
+                <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo">
             </div>
-            <div class="nav-buttons">
-                <button class="demo-button">Request Demo</button>
-                <button class="dashboard-button">Dashboard</button>
-            </div>
-        </div>
-    """
-    st.markdown(nav_html, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    else:
+        st.warning("Logo file not found. Please check the path.")
+
+    st.markdown("""
+    <h2>More than an AI Detector</h2>
+    <h3>Preserve what\'s <span style="color: #65c6ba;">Human.</span></h3>
+
+    """, unsafe_allow_html=True)
+
+
 
 def example_buttons():
     st.write("Try an example:")
 
-    # Create a container for the buttons
-    button_container = st.container()
+    # Add a container for custom button styling
+    st.markdown('<div class="example-buttons-container">', unsafe_allow_html=True)
 
     # Use columns within the container
-    cols = button_container.columns(4)
+    cols = st.columns(4)
 
     # Track which button was clicked
     selected_example = None
@@ -236,10 +273,6 @@ def display_results(analysis: dict):
     st.write(styled_df, use_container_width=True)
 
 def create_content():
-    st.title("More than an AI detector.")
-    st.markdown("### Preserve what's human.")
-    st.write("Since inventing AI detection, we incorporate the latest research in detecting ChatGPT, GPT4, Google-Gemini, LLaMa, and new AI models, and investigating their sources.")
-
     # Store the selected example in session state if it's not already there
     if 'selected_example' not in st.session_state:
         st.session_state.selected_example = None
@@ -252,23 +285,34 @@ def create_content():
         st.session_state.selected_example = new_selection
         st.session_state.text_input = f"This is example text for {new_selection}"
 
+    # Display the text input area
     text = text_input_section()
 
-    col1, col2 = st.columns([2, 1])
+    # Bottom buttons for Analyze and Clear
+    st.markdown('<div class="bottom-buttons-container">', unsafe_allow_html=True)
+    col1, col2 = st.columns([1, 1])  # Two equally spaced columns
     with col1:
-        if st.button("Analyse Text", type="primary"):
+        if st.button("Analyze Test", type="primary", key="analyze"):
             if text:
-                with st.spinner('Wait for it...'):
+                with st.spinner("Wait for it..."):
                     analysis = analyze_text(text)
                     display_results(analysis)
             else:
                 st.warning("Please enter some text to analyze.")
     with col2:
-        if st.button("Clear", type="secondary"):
+        if st.button("Clear", type="secondary", key="clear"):
             st.session_state.clear()
             st.session_state.text_input = ''
             st.rerun()
 
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Footer
+    st.markdown("""
+        <div class="footer">
+            © 2024 TrueNet AI Detection. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)
 
 def main():
     set_page_config()
