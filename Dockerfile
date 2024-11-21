@@ -9,7 +9,7 @@ RUN pip install --upgrade pip
 # larger version
 RUN pip install --no-cache-dir --timeout=600 -r requirements.txt
 
-# RUN python -m spacy download en_core_web_sm
+RUN python -m spacy download en_core_web_sm
 # test comment
 # copy folders
 COPY detect_ai_content detect_ai_content
