@@ -31,15 +31,8 @@ def app():
     st.markdown("""
         <h2 style='text-align: left; color: black;
         font-size: 30px'>Is your image Real or AI Generated?</h2>
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #777777;
-
     """, unsafe_allow_html=True)
+
 
 
 
