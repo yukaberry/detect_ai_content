@@ -29,6 +29,7 @@ def app():
 
     # Main content of the page
     st.markdown("""
+                
     ## Our Approach
 
     ### Data Collection and Preprocessing:
