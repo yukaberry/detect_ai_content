@@ -11,7 +11,7 @@ pages = {
     ],
     "🌌 AI detection for images": [
         st.Page("./pages/3_Image_AI_Detector.py", title="One model"),
-        st.Page("./pages/4_Multi-Model_Image_AI_Detector.py", title="Multiple models"),
+        st.Page("./pages/page_multi_imges.py", title="Multiple models"),
     ],
     "ℹ️ More pages ": [
         st.Page("./pages/page_approach.py", title="Approach"),
