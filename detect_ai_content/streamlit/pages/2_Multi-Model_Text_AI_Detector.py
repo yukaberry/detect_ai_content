@@ -20,18 +20,7 @@ def local_css():
 
     st.markdown("""
         <style>
-        body {
-            font-family: 'Arial', sans-serif;
-        }
-
-        /* Main Container */
-        .main {
-            padding: 2rem;
-
-        }
-
         /* Header */
-
         .header {
             background-color: #f5f5f5;
             padding: 10px 20px;
@@ -61,43 +50,6 @@ def local_css():
             margin: 0;
         }
 
-        /* Top Buttons */
-
-        .stButton>button {
-            border-radius: 4px;
-            padding: 0.5rem 1rem;
-            background-color: #65c6ba !important; /* Blue from logo */
-            color: white !important;
-            border: none;
-        }
-        .stButton>button:hover {
-            background-color: #0e8c7d !important; /* Darker blue */
-            color: white !important;
-        }
-
-        /* Analyze and Clear Buttons */
-
-        .stButton.analyze {
-            background: #65c6ba;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            margin: 1rem 0;
-        }
-        .stButton.clear {
-            background: #f5f5f5;
-            border: 1px solid #d9d9d9;
-            padding: 0.5rem 1.5rem;
-            border-radius: 10px;
-            color: #333333;
-            font-size: 1rem;
-            margin: 1rem 0;
-        }
-        .stButton.clear:hover {
-            background: #e0e0e0;
-        }
         /* Text Input */
 
         .stTextArea textarea {
@@ -147,42 +99,37 @@ def local_css():
 
     """, unsafe_allow_html=True)
 
-
-
 def example_buttons():
-    st.write("Try an example:")
+    Llama2_text = "Llama2"
+    Claude_text = "Claude"
+    ChatGPT_text = "ChatGPT"
+    Human_text = "Human"
 
-    # Add a container for custom button styling
-    st.markdown('<div class="example-buttons-container">', unsafe_allow_html=True)
+    option_map = {
+        0: Llama2_text,
+        1: Claude_text,
+        2: ChatGPT_text,
+        3: Human_text,
+    }
+    selection = st.pills(
+        "Try an example:",
+        options=option_map.keys(),
+        format_func=lambda option: option_map[option],
+        selection_mode="single",
+    )
 
-    # Use columns within the container
-    cols = st.columns(4)
-
-    # Track which button was clicked
-    selected_example = None
-
-    # Create all buttons and check their states
-    if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=llama2_chat')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=darragh_claude_v6')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=chat_gpt_moth')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=persuade_corpus')
-        print(response.json())
-        selected_example = response.json()['text']
-
-    return selected_example
+    if selection is not None:
+        pills_selection = option_map[selection]
+        if pills_selection == Llama2_text:
+            source = "llama2_chat"
+        elif pills_selection == Claude_text:
+            source = "darragh_claude_v6"
+        elif pills_selection == ChatGPT_text:
+            source = "chat_gpt_moth"
+        elif pills_selection == Human_text:
+            source = "persuade_corpus"
+        response = requests.get(f'{BASEURL}/random_text?source={source}')
+        st.session_state.text_input = response.json()['text']
 
 
 def text_input_section():
@@ -282,14 +229,13 @@ def create_content():
     text = text_input_section()
 
     # Bottom buttons for Analyze and Clear
-    st.markdown('<div class="bottom-buttons-container">', unsafe_allow_html=True)
     col1, col2 = st.columns([1, 1])  # Two equally spaced columns
+    analysis = None
     with col1:
-        if st.button("Analyze Test", type="primary", key="analyze"):
+        if st.button("Scan for AI", type="primary", key="analyze"):
             if text:
                 with st.spinner("Wait for it..."):
                     analysis = analyze_text(text)
-                    display_results(analysis)
             else:
                 st.warning("Please enter some text to analyze.")
     with col2:
@@ -298,7 +244,8 @@ def create_content():
             st.session_state.text_input = ''
             st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    if analysis is not None:
+        display_results(analysis)
 
     # Footer
     st.markdown("""

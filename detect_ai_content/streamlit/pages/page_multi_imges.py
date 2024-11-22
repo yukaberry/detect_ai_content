@@ -229,12 +229,13 @@ def create_content():
     image_file = image_input_section()
 
     col1, col2 = st.columns([2, 1])
+    analysis = None
+
     with col1:
-        if st.button("Analyse Image", type="primary"):
+        if st.button("Scan for AI", type="primary"):
             if image_file:
                 with st.spinner('Analysing...'):
                     analysis = analyze_image(image_file)
-                    display_results(analysis)
             else:
                 st.warning("Please upload an image to analyse.")
     with col2:
@@ -242,6 +243,9 @@ def create_content():
             st.session_state.clear()
             st.session_state.image_input = None
             st.rerun()
+
+    if analysis is not None:
+        display_results(analysis)
 
 with st.container():
     create_content()
