@@ -203,7 +203,7 @@ def predict(
     if "LgbmInternal" not in app.state.models:
         app.state.models["LgbmInternal"] = LgbmInternal().pretrained_model()
     model = app.state.models["LgbmInternal"]
-    predictions['LgbmInternal'] = prediction_to_result(model, 'LgbmInternal', text_enriched_df)
+    predictions['LgbmInternal'] = prediction_to_result(model, 'LgbmInternal', text_df)
 
     y_preds = []
     number_of_zeros = float(0)
