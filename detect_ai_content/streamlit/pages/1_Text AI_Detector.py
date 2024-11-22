@@ -52,32 +52,37 @@ def local_css():
     }
 
     /* Example Buttons Container */
-        .example-buttons-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 1rem;
-            gap: 0.5rem;
-        }
-        .example-buttons-container button {
-            background-color: #65c6ba;
-            color: white;
-            border-radius: 8px;
-            border: none;
-            padding: 0.5rem 1rem;
-        }
-        .example-buttons-container button:hover {
-            background-color: #0e8c7d;
-            cursor: pointer;
-        }
-
-    /* Container for Text Area and Buttons */
-    .textarea-and-buttons-container {
+    .example-buttons-container {
         display: flex;
-        flex-direction: column; /* Stack elements vertically */
-        align-items: center;
-        justify-content: center;
+        justify-content: space-around;
         margin-top: 1rem;
-        gap: 1rem; /* Space between text area and buttons */
+        gap: 0.5rem;
+    }
+    .example-buttons-container button {
+        background-color: #65c6ba;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 1rem;
+    }
+    .example-buttons-container button:hover {
+        background-color: #0e8c7d;
+        cursor: pointer;
+    }
+
+    /* Scan for AI and Clear Buttons */
+    div.stButton > button {
+        background-color: #65c6ba; /* Base color from logo */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
+    div.stButton > button:hover {
+        background-color: #0e8c7d; /* Slightly darker shade for hover effect */
     }
 
     /* Text Area */
@@ -87,21 +92,6 @@ def local_css():
         display: flex;
         justify-content: center;
         margin-bottom: 1rem; /* Space between text area and buttons */
-    }
-
-    /* Analyze Test Button (Bottom Left) */
-    .analyze-button-container {
-       align-self: flex-start; /* Align to the left of the container */
-    }
-    .analyze-button-container > button {
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        background-color: #65c6ba;important!
-        color: white;
-        border: none;
-    }
-    .analyze-button-container > button:hover {
-        background-color: #0e8c7d;
     }
 
     /* Footer */
@@ -115,7 +105,6 @@ def local_css():
     /* Hide Streamlit's default menu */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-
 
     </style>
     """, unsafe_allow_html=True)
@@ -135,6 +124,7 @@ def local_css():
     <h3>Preserve what\'s <span style="color: #65c6ba;">Human.</span></h3>
 
     """, unsafe_allow_html=True)
+
 
 def example_buttons():
     Llama2_text = "Llama2"
@@ -238,9 +228,11 @@ def create_content():
     text = text_input_section()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Analyze Test button (Bottom Left)
-    col1, col2 = st.columns([2, 1])
+    # Add buttons using columns
+    col1, col2, col3 = st.columns([2, 5, 1])  # Adjust column ratios
     analysis = None
+
+    # "Scan for AI" Button (Left)
     with col1:
         if st.button("Scan for AI", key="analyze", type="primary"):
             if text:
@@ -249,13 +241,18 @@ def create_content():
             else:
                 st.warning("Please enter some text to analyze.")
 
-    # Clear button (Bottom Right)
+    # Empty Column (Middle) to push "Clear" Button to the Right
     with col2:
+        st.markdown("")  # Empty space for alignment
+
+    # "Clear" Button (Right)
+    with col3:
         if st.button("Clear", key="clear"):
             st.session_state.clear()
             st.session_state.text_input = ''
             st.rerun()
 
+    # Display analysis results if available
     if analysis is not None:
         display_results(analysis)
 
@@ -265,6 +262,7 @@ def create_content():
             © 2024 TrueNet AI Detection. All rights reserved.
         </div>
     """, unsafe_allow_html=True)
+
 
 
 with st.container():

@@ -133,6 +133,31 @@ def local_css():
             box-shadow: none; /* Prevent any shadow effects */
         }
 
+        /* Custom button styles */
+
+        div.stButton > button {
+            background-color: #65c6ba; /* Base color */
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        div.stButton > button:hover {
+            background-color: #0e8c7d; /* Slightly darker shade for hover effect */
+        }
+
+        /* Align Clear button to the right */
+        .clear-button-container {
+            text-align: right; /* Align Clear button to the right */
+        }
+
+        /* end of button de m...styling :x */
+
         /* Footer */
         .footer {
             text-align: center;
@@ -316,21 +341,26 @@ def create_content():
     # Get newly selected example
     pdf_file = pdf_input_section()
 
-    col1, col2 = st.columns([2, 1])
+    # Create button layout
+    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
     with col1:
         if st.button("Scan for AI", type="primary"):
             if pdf_file:
                 with st.spinner('Analysing...'):
                     analysis = analyze_pdf(pdf_file)
             else:
-                st.warning("Please upload an pdf to analyse.")
+                st.warning("Please upload a PDF to analyze.")
     with col2:
+        # Wrap the Clear button inside a div for alignment
+        st.markdown('<div class="clear-button-container">', unsafe_allow_html=True)
         if st.button("Clear", type="secondary"):
             st.session_state.clear()
             st.session_state.image_input = None
             st.session_state.analysis = None
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
+    # Display analysis results if available
     if st.session_state.analysis is not None:
         analysis = st.session_state.analysis
         details = analysis["details"]

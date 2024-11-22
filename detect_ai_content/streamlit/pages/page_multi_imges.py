@@ -5,109 +5,37 @@ import pathlib
 import requests
 import time
 from params import *
-
-# # Set page configuration
-# st.set_page_config(page_title="TrueNet – Image AI Detection", layout="wide")
-
-# # Convert the image to Base64
-# def get_base64_image(file_path):
-#     with open(file_path, "rb") as image_file:
-#         return base64.b64encode(image_file.read()).decode("utf-8")
-
-# def app():
-#     # Prepare base64 string for the logo
-#     parent_path = pathlib.Path(__file__).parent.parent.resolve()
-#     save_path = os.path.join(parent_path, "data")
-#     logo_base64 = get_base64_image(f"{save_path}/logo3_transparent.png")
-
-#     # Display custom header with logo
-#     st.markdown(f"""
-#         <div style="background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px;">
-#             <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto;">
-#         </div>
-#     """, unsafe_allow_html=True)
-
-#     # Title
-#     st.markdown("""
-#         ## **Is your image Human or AI Generated?**
-#     """)
-
-#     # Instruction
-#     st.write("""
-#     Upload an image below to find out if it's created by AI or a human:
-#     """)
-
-#     # File uploader
-#     image = st.file_uploader("", type=["JPG", "JPEG", "PNG"])
-
-#     # Run Prediction Button
-
-#     if st.button("Run Prediction") and image is not None:
-#         # API URL (Replace with actual deployed API)
-#         # TODO
-#         api_url = "http://0.0.0.0:8000/image_multi_predict"
-#         files = {"file": image.getvalue()}
-
-#         try:
-#             response = requests.post(api_url, files=files)
-
-#             if response.status_code == 200:
-#                 prediction = response.json().get("prediction", "No prediction found")
-#                 st.markdown(f"""
-#                     <div style="background-color:#65c6ba; color:white; padding:10px; border-radius:5px; text-align:center; font-size:18px; margin-top:20px;">
-#                         Prediction complete ✅ <br><b>{prediction}</b>
-#                     </div>
-#                 """, unsafe_allow_html=True)
-#             else:
-#                 st.error("Error: " + response.text)
-#         except Exception as e:
-#             st.error("Error while connecting to the API. Please try again later.")
-
-#     # Footer
-#     st.markdown("---")
-#     st.markdown("""
-#         <div style="text-align:center;">
-#             © 2024 TrueNet AI Detection. All rights reserved.
-#         </div>
-#     """, unsafe_allow_html=True)
-
-
-# def analyze_img(img: str) -> dict:
-
-#     """
-#     Placeholder for actual AI detection logic.
-#     """
-
-#     headers = {
-#         'accept': 'application/json',
-#     }
-#     params = {
-#         "text":text
-#     }
-#     response = requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/text_multi_predict', headers=headers, params=params)
-#     st.success("Prediction done ✅")
-#     return response.json()
-
-# def main():
-#     analyze_img()
-
-
-
-
-
-# # This allows the app to run as a standalone page for testing
-# if __name__ == "__main__":
-#     #st.sidebar.title('Navigation')
-
-#     main()
-
-# import requests
-# requests.get('https://detect-ai-content-improved14nov-667980218208.europe-west1.run.app/ping')
-
-
+import pathlib
+import os
 from PIL import Image
 import pandas as pd
-import streamlit as st
+
+def get_base64_image(file_path):
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+def app():
+        # Prepare base64 string for the logo
+    parent_path = pathlib.Path(__file__).parent.parent.resolve()
+    save_path = os.path.join(parent_path, "data")
+    logo_path = os.path.join(save_path, "logo3_transparent.png")
+
+    # Check if the logo file exists
+    if os.path.exists(logo_path):
+        logo_base64 = get_base64_image(logo_path)
+        st.markdown(f"""
+            <div style="display: flex; align-items: center; background-color:#f5f5f5; padding:10px; border-radius:10px; margin-bottom:10px;">
+                <img src="data:image/png;base64,{logo_base64}" alt="TrueNet Logo" style="height:60px; width:auto; margin-right:20px;">
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.warning("Logo file not found. Please check the path.")
+
+    # Add a consistent header
+    st.markdown("""
+        <h2 style='text-align: left; color: black; font-size: 30px'>Is your image Real or AI Generated?</h2>
+    """, unsafe_allow_html=True)
+
 
 def image_input_section():
     return st.file_uploader(
@@ -218,19 +146,35 @@ def display_results(analysis: dict):
 
     st.write(styled_df, use_container_width=True)
 
-
-
 def create_content():
-    st.title("Is your image Real or AI Generated?")
-    st.markdown("### Upload an image to find out now!")
-    #st.write("Upload an image to analyze whether it is likely AI-generated or real.")
-
     # Image upload section
     image_file = image_input_section()
 
-    col1, col2 = st.columns([2, 1])
+    # Add custom CSS for button styling
+    st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            background-color: #65c6ba; /* Base color from the logo */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        div.stButton > button:first-child:hover {
+            background-color: #4da79c; /* Slightly darker shade for hover effect */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Use three columns to align the buttons
+    col1, col2, col3 = st.columns([2, 5, 1])  # Adjust column ratios
+
     analysis = None
 
+    # "Scan for AI" Button (Left)
     with col1:
         if st.button("Scan for AI", type="primary"):
             if image_file:
@@ -238,14 +182,32 @@ def create_content():
                     analysis = analyze_image(image_file)
             else:
                 st.warning("Please upload an image to analyse.")
+
+    # Empty Column (Middle) for Spacing
     with col2:
+        st.markdown("")  # Empty content
+
+    # "Clear" Button (Right)
+    with col3:
         if st.button("Clear", type="secondary"):
             st.session_state.clear()
             st.session_state.image_input = None
             st.rerun()
 
+    # Display results if available
     if analysis is not None:
         display_results(analysis)
 
+
+
 with st.container():
+    app() # runs before any other content
     create_content()
+
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+        <div style="text-align:center;">
+            © 2024 TrueNet AI Detection. All rights reserved.
+        </div>
+    """, unsafe_allow_html=True)

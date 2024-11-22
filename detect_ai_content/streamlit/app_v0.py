@@ -17,40 +17,40 @@ st.markdown("""
         background-color: #f7f7f7;
     }
 
-    /* Style for the header */
-
+    /* Header */
     .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-        background-color: #f5f5f5; /* Light gray background */
-        padding: 10px 20px; /* Add some spacing */
-        border-bottom: 1px solid #ddd; /* Light gray border at the bottom */
+        display: flex;
+        align-items: center;
+        background-color: #f5f5f5;
+        padding: 10px 20px;
+        border-bottom: 1px solid #ddd;
     }
 
-    /* Style for the logo */
+    /* Logo */
     .logo img {
-        height: 60px; /* Adjust the logo size */
-        width: auto; /* Maintain aspect ratio */
-        margin-right: 20px; /* Add some spacing to the right of the logo */
+        height: 60px;
+        width: auto;
+        margin-right: 20px;
     }
 
-    /* Style for the navigation links */
+    /* Navigation Links */
     .nav-links {
-        display: flex; /* Arrange links horizontally */
-        gap: 15px; /* Space between links */
+        display: flex;
+        gap: 20px; /* Space between links */
+        margin-left: 20px; /* Space between the logo and the links */
     }
 
     .nav-links a {
-        text-decoration: none; /* Remove underline */
-        color: #65c6ba; /* Blue color */
-        font-weight: bold; /* Bold text */
-        transition: color 0.3s; /* Smooth transition for hover effect */
+        text-decoration: none;
+        color: #65c6ba; /* Base color */
+        font-weight: bold;
+        transition: color 0.3s;
     }
 
     .nav-links a:hover {
-        color: #0e8c7d; /* Darker blue on hover */
+        color: #0e8c7d; /* Darker shade on hover */
     }
+
 
     /* End of Header */
 
@@ -151,32 +151,40 @@ st.markdown("""
     /* END Style for CHARTS */
 
     /* Title Styling */
-    .title-big, .title-small {
-        font-size: 36px;
+
+    .title-big {
+    font-size: 36px;
+    font-weight: bold;
+    color: black;
+    text-align: left; /* Align the title to the left */
+    margin-bottom: 10px; /* Reduce the space below the title */
+    }
+
+    .title-small {
+        font-size: 30px;
         font-weight: bold;
         color: black;
-        text-align: left; /* Align titles to the left */
-        margin-bottom: 15px; /* Space between title and paragraphs */
+        text-align: left; /* Align the title to the left */
+        margin-top: 0; /* Remove extra space above */
+        margin-bottom: 15px; /* Adjust the space below */
     }
 
     .title-small span {
-        color: #65c6ba;  /* Green for 'Creator' */
+        color: #65c6ba; /* Green for 'Creator' */
     }
 
     /* Paragraph and Content Text Styling */
     .content-text {
-        font-size: 20px; /* Increased font size */
-        color: #333;
-        margin: 20px;
-        text-align: left; /* Ensure the text is aligned to the left */
+        font-size: 20px; /* Adjust font size */
+        color: #333; /* Text color */
+        margin: 0 20px; /* Add some horizontal margin */
+        text-align: left; /* Align text to the left */
+        line-height: 1.6; /* Adjust line spacing */
     }
 
-    /* Styling for paragraphs inside content-text */
     .paragraph {
-        font-size: 20px; /* Increased font size for paragraphs */
-        margin-top: 20px;
-        margin-bottom: 15px;
-        line-height: 1.6; /* Add line spacing to paragraphs */
+        margin-top: 15px; /* Adjust spacing between paragraphs */
+        margin-bottom: 15px; /* Adjust spacing between paragraphs */
     }
 
     /* Additional customizations to ensure responsiveness and alignment */
@@ -186,6 +194,8 @@ st.markdown("""
             margin-left: 15px; /* Adjust left margin for smaller screens */
         }
     }
+    /* END Style for title */
+
 
     .logo_image {
         margin-top: 20px;
@@ -206,6 +216,46 @@ st.markdown("""
         font-size: 20px;  /* Increase font size for paragraphs */
         margin-top: 20px;
         margin-bottom: 15px; /* You had this but now explicitly placed it here */
+    }
+
+    /* Scan for AI and Clear Buttons */
+    div.stButton > button:first-child {
+        background-color: #65c6ba; /* Base color */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    div.stButton > button:first-child:hover {
+        background-color: #0e8c7d; /* Slightly darker shade on hover */
+    }
+
+    /* Align Clear button to the right */
+    .stClearContainer {
+        display: flex;
+        justify-content: flex-end; /* Push the Clear button to the right */
+        margin-top: -20px; /* Adjust spacing */
+    }
+
+    div.stButton > button:last-child {
+        background-color: #65c6ba; /* Base color for Clear button */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    div.stButton > button:last-child:hover {
+        background-color: #0e8c7d; /* Slightly darker shade on hover */
     }
 
     </style>
@@ -230,10 +280,9 @@ logo_base64_youtube = get_base64_image(f"{save_path}/youtube.jpg")
 # Embed the Base64 image into the HTML
 st.markdown(
     f"""
-   <body>
-   <div class="header">
+    <div class="header">
         <div class="logo">
-            <img src="data:image/png;base64,{logo_base64_logo}" alt="Your Logo">
+            <img src="data:image/png;base64,{logo_base64_logo}" alt="TrueNet Logo">
         </div>
         <div class="nav-links">
             <a href="page_approach">Approach</a>
@@ -243,7 +292,6 @@ st.markdown(
             <a href="page_team">Team</a>
         </div>
     </div>
-</body>
     """,
     unsafe_allow_html=True
 )
@@ -353,8 +401,11 @@ col1, col2 = st.columns([1.5, 2])
 
 # Left Side Content
 with col1:
+    # Titles
     st.markdown('<div class="title-big">Beyond the Surface</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-small">Identify the <span>Creator</span></div>', unsafe_allow_html=True)
+
+    # Content Text
     st.markdown("""
     <div class="content-text">
         <div class="paragraph">
@@ -367,7 +418,7 @@ with col1:
         TrueNet<span style="color:#65c6ba;">: Because <span style="color:#0e8c7d;">truth</span> matters.</span>
         </div>
     </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 
 # Insert video (Check issue with encoding)
@@ -426,7 +477,10 @@ with col2:
 
     # st.file_uploader("Upload File", type=["txt", "docx", "pdf"], key="uploader")
 
-    col1, col2 = st.columns([2, 1])
+    # Scan and Clear Buttons
+    col1, col2, col3 = st.columns([2, 5, 1])  # Adjust column ratios for spacing
+
+    # Scan for AI Button
     with col1:
         if st.button("Scan for AI", type="primary"):
             print(f'st.session_state: {st.session_state}')
@@ -437,12 +491,19 @@ with col2:
                     display_results(analysis)
             else:
                 st.warning("Please enter some text to analyze.")
+
+    # Empty middle column for spacing
     with col2:
+        st.markdown("")
+
+    # Clear Button
+    with col3:
         if st.button("Clear", type="secondary"):
             st.session_state.clear()
             st.session_state.text_input = ''
             st.session_state.selected_example = ''
             st.rerun()
+
 
     # st.markdown('<button class="scan-button">Scan for AI</button>', unsafe_allow_html=True)
 

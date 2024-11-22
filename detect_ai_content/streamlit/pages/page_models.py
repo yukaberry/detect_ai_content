@@ -44,12 +44,12 @@ def app():
     # Baseline Models
     with st.expander("Baseline Models", expanded=False):
         st.markdown("""
-         ##Logistic Regression
+        ###Logistic Regression
         - **Overview:** A simple yet effective statistical model used as a baseline for comparison with more advanced algorithms.
         - **Purpose:** Measures the relationship between input features and the likelihood of text being AI-generated or human-written.
         - **Advantages:** Computationally efficient, easy to implement, and interpretable.
 
-         ##Support Vector Machines (SVM)
+        ###Support Vector Machines (SVM)
         - **Overview:** A robust supervised learning algorithm for text classification.
         - **Kernel Trick:** Projects data into higher-dimensional spaces for better classification.
         - **Advantages:** Works well with small-to-medium datasets and captures complex patterns.
