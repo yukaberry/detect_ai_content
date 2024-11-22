@@ -378,6 +378,7 @@ def example_buttons():
         options=option_map.keys(),
         format_func=lambda option: option_map[option],
         selection_mode="single",
+        key="pills_selection"
     )
 
     if selection is not None:
@@ -501,7 +502,7 @@ with col2:
         if st.button("Clear", type="secondary"):
             st.session_state.clear()
             st.session_state.text_input = ''
-            st.session_state.selected_example = ''
+            st.session_state.pills_selection = None
             st.rerun()
 
 
