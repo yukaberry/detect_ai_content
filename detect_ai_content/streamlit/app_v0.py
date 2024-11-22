@@ -52,60 +52,7 @@ st.markdown("""
         color: #0e8c7d; /* Darker blue on hover */
     }
 
-    /* Style for the button container */
-    .button-container {
-        margin-left: auto; /* Push the button to the far right */
-    }
-
-    .btn-dark {
-        background-color: #65c6ba; /* Blue background */
-        color: white; /* White text */
-        padding: 8px 16px; /* Add padding */
-        border-radius: 5px; /* Rounded corners */
-        text-align: center;
-        cursor: pointer; /* Show pointer on hover */
-        font-weight: bold; /* Bold text */
-        transition: background-color 0.3s; /* Smooth hover effect */
-    }
-
-    .btn-dark:hover {
-        background-color: #0e8c7d; /* Darker blue on hover */
-    }
-
     /* End of Header */
-
-    /* Style for the file uploader button */
-    button {
-        background-color: #65c6ba; /* Default background color */
-        color: white; /* Text color */
-        font-weight: bold; /* Bold text */
-        padding: 10px 20px; /* Padding inside buttons */
-        border: none; /* Remove default border */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        transition: background-color 0.3s ease; /* Smooth hover effect */
-    }
-
-    /* Hover effect for all buttons */
-    button:hover {
-        background-color:#0e8c7d; /* Darker hover color */
-        color:#0e8c7d;
-    }
-
-    .stButton>button {
-        margin: 0px 0px;  /* Reduce the space between buttons */
-    }
-
-    /* Optional: Style for Streamlit-specific buttons (if needed) */
-    div[data-testid="stButton"] > button {
-        background-color: #65c6ba;
-        color: white;
-    }
-
-    /* Additional specificity for Streamlit's default button style */
-    div[data-testid="stButton"] > button:hover {
-        background-color: #0e8c7d !important; /* Force custom hover color */
-    }
 
     /* END Style for the file uploader button */
 
@@ -240,24 +187,6 @@ st.markdown("""
         }
     }
 
-    .scan-button {
-        background-color: #65c6ba;
-        color: white;
-        font-size: 18px;
-        padding: 15px 40px;
-        border-radius: 30px;
-        border: none;
-        cursor: pointer;
-        margin-left: 0;
-        display: block;
-        transition: background-color 0.3s; /* Smooth hover effect */
-    }
-
-    .scan-button:hover {
-        background-color:#0e8c7d;
-        color:black;
-    }
-
     .logo_image {
         margin-top: 20px;
         text-align: center;
@@ -312,9 +241,6 @@ st.markdown(
             <a href="page_resources">Resources</a>
             <a href="page_news">News</a>
             <a href="page_team">Team</a>
-        </div>
-        <div class="button-container">
-            <div class="btn-dark">Dashboard</div>
         </div>
     </div>
 </body>
@@ -388,38 +314,36 @@ def analyze_text(text: str) -> dict:
     return response.json()
 
 def example_buttons():
-    st.write("Try an example:")
+    Llama2_text = "Llama2"
+    Claude_text = "Claude"
+    ChatGPT_text = "ChatGPT"
+    Human_text = "Human"
 
-    # Create a container for the buttons
-    button_container = st.container()
+    option_map = {
+        0: Llama2_text,
+        1: Claude_text,
+        2: ChatGPT_text,
+        3: Human_text,
+    }
+    selection = st.pills(
+        "Try an example:",
+        options=option_map.keys(),
+        format_func=lambda option: option_map[option],
+        selection_mode="single",
+    )
 
-    # Adjust the column width to reduce space
-    cols = button_container.columns([1, 1, 1, 1])  # Use equal width for all buttons
-
-    # Create all buttons and check their states
-    if cols[0].button("Llama2", key="example1", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=llama2_chat')
-        print(response.json())
+    if selection is not None:
+        pills_selection = option_map[selection]
+        if pills_selection == Llama2_text:
+            source = "llama2_chat"
+        elif pills_selection == Claude_text:
+            source = "darragh_claude_v6"
+        elif pills_selection == ChatGPT_text:
+            source = "chat_gpt_moth"
+        elif pills_selection == Human_text:
+            source = "persuade_corpus"
+        response = requests.get(f'{BASEURL}/random_text?source={source}')
         st.session_state.text_input = response.json()['text']
-
-    if cols[1].button("Claude", key="example2", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=darragh_claude_v6')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
-    if cols[2].button("ChatGPT", key="example3", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=chat_gpt_moth')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
-    if cols[3].button("Human", key="example4", type="secondary"):
-        response = requests.get(f'{BASEURL}/random_text?source=persuade_corpus')
-        print(response.json())
-        st.session_state.text_input = response.json()['text']
-
-    # Add custom CSS to reduce space between buttons
-
-
 
 # Divider
 st.markdown("---")
@@ -500,7 +424,7 @@ with col2:
                  height=200,
                  help="Enter the text you want to analyze")
 
-    st.file_uploader("Upload File", type=["txt", "docx", "pdf"], key="uploader")
+    # st.file_uploader("Upload File", type=["txt", "docx", "pdf"], key="uploader")
 
     col1, col2 = st.columns([2, 1])
     with col1:
