@@ -221,9 +221,9 @@ def display_results(analysis: dict):
 
 
 def create_content():
-    st.title("AI Detector for Images")
-    st.markdown("### Detect Fake vs Real Images.")
-    st.write("Upload an image to analyze whether it is likely AI-generated or real.")
+    st.title("Is your image Real or AI Generated?")
+    st.markdown("### Upload an image to find out now!")
+    #st.write("Upload an image to analyze whether it is likely AI-generated or real.")
 
     # Image upload section
     image_file = image_input_section()

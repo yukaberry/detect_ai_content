@@ -68,7 +68,7 @@ def app():
     # https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader
     # SUPPORT PNG in the futur
     # Complex to support the 4th layer on the Api & model
-    uploaded_file = st.file_uploader("Upload an image", type=["jpg"], accept_multiple_files=False)
+    uploaded_file = st.file_uploader("Upload an image to find out now!", type=["jpg"], accept_multiple_files=False)
     analysis = None
 
     if uploaded_file is not None:
