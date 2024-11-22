@@ -19,68 +19,99 @@ def local_css():
     logo_path = os.path.join(save_path, "logo3_transparent.png")
 
     st.markdown("""
-        <style>
-        /* Header */
-        .header {
-            background-color: #f5f5f5;
-            padding: 10px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .header img { /*logo*/
-            height: 60px;
-            width: auto;
-            margin-right: 20px;
-        }
-        .header-title {
-            flex: 1;
-            text-align: center;
-        }
-        .header-title h2 {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #333333;
-            margin: 0;
-        }
-        .header-title h3 {
-            font-size: 1.5rem;
-            color: #65c6ba;
-            margin: 0;
-        }
+    <style>
+    /* Main Container */
 
-        /* Text Input */
+    /* Header */
+    .header {
+        background-color: #f5f5f5;
+        padding: 10px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+    .header img {
+        height: 60px;
+        width: auto;
+        margin-right: 20px;
+    }
+    .header-title {
+        flex: 1;
+        text-align: center;
+    }
+    .header-title h2 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333333;
+        margin: 0;
+    }
+    .header-title h3 {
+        font-size: 1.5rem;
+        color: #65c6ba;
+        margin: 0;
+    }
 
-        .stTextArea textarea {
-            min-height: 150px; /* Adjust the height as needed */
-            padding: 1rem; /* Add some inner spacing */
-            font-size: 1rem; /* Text size */
-            border: none; /* Remove the border */
-            outline: none; /* Remove focus outline */
-            background-color: #f5f5f5; /* Optional: Light gray background for distinction */
-            border-radius: 10px; /* Optional: Rounded corners for a cleaner look */
-        }
+    /* Example Buttons Container */
+    .example-buttons-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 1rem;
+        gap: 0.5rem;
+    }
+    .example-buttons-container button {
+        background-color: #65c6ba;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 1rem;
+    }
+    .example-buttons-container button:hover {
+        background-color: #0e8c7d;
+        cursor: pointer;
+    }
+    /* Align Clear button to the right */
+    div.stButton.clear-button-container {
+        text-align: right;!important /* Push the Clear button to the right */
+    }
 
-        .stTextArea textarea:focus {
-            border: none; /* Ensure no border appears on focus */
-            outline: none; /* Remove any browser-generated focus outline */
-            box-shadow: none; /* Prevent any shadow effects */
-        }
+    /* Scan for AI and Clear Buttons */
+    div.stButton > button {
+        background-color: #65c6ba; /* Base color from logo */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
+    div.stButton > button:hover {
+        background-color: #0e8c7d; /* Slightly darker shade for hover effect */
+    }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #777777;
-        }
+    /* Text Area */
+    .stTextArea-container {
+        width: 100%; /* Make the text area take full width */
+        max-width: 600px; /* Optional: Limit the max width */
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem; /* Space between text area and buttons */
+    }
 
-        /* Hide Streamlit's default menu */
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        </style>
+    /* Footer */
+    .footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 0.9rem;
+        color: #777777;
+    }
 
+    /* Hide Streamlit's default menu */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+
+    </style>
     """, unsafe_allow_html=True)
 
     if os.path.exists(logo_path):
@@ -98,6 +129,8 @@ def local_css():
     <h3>Preserve what\'s <span style="color: #65c6ba;">Human.</span></h3>
 
     """, unsafe_allow_html=True)
+
+
 
 def example_buttons():
     Llama2_text = "Llama2"
@@ -225,25 +258,41 @@ def create_content():
         st.session_state.selected_example = new_selection
         st.session_state.text_input = f"This is example text for {new_selection}"
 
-    # Display the text input area
-    text = text_input_section()
 
-    # Bottom buttons for Analyze and Clear
-    col1, col2 = st.columns([1, 1])  # Two equally spaced columns
+    # Container for text area and buttons
+    st.markdown('<div class="textarea-and-buttons-container">', unsafe_allow_html=True)
+
+    # Text input area
+    st.markdown('<div class="stTextArea-container">', unsafe_allow_html=True)
+    text = text_input_section()
+    st.markdown('</div>', unsafe_allow_html=True)# Display the text input area
+
+
+    # Add buttons using columns
+    col1, col2, col3 = st.columns([2, 5, 1])  # Adjust column ratios to control spacing
     analysis = None
+
+    # Scan for AI Button (Left)
     with col1:
-        if st.button("Scan for AI", type="primary", key="analyze"):
+        if st.button("Scan for AI", key="analyze", type="primary"):
             if text:
                 with st.spinner("Wait for it..."):
                     analysis = analyze_text(text)
             else:
                 st.warning("Please enter some text to analyze.")
+
+    # Empty Column (Middle) to push Clear button to the right
     with col2:
-        if st.button("Clear", type="secondary", key="clear"):
+        st.markdown("")  # Empty content for spacing
+
+    # Clear Button (Right)
+    with col3:
+        if st.button("Clear", key="clear"):
             st.session_state.clear()
             st.session_state.text_input = ''
             st.rerun()
 
+    # Display analysis results if available
     if analysis is not None:
         display_results(analysis)
 
