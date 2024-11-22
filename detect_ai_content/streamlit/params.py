@@ -1,1 +1,1 @@
-BASEURL="https://detect-ai-content-improved21nov-updated-667980218208.europe-west1.run.app"
+BASEURL="https://detect-ai-content-improved22nov-final-667980218208.europe-west1.run.ap"

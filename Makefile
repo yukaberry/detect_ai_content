@@ -104,6 +104,7 @@ run_docker_build:
 	docker build --tag=${IMAGE}:dev . -f Dockerfile
 
 # run the image
+# note : ensure to cut off your local port connection once your local test is done
 run_docker_run:
 	docker run -it -e PORT=8000 -p 8000:8000 ${IMAGE}:dev
 
