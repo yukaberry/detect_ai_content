@@ -200,6 +200,11 @@ def predict(
     model = app.state.models["TrueNetTextTfidfNaiveBayesClassifier"]
     predictions['TrueNetTextTfidfNaiveBayesClassifier'] = prediction_to_result(model, 'TrueNetTextTfidfNaiveBayesClassifier', text_enriched_df)
 
+    if "LgbmInternal" not in app.state.models:
+        app.state.models["LgbmInternal"] = LgbmInternal().pretrained_model()
+    model = app.state.models["LgbmInternal"]
+    predictions['LgbmInternal'] = prediction_to_result(model, 'LgbmInternal', text_df)
+
     y_preds = []
     number_of_zeros = float(0)
     number_of_ones = float(0)
@@ -409,4 +414,67 @@ def get_random_text(source: str):
     # print(filtered_df)
     return {
         'text': filtered_df.sample(1).iloc[0]['text']
+    }
+
+import pymupdf
+
+@app.post("/text_book_predict")
+async def text_book_predict(file: UploadFile = File(...)):
+    # save UploadFile to local path
+    file_bytes = await file.read()
+
+    file_path = os.path.join(os.path.dirname(__file__), "temp_pdf.pdf")
+    with open(file_path, "wb") as f:
+        f.write(file_bytes)
+
+    doc = pymupdf.open(file_path)
+
+    texts = []
+    for page in doc:
+        texts.append(page.get_text())
+
+    if "LgbmInternal" not in app.state.models:
+        app.state.models["LgbmInternal"] = LgbmInternal().pretrained_model()
+    model = app.state.models["LgbmInternal"]
+
+    predictions = []
+    index = 0
+    for text in texts:
+        index += 1
+        text_df = pd.DataFrame(data=[text],columns=['text'])
+        result = prediction_to_result(model, 'LgbmInternal', text_df)
+        result["page"] = index
+        predictions.append(result)
+
+    y_preds = []
+    number_of_zeros = float(0)
+    number_of_ones = float(0)
+
+    for estimator_result in predictions:
+        v = estimator_result['predicted_class']
+        y_preds.append(v)
+        if v == 0:
+            number_of_zeros += 1
+        else:
+            number_of_ones += 1
+
+    prediction = -1
+    prediction_confidence = 0
+
+    if np.mean(y_preds) < 0.5:
+        prediction = 0
+        prediction_confidence = round(100 * (number_of_zeros/len(predictions)))
+
+    else:
+        prediction = 1
+        prediction_confidence = round(100 * (number_of_ones/len(predictions)))
+
+    # print(f"preds: {predictions}")
+
+    return {
+        'prediction': prediction,
+        'predict_proba': f'{prediction_confidence}%',
+        'details': {
+            'pages': predictions
+        }
     }
