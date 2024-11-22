@@ -5,3 +5,4 @@ pillow==10.4.0
 numpy
 pathlib
 requests
+plotly
