@@ -481,6 +481,7 @@ with col2:
     # Scan and Clear Buttons
     col1, col2, col3 = st.columns([2, 5, 1])  # Adjust column ratios for spacing
 
+    analysis = None
     # Scan for AI Button
     with col1:
         if st.button("Scan for AI", type="primary"):
@@ -489,7 +490,6 @@ with col2:
             if len(st.session_state.text_input) > 1:
                 with st.spinner('Wait for it...'):
                     analysis = analyze_text(text)
-                    display_results(analysis)
             else:
                 st.warning("Please enter some text to analyze.")
 
@@ -505,7 +505,8 @@ with col2:
             st.session_state.pills_selection = None
             st.rerun()
 
-
+    if analysis is not None:
+        display_results(analysis)
     # st.markdown('<button class="scan-button">Scan for AI</button>', unsafe_allow_html=True)
 
 
