@@ -430,7 +430,9 @@ with col1:
     st.markdown(
         f"""
         <div class="logo_image_manu">
-            <img src="data:image/png;base64,{logo_base64_youtube}" alt="Your Image" style="max-width: 100%; border-radius: 8px;">
+            <iframe id="player" type="text/html" height="360" width="100%"
+            src="http://www.youtube.com/embed/BiDdDFXZilA?enablejsapi=1&origin=http://example.com"
+            frameborder="0"></iframe>
         </div>
         """,
         unsafe_allow_html=True
