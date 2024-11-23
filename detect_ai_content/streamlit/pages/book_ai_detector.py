@@ -255,8 +255,8 @@ def analyze_pdf(file) -> dict:
         'file': (file.name, file, file.type)
     }
     response = requests.post(
-        'http://127.0.0.1:8000/text_book_predict',
-        #  f'{BASEURL}/text_book_predict',
+        # 'http://127.0.0.1:8000/text_book_predict',
+        f'{BASEURL}/text_book_predict',
         headers=headers,
         files=files
     )
